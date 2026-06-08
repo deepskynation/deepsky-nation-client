@@ -1,0 +1,9 @@
+Hi {{CUSTOMER_NAME}},
+
+Great news — your order {{ORDER_NUMBER}} has been approved.
+
+Approved on: {{APPROVED_AT}}
+
+We will prepare your items for delivery. You can track progress from your orders page.
+
+View your orders: {{ORDERS_LINK}}

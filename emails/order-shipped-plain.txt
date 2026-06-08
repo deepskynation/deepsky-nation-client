@@ -1,0 +1,9 @@
+Hi {{CUSTOMER_NAME}},
+
+Your order {{ORDER_NUMBER}} has been shipped.
+
+Shipped on: {{SHIPPED_AT}}
+
+Your items are on their way. You can track progress from your orders page.
+
+View your orders: {{ORDERS_LINK}}

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Order receipt — {{ORDER_NUMBER}}</title>
+</head>
+<!--
+  Order confirmation / receipt (checkout).
+  Placeholders: {{CUSTOMER_NAME}}, {{ORDER_NUMBER}}, {{ORDER_DATE}}, {{ORDER_STATUS}},
+  {{PAYMENT_METHOD}}, {{LINE_ITEMS_HTML}}, {{SUBTOTAL}}, {{SHIPPING_FEE}}, {{TOTAL}},
+  {{DELIVERY_ADDRESS}}, {{DELIVERY_PHONE}}, {{DELIVERY_EMAIL}}, {{ORDERS_LINK}}
+-->
+<body style="margin:0;padding:0;background-color:#f9fafb;font-family:Calibre,system-ui,sans-serif;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color:#f9fafb;">
+    <tr>
+      <td align="center" style="padding:40px 16px;">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:520px;background:rgba(255,255,255,0.92);border:1px solid rgba(0,0,0,0.1);border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,0.05);">
+          <tr>
+            <td style="padding:32px 28px 20px;text-align:center;">
+              <img src="{{LOGO_URL}}" alt="DeepSky" width="140" height="28" style="display:block;margin:0 auto 16px;height:28px;width:auto;max-width:140px;border:0;" />
+              <h1 style="margin:0 0 8px;font-size:24px;font-weight:600;color:#000;">
+                Order details
+              </h1>
+              <p style="margin:0;font-size:14px;line-height:1.6;color:rgba(0,0,0,0.6);">
+                Hi {{CUSTOMER_NAME}}, here are the details for <strong>{{ORDER_NUMBER}}</strong>.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 28px 16px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="font-size:13px;color:rgba(0,0,0,0.65);">
+                <tr>
+                  <td style="padding:4px 0;">Placed</td>
+                  <td style="padding:4px 0;text-align:right;color:#000;">{{ORDER_DATE}}</td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 0;">Status</td>
+                  <td style="padding:4px 0;text-align:right;color:#000;">{{ORDER_STATUS}}</td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 0;">Payment</td>
+                  <td style="padding:4px 0;text-align:right;color:#000;">{{PAYMENT_METHOD}}</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:8px 28px 12px;">
+              <p style="margin:0 0 8px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:rgba(0,0,0,0.45);">
+                Items
+              </p>
+              {{LINE_ITEMS_HTML}}
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:4px 28px 16px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="font-size:13px;">
+                <tr>
+                  <td style="padding:4px 0;color:rgba(0,0,0,0.55);">Subtotal</td>
+                  <td style="padding:4px 0;text-align:right;">{{SUBTOTAL}}</td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 0;color:rgba(0,0,0,0.55);">Shipping</td>
+                  <td style="padding:4px 0;text-align:right;">{{SHIPPING_FEE}}</td>
+                </tr>
+                <tr>
+                  <td style="padding:8px 0 4px;font-weight:600;color:#000;">Total</td>
+                  <td style="padding:8px 0 4px;text-align:right;font-weight:600;color:#000;">{{TOTAL}}</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:8px 28px 20px;border-top:1px solid rgba(0,0,0,0.08);">
+              <p style="margin:0 0 8px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:rgba(0,0,0,0.45);">
+                Delivery
+              </p>
+              <p style="margin:0 0 6px;font-size:13px;line-height:1.55;color:rgba(0,0,0,0.7);white-space:pre-line;">{{DELIVERY_ADDRESS}}</p>
+              <p style="margin:0;font-size:13px;color:rgba(0,0,0,0.55);">
+                {{DELIVERY_PHONE}} · {{DELIVERY_EMAIL}}
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 28px 28px;text-align:center;">
+              <a href="{{ORDERS_LINK}}"
+                 style="display:inline-block;max-width:280px;box-sizing:border-box;padding:12px 24px;background:#000;color:#fff;text-decoration:none;border-radius:6px;font-size:14px;font-weight:500;">
+                View my orders
+              </a>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

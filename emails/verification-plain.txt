@@ -1,0 +1,7 @@
+Thanks for signing up.
+
+Open this email in your mail app and tap "Confirm email" to verify your address.
+
+This link expires in {{EXPIRE_HOURS}} hours.
+
+If you did not create an account, you can ignore this email.
