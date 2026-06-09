@@ -55,22 +55,8 @@ export function AuthRequiredDialog({
             href="/login"
             className="flex h-11 w-full cursor-pointer items-center justify-center rounded-md bg-black text-sm font-medium text-white transition-colors hover:bg-black/90"
           >
-            Log In
+            Sign in
           </Link>
-          <Link
-            href="/signup"
-            className="flex h-11 w-full cursor-pointer items-center justify-center rounded-md border border-black/15 bg-white text-sm font-medium text-black transition-colors hover:border-black/30 hover:bg-neutral-50"
-          >
-            Signup
-          </Link>
-
-          <div className="flex items-center gap-3 pt-1">
-            <div className="h-px flex-1 bg-black/8" />
-            <span className="text-[10px] tracking-[0.18em] text-black/35 uppercase">
-              or
-            </span>
-            <div className="h-px flex-1 bg-black/8" />
-          </div>
 
           <DialogClose
             render={

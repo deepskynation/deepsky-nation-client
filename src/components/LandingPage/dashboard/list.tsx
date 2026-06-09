@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { Loader2Icon } from "lucide-react";
 import { dashboardHeaderMenuItems } from "@/components/layout/HeaderMenuItems";
 import { HeaderNavLink } from "@/components/layout/header-nav-link";
+import { LandingProfileLink } from "@/components/LandingPage/dashboard/modules/landing-profile-link";
 import { ProductCard } from "@/components/LandingPage/dashboard/modules/product-card";
 import { AnimateInView } from "@/components/LandingPage/dashboard/modules/animate-in-view";
 import { DashboardGlassSection } from "@/components/LandingPage/dashboard/modules/dashboard-glass-section";
@@ -42,11 +43,7 @@ export default function DashboardList() {
   const isFeaturedLoading =
     featuredProductsStatus === "loading" && displayedProducts.length === 0;
 
-  const navItems = dashboardHeaderMenuItems.filter((item) => !item.children);
-  const authItem = dashboardHeaderMenuItems.find(
-    (item) => item.children?.length,
-  );
-  const authLinks = authItem?.children ?? [];
+  const navItems = dashboardHeaderMenuItems;
 
   const isLandingPage = pathname === "/" || pathname === "/dashboard";
 
@@ -119,20 +116,13 @@ export default function DashboardList() {
               ))}
             </nav>
 
-            <div className="flex items-center justify-end gap-9">
-              {authLinks.map((item) => (
-                <HeaderNavLink
-                  key={item.id}
-                  item={item}
-                  variant="minimal"
-                  showIcon={false}
-                />
-              ))}
+            <div className="flex items-center justify-end">
+              <LandingProfileLink />
             </div>
           </div>
 
           <div className="md:hidden">
-            <div className="py-4">
+            <div className="flex items-center justify-between py-4">
               <Link
                 href="/"
                 className="text-lg transition-opacity hover:opacity-70"
@@ -141,6 +131,7 @@ export default function DashboardList() {
                   DeepSky
                 </span>
               </Link>
+              <LandingProfileLink />
             </div>
 
             <div className="-mx-6 overflow-x-auto overscroll-x-contain scroll-smooth pb-4 scrollbar-hide">
@@ -153,15 +144,6 @@ export default function DashboardList() {
                     showIcon={false}
                     active={isActive(item.href)}
                     onHashNavigate={setActiveHash}
-                    className="shrink-0 whitespace-nowrap"
-                  />
-                ))}
-                {authLinks.map((item) => (
-                  <HeaderNavLink
-                    key={item.id}
-                    item={item}
-                    variant="minimal"
-                    showIcon={false}
                     className="shrink-0 whitespace-nowrap"
                   />
                 ))}

@@ -38,6 +38,25 @@ export type LoginCredentials = {
   password: string;
 };
 
+export type EmailVerifyCodeCredentials = {
+  email: string;
+  code: string;
+};
+
+export type MessageResponse = {
+  message: string;
+};
+
+export type GoogleSendCodeResponse = {
+  message: string;
+  email: string;
+};
+
+export type GoogleVerifyCodeCredentials = {
+  credential: string;
+  code: string;
+};
+
 export type SignupCredentials = {
   username: string;
   email: string;

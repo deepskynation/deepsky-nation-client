@@ -44,26 +44,6 @@ export const dashboardHeaderMenuItems: MenuItemTypes[] = [
     icon: ContactIcon,
     href: "/#contact-us",
   },
-  {
-    id: "auth",
-    title: "Auth",
-    icon: UserCircleIcon,
-    href: "/auth",
-    children: [
-      {
-        id: "login",
-        title: "Login",
-        icon: UserCircleIcon,
-        href: "/login",
-      },
-      {
-        id: "signup",
-        title: "Signup",
-        icon: UserCircleIcon,
-        href: "/signup",
-      },
-    ],
-  },
 ];
 
 export const userHeaderMenuItems: MenuItemTypes[] = [

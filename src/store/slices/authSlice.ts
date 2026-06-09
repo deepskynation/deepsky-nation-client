@@ -10,7 +10,11 @@ import { readApiError } from "@/store/api-utils";
 import type {
   ApiUser,
   AuthState,
+  EmailVerifyCodeCredentials,
+  GoogleSendCodeResponse,
+  GoogleVerifyCodeCredentials,
   LoginCredentials,
+  MessageResponse,
   SignupCredentials,
   SignupResponse,
   TokenResponse,
@@ -51,6 +55,12 @@ async function fetchCurrentUser(accessToken: string): Promise<User> {
 
   const body = (await response.json()) as ApiUser;
   return mapApiUserToUser(body);
+}
+
+async function completeTokenLogin(accessToken: string) {
+  const user = await fetchCurrentUser(accessToken);
+  setStoredAuth(accessToken, user);
+  return { user, accessToken };
 }
 
 const initialState: AuthState = {
@@ -104,15 +114,112 @@ export const login = createAsyncThunk(
       }
 
       const tokenResponse = (await response.json()) as TokenResponse;
-      const user = await fetchCurrentUser(tokenResponse.access_token);
-      setStoredAuth(tokenResponse.access_token, user);
-      return {
-        user,
-        accessToken: tokenResponse.access_token,
-      };
+      return completeTokenLogin(tokenResponse.access_token);
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Login failed. Please try again.";
+      return rejectWithValue(message);
+    }
+  },
+);
+
+export const sendGoogleCode = createAsyncThunk(
+  "auth/sendGoogleCode",
+  async (credential: string, { rejectWithValue }) => {
+    try {
+      const response = await fetch(apiUrl("/api/auth/google/send-code"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ credential }),
+      });
+
+      if (!response.ok) {
+        throw new Error(await readApiError(response));
+      }
+
+      return (await response.json()) as GoogleSendCodeResponse;
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Could not send verification code. Try again.";
+      return rejectWithValue(message);
+    }
+  },
+);
+
+export const verifyGoogleCode = createAsyncThunk(
+  "auth/verifyGoogleCode",
+  async (credentials: GoogleVerifyCodeCredentials, { rejectWithValue }) => {
+    try {
+      const response = await fetch(apiUrl("/api/auth/google/verify-code"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          credential: credentials.credential,
+          code: credentials.code.trim(),
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(await readApiError(response));
+      }
+
+      const tokenResponse = (await response.json()) as TokenResponse;
+      return completeTokenLogin(tokenResponse.access_token);
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Invalid or expired code.";
+      return rejectWithValue(message);
+    }
+  },
+);
+
+export const sendEmailCode = createAsyncThunk(
+  "auth/sendEmailCode",
+  async (email: string, { rejectWithValue }) => {
+    try {
+      const response = await fetch(apiUrl("/api/auth/email/send-code"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+
+      if (!response.ok) {
+        throw new Error(await readApiError(response));
+      }
+
+      return (await response.json()) as MessageResponse;
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Could not send code. Try again.";
+      return rejectWithValue(message);
+    }
+  },
+);
+
+export const verifyEmailCode = createAsyncThunk(
+  "auth/verifyEmailCode",
+  async (credentials: EmailVerifyCodeCredentials, { rejectWithValue }) => {
+    try {
+      const response = await fetch(apiUrl("/api/auth/email/verify-code"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: credentials.email.trim(),
+          code: credentials.code.trim(),
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(await readApiError(response));
+      }
+
+      const tokenResponse = (await response.json()) as TokenResponse;
+      return completeTokenLogin(tokenResponse.access_token);
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Invalid or expired code.";
       return rejectWithValue(message);
     }
   },
@@ -305,6 +412,72 @@ const authSlice = createSlice({
           typeof action.payload === "string"
             ? action.payload
             : "Login failed. Please try again.";
+      })
+      .addCase(sendGoogleCode.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(sendGoogleCode.fulfilled, (state) => {
+        state.status = "idle";
+        state.error = null;
+      })
+      .addCase(sendGoogleCode.rejected, (state, action) => {
+        state.status = "error";
+        state.error =
+          typeof action.payload === "string"
+            ? action.payload
+            : "Could not send verification code. Try again.";
+      })
+      .addCase(verifyGoogleCode.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(verifyGoogleCode.fulfilled, (state, action) => {
+        state.user = action.payload.user;
+        state.accessToken = action.payload.accessToken;
+        state.status = "authenticated";
+        state.error = null;
+        state.initialized = true;
+      })
+      .addCase(verifyGoogleCode.rejected, (state, action) => {
+        state.status = "error";
+        state.error =
+          typeof action.payload === "string"
+            ? action.payload
+            : "Invalid or expired code.";
+      })
+      .addCase(sendEmailCode.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(sendEmailCode.fulfilled, (state) => {
+        state.status = "idle";
+        state.error = null;
+      })
+      .addCase(sendEmailCode.rejected, (state, action) => {
+        state.status = "error";
+        state.error =
+          typeof action.payload === "string"
+            ? action.payload
+            : "Could not send code. Try again.";
+      })
+      .addCase(verifyEmailCode.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(verifyEmailCode.fulfilled, (state, action) => {
+        state.user = action.payload.user;
+        state.accessToken = action.payload.accessToken;
+        state.status = "authenticated";
+        state.error = null;
+        state.initialized = true;
+      })
+      .addCase(verifyEmailCode.rejected, (state, action) => {
+        state.status = "error";
+        state.error =
+          typeof action.payload === "string"
+            ? action.payload
+            : "Invalid or expired code.";
       })
       .addCase(signup.pending, (state) => {
         state.status = "loading";
