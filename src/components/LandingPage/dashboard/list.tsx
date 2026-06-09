@@ -7,9 +7,10 @@ import { usePathname } from "next/navigation";
 import { Loader2Icon } from "lucide-react";
 import { dashboardHeaderMenuItems } from "@/components/layout/HeaderMenuItems";
 import { HeaderNavLink } from "@/components/layout/header-nav-link";
+import { LandingProductSearch } from "@/components/LandingPage/dashboard/modules/landing-product-search";
 import { LandingProfileLink } from "@/components/LandingPage/dashboard/modules/landing-profile-link";
 import { ProductCard } from "@/components/LandingPage/dashboard/modules/product-card";
-import { AnimateInView } from "@/components/LandingPage/dashboard/modules/animate-in-view";
+import { AnimateInView } from "@/components/common/animation/animate-in-view";
 import { DashboardGlassSection } from "@/components/LandingPage/dashboard/modules/dashboard-glass-section";
 import {
   glassCardClassName,
@@ -96,11 +97,16 @@ export default function DashboardList() {
           <div className="hidden items-center gap-5 py-5 md:grid md:grid-cols-[1fr_auto_1fr]">
             <Link
               href="/"
-              className="justify-self-start text-lg transition-opacity hover:opacity-70 md:text-xl"
+              className="justify-self-start transition-opacity hover:opacity-70"
             >
-              <span className="font-bold uppercase tracking-[0.22em]">
-                DeepSky
-              </span>
+              <Image
+                src="/deepsky-logo.png"
+                alt="DeepSky"
+                width={140}
+                height={28}
+                className="h-6 w-auto md:h-7"
+                priority
+              />
             </Link>
 
             <nav className="flex items-center justify-center gap-x-9">
@@ -116,22 +122,28 @@ export default function DashboardList() {
               ))}
             </nav>
 
-            <div className="flex items-center justify-end">
+            <div className="flex items-center justify-end gap-1">
+              <LandingProductSearch />
               <LandingProfileLink />
             </div>
           </div>
 
           <div className="md:hidden">
             <div className="flex items-center justify-between py-4">
-              <Link
-                href="/"
-                className="text-lg transition-opacity hover:opacity-70"
-              >
-                <span className="font-bold uppercase tracking-[0.22em]">
-                  DeepSky
-                </span>
+              <Link href="/" className="transition-opacity hover:opacity-70">
+                <Image
+                  src="/deepsky-logo.png"
+                  alt="DeepSky"
+                  width={140}
+                  height={28}
+                  className="h-6 w-auto md:h-7"
+                  priority
+                />
               </Link>
-              <LandingProfileLink />
+              <div className="flex items-center gap-1">
+                <LandingProductSearch />
+                <LandingProfileLink />
+              </div>
             </div>
 
             <div className="-mx-6 overflow-x-auto overscroll-x-contain scroll-smooth pb-4 scrollbar-hide">

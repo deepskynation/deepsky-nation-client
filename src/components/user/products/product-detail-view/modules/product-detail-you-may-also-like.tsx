@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo } from "react";
 import { Loader2Icon } from "lucide-react";
-import { AnimateInView } from "@/components/LandingPage/dashboard/modules/animate-in-view";
+import { AnimateInView } from "@/components/common/animation/animate-in-view";
 import { ProductCard } from "@/components/common/product/ProductCard";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import {

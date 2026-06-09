@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { UserRoundIcon } from "lucide-react";
+import { UserIcon } from "lucide-react";
 import { useAppSelector } from "@/hooks";
 import { getDashboardPathForRole } from "@/lib/auth-session";
 import {
@@ -27,11 +27,11 @@ export function LandingProfileLink({ className }: LandingProfileLinkProps) {
       href={href}
       aria-label={isAuthenticated ? "Open account" : "Sign in"}
       className={cn(
-        "inline-flex size-10 items-center justify-center rounded-full border border-black/10 bg-white/80 text-black/70 shadow-sm transition-colors hover:border-black/20 hover:bg-white hover:text-black",
+        "inline-flex size-10 items-center justify-center text-black transition-opacity hover:opacity-70",
         className,
       )}
     >
-      <UserRoundIcon className="size-5" strokeWidth={1.75} />
+      <UserIcon className="size-6" strokeWidth={1.75} />
     </Link>
   );
 }

@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Loader2Icon, Search } from "lucide-react";
 import { authGlassInputClassName } from "@/components/(auth)/modules/auth-glass-styles";
-import { AnimateInView } from "@/components/LandingPage/dashboard/modules/animate-in-view";
+import { AnimateInView } from "@/components/common/animation/animate-in-view";
 import { DashboardGlassSection } from "@/components/LandingPage/dashboard/modules/dashboard-glass-section";
 import { GlassPillFilter } from "@/components/common/filters/glass-pill-filter";
 import { GlassOptionsMenu } from "@/components/common/filters/glass-options-menu";
@@ -32,13 +33,14 @@ import {
 } from "@/store/slices/productSlice";
 
 export function ProductsList() {
+  const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
   const products = useAppSelector(selectShopProducts);
   const listStatus = useAppSelector(selectShopProductsListStatus);
   const listError = useAppSelector(selectShopProductsListError);
   const categories = useAppSelector(selectShopCategories);
 
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(() => searchParams.get("q") ?? "");
   const [categoryId, setCategoryId] = useState<string>("all");
   const [sort, setSort] = useState<ProductSortOption>("Default");
 
@@ -51,6 +53,13 @@ export function ProductsList() {
     void dispatch(fetchShopCategories());
     void dispatch(fetchReleasedProducts(STOREFRONT_CATALOG_QUERY));
   }, [dispatch]);
+
+  useEffect(() => {
+    const query = searchParams.get("q");
+    if (query !== null) {
+      setSearchQuery(query);
+    }
+  }, [searchParams]);
 
   const categoryFilteredProducts = useMemo(
     () => filterProductsByCategoryId(products, categoryId),

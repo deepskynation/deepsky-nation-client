@@ -7,10 +7,14 @@ export const contactUsContent = {
     label: "Facebook",
     href: "https://www.facebook.com/Deepskynation",
   },
+  instagram: {
+    label: "Instagram",
+    href: "https://www.instagram.com/deepskynation/",
+  },
   gmail: {
     label: "Gmail",
-    email: "deepsky.nation@gmail.com",
-    href: "https://mail.google.com/mail/?view=cm&fs=1&to=deepsky.nation@gmail.com",
+    email: "deepskynation@gmail.com",
+    href: "https://mail.google.com/mail/?view=cm&fs=1&to=deepskynation@gmail.com",
   },
 };
 

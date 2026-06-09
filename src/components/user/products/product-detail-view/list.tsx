@@ -43,6 +43,7 @@ import {
   selectProductDetailError,
   selectProductDetailStatus,
 } from "@/store/slices/productSlice";
+import { ProductDetailEmailSubscribe } from "@/components/user/products/product-detail-view/modules/product-detail-email-subscribe";
 import { ProductDetailYouMayAlsoLike } from "@/components/user/products/product-detail-view/modules/product-detail-you-may-also-like";
 import type { ApiProductImage } from "@/types/product";
 
@@ -535,6 +536,8 @@ export function ProductDetailView({ params }: ProductDetailViewProps) {
             categoryId={product.category_id}
             categoryName={product.category_name}
           />
+
+          <ProductDetailEmailSubscribe />
         </div>
       </DashboardGlassSection>
 

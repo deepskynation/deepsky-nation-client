@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Loader2Icon } from "lucide-react";
-import { AnimateInView } from "@/components/LandingPage/dashboard/modules/animate-in-view";
+import { AnimateInView } from "@/components/common/animation/animate-in-view";
 import { ProductCard } from "@/components/common/product/ProductCard";
 import { glassCardClassName } from "@/lib/glass-styles";
 import { pickFeaturedProducts } from "@/lib/user-dashboard-products";

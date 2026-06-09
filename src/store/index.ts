@@ -1,5 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import adminDashboardReducer from "@/store/slices/adminDashboardSlice";
+import adminSubscribersReducer from "@/store/slices/adminSubscriberSlice";
 import adminUsersReducer from "@/store/slices/adminUserSlice";
 import appReducer from "@/store/slices/appSlice";
 import authReducer from "@/store/slices/authSlice";
@@ -15,6 +16,7 @@ export const makeStore = () =>
     reducer: {
       app: appReducer,
       adminDashboard: adminDashboardReducer,
+      adminSubscribers: adminSubscribersReducer,
       adminUsers: adminUsersReducer,
       auth: authReducer,
       cart: cartReducer,

@@ -3,6 +3,7 @@
 import {
   ClipboardListIcon,
   HomeIcon,
+  MailIcon,
   PackageIcon,
   PaletteIcon,
   ShoppingBagIcon,
@@ -18,6 +19,7 @@ const sidebarIconMap: Record<SidebarIconName, LucideIcon> = {
   "shopping-cart": ShoppingCartIcon,
   package: PackageIcon,
   "user-circle": UserCircleIcon,
+  mail: MailIcon,
   audit: ClipboardListIcon,
   "model-artist": PaletteIcon,
 };

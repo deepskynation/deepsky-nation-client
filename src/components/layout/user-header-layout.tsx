@@ -15,24 +15,6 @@ import { selectCartItemCount } from "@/store/slices/cartSlice";
 import { glassHeaderClassName } from "@/lib/glass-styles";
 import { cn } from "@/lib/utils";
 
-function HeaderLogo({ className }: { className?: string }) {
-  return (
-    <Link
-      href="/user/dashboard"
-      className={cn("transition-opacity hover:opacity-70", className)}
-    >
-      <Image
-        src="/deepsky-logo.png"
-        alt="DeepSky"
-        width={140}
-        height={28}
-        className="h-6 w-auto md:h-7"
-        priority
-      />
-    </Link>
-  );
-}
-
 function HeaderDesktopActions({ cartCount }: { cartCount: number }) {
   return (
     <div className="flex shrink-0 items-center justify-end gap-2">
@@ -86,7 +68,19 @@ export function UserHeaderLayout({ children }: UserHeaderLayoutProps) {
       <header className={cn(glassHeaderClassName, "relative z-50")}>
         <div className="mx-auto max-w-7xl px-6 md:px-10 lg:px-12">
           <div className="hidden items-center gap-5 py-5 md:grid md:grid-cols-[1fr_auto_1fr]">
-            <HeaderLogo className="justify-self-start" />
+            <Link
+              href="/user/dashboard"
+              className="justify-self-start transition-opacity hover:opacity-70"
+            >
+              <Image
+                src="/deepsky-logo.png"
+                alt="DeepSky"
+                width={140}
+                height={28}
+                className="h-6 w-auto md:h-7"
+                priority
+              />
+            </Link>
 
             <nav className="flex items-center justify-center gap-x-9">
               {userHeaderMenuItems.map((item) => (
@@ -119,7 +113,19 @@ export function UserHeaderLayout({ children }: UserHeaderLayoutProps) {
                 )}
               </button>
 
-              <HeaderLogo className="justify-self-center" />
+              <Link
+                href="/user/dashboard"
+                className="justify-self-center transition-opacity hover:opacity-70"
+              >
+                <Image
+                  src="/deepsky-logo.png"
+                  alt="DeepSky"
+                  width={140}
+                  height={28}
+                  className="h-6 w-auto md:h-7"
+                  priority
+                />
+              </Link>
               <HeaderMobileActions cartCount={cartCount} />
             </div>
 

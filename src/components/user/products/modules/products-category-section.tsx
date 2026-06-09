@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimateInView } from "@/components/LandingPage/dashboard/modules/animate-in-view";
+import { AnimateInView } from "@/components/common/animation/animate-in-view";
 import { ProductCard } from "@/components/common/product/ProductCard";
 import { cn } from "@/lib/utils";
 import type { ApiProduct } from "@/types/product";

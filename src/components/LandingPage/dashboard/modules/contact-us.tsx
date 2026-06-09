@@ -1,26 +1,12 @@
 import Link from "next/link";
 import { MailIcon } from "lucide-react";
 import { contactUsContent } from "@/mock/contact-us";
-import { AnimateInView } from "@/components/LandingPage/dashboard/modules/animate-in-view";
+import { AnimateInView } from "@/components/common/animation/animate-in-view";
+import { FacebookIcon, InstagramIcon } from "@/components/common/icons/social-icons";
 import { DashboardGlassSection } from "@/components/LandingPage/dashboard/modules/dashboard-glass-section";
-import {
-  glassCardClassName,
-  glassCardHoverClassName,
-} from "@/lib/glass-styles";
-import { cn } from "@/lib/utils";
 
-function FacebookIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      className={className}
-      fill="currentColor"
-    >
-      <path d="M13.5 3.5H16V0h-2.5C9.9 0 7.5 2.4 7.5 6v2.5H5v3.5h2.5V24h3.5v-12H14l.5-3.5h-3V6c0-1.4 1.1-2.5 2.5-2.5z" />
-    </svg>
-  );
-}
+const contactLinkClassName =
+  "flex size-11 shrink-0 items-center justify-center text-black transition-opacity hover:opacity-70";
 
 export function ContactUsSection() {
   return (
@@ -47,57 +33,37 @@ export function ContactUsSection() {
           </p>
         </AnimateInView>
 
-        <div className="grid gap-4 sm:grid-cols-2 sm:max-w-2xl">
-          <AnimateInView delay={120}>
+        <AnimateInView delay={120}>
+          <div className="flex items-center gap-2">
             <Link
               href={contactUsContent.facebook.href}
               target="_blank"
               rel="noopener noreferrer"
-              className={cn(
-                glassCardClassName,
-                glassCardHoverClassName,
-                "group flex items-center gap-4 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-black/20 hover:bg-black hover:text-white",
-              )}
+              className={contactLinkClassName}
+              aria-label={contactUsContent.facebook.label}
             >
-              <div className="flex size-11 items-center justify-center rounded-full border border-white/40 bg-black text-white transition-transform duration-300 group-hover:scale-110 group-hover:border-white/20 group-hover:bg-white group-hover:text-black">
-                <FacebookIcon className="size-5" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.12em]">
-                  {contactUsContent.facebook.label}
-                </p>
-                <p className="mt-1 text-sm text-black/55 group-hover:text-white/70">
-                  Message us on Facebook
-                </p>
-              </div>
+              <FacebookIcon />
             </Link>
-          </AnimateInView>
-
-          <AnimateInView delay={200}>
+            <Link
+              href={contactUsContent.instagram.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={contactLinkClassName}
+              aria-label={contactUsContent.instagram.label}
+            >
+              <InstagramIcon />
+            </Link>
             <Link
               href={contactUsContent.gmail.href}
               target="_blank"
               rel="noopener noreferrer"
-              className={cn(
-                glassCardClassName,
-                glassCardHoverClassName,
-                "group flex items-center gap-4 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-black/20 hover:bg-black hover:text-white",
-              )}
+              className={contactLinkClassName}
+              aria-label={contactUsContent.gmail.label}
             >
-              <div className="flex size-11 items-center justify-center rounded-full border border-white/40 bg-black text-white transition-transform duration-300 group-hover:scale-110 group-hover:border-white/20 group-hover:bg-white group-hover:text-black">
-                <MailIcon className="size-5" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.12em]">
-                  {contactUsContent.gmail.label}
-                </p>
-                <p className="mt-1 text-sm text-black/55 group-hover:text-white/70">
-                  {contactUsContent.gmail.email}
-                </p>
-              </div>
+              <MailIcon className="size-6" strokeWidth={1.75} />
             </Link>
-          </AnimateInView>
-        </div>
+          </div>
+        </AnimateInView>
       </div>
     </DashboardGlassSection>
   );

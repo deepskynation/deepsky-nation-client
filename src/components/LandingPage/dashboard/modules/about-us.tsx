@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { aboutUsContent } from "@/mock/about-us";
-import { AnimateInView } from "@/components/LandingPage/dashboard/modules/animate-in-view";
+import { AnimateInView } from "@/components/common/animation/animate-in-view";
 import { DashboardGlassSection } from "@/components/LandingPage/dashboard/modules/dashboard-glass-section";
 import {
   glassCardClassName,
