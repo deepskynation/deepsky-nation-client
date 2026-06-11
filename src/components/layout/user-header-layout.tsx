@@ -83,15 +83,17 @@ export function UserHeaderLayout({ children }: UserHeaderLayoutProps) {
             </Link>
 
             <nav className="flex items-center justify-center gap-x-9">
-              {userHeaderMenuItems.map((item) => (
-                <HeaderNavLink
-                  key={item.id}
-                  item={item}
-                  variant="minimal"
-                  showIcon={false}
-                  active={isActive(item.href)}
-                />
-              ))}
+              {userHeaderMenuItems
+                .filter((item) => !item.hideInDesktopNav)
+                .map((item) => (
+                  <HeaderNavLink
+                    key={item.id}
+                    item={item}
+                    variant="minimal"
+                    showIcon={false}
+                    active={isActive(item.href)}
+                  />
+                ))}
             </nav>
 
             <HeaderDesktopActions cartCount={cartCount} />

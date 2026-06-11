@@ -17,6 +17,7 @@ export type MenuItemTypes = {
   chipColor?: string;
   subtitle?: string;
   badge?: number | string;
+  hideInDesktopNav?: boolean;
 };
 
 export const dashboardHeaderMenuItems: MenuItemTypes[] = [
@@ -64,6 +65,7 @@ export const userHeaderMenuItems: MenuItemTypes[] = [
     title: "Orders",
     icon: PackageIcon,
     href: "/user/orders",
+    hideInDesktopNav: true,
   },
   {
     id: "size-chart",
