@@ -13,6 +13,7 @@ import { GlassMessagePanel } from "@/components/common/feedback/glass-message-pa
 import { useToast } from "@/components/common/feedback/toast-provider";
 import { DashboardGlassSection } from "@/components/LandingPage/dashboard/modules/dashboard-glass-section";
 import { useAppDispatch, useAppSelector } from "@/hooks";
+import { usePurchaseAuth } from "@/hooks/use-purchase-auth";
 import {
   formatProductDetails,
   getProductThumbnailSrc,
@@ -31,10 +32,6 @@ import {
   glassQuantityButtonClassName,
 } from "@/lib/glass-styles";
 import { cn } from "@/lib/utils";
-import {
-  selectAuthInitialized,
-  selectIsAuthenticated,
-} from "@/store/slices/authSlice";
 import { addCartItem } from "@/store/slices/cartSlice";
 import {
   clearProductDetail,
@@ -43,7 +40,7 @@ import {
   selectProductDetailError,
   selectProductDetailStatus,
 } from "@/store/slices/productSlice";
-import { ProductDetailEmailSubscribe } from "@/components/user/products/product-detail-view/modules/product-detail-email-subscribe";
+import { EmailSubscribeSection } from "@/components/common/marketing/email-subscribe-section";
 import { ProductDetailYouMayAlsoLike } from "@/components/user/products/product-detail-view/modules/product-detail-you-may-also-like";
 import type { ApiProductImage } from "@/types/product";
 
@@ -108,8 +105,7 @@ export function ProductDetailView({ params }: ProductDetailViewProps) {
   const product = useAppSelector(selectProductDetail);
   const detailStatus = useAppSelector(selectProductDetailStatus);
   const detailError = useAppSelector(selectProductDetailError);
-  const authInitialized = useAppSelector(selectAuthInitialized);
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const { requireAuth } = usePurchaseAuth();
 
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
@@ -249,12 +245,7 @@ export function ProductDetailView({ params }: ProductDetailViewProps) {
       selectedVariant?.id,
     );
 
-    if (!authInitialized) {
-      return;
-    }
-
-    if (!isAuthenticated) {
-      router.push(`/login?redirect=${encodeURIComponent(checkoutHref)}`);
+    if (!requireAuth(checkoutHref)) {
       return;
     }
 
@@ -266,12 +257,7 @@ export function ProductDetailView({ params }: ProductDetailViewProps) {
       return;
     }
 
-    if (!authInitialized) {
-      return;
-    }
-
-    if (!isAuthenticated) {
-      router.push(`/login?redirect=${encodeURIComponent(`/user/products/${productId}`)}`);
+    if (!requireAuth(`/user/products/${productId}`)) {
       return;
     }
 
@@ -537,7 +523,7 @@ export function ProductDetailView({ params }: ProductDetailViewProps) {
             categoryName={product.category_name}
           />
 
-          <ProductDetailEmailSubscribe />
+          <EmailSubscribeSection className="mt-10" />
         </div>
       </DashboardGlassSection>
 

@@ -95,6 +95,16 @@ export function formatPaymentMethod(method: string): string {
   return method.replace(/_/g, " ");
 }
 
+export function formatPaymentMethodShort(method: string): string {
+  if (method === "cod") {
+    return "COD";
+  }
+  if (method === "online_transfer") {
+    return "Transfer";
+  }
+  return method.replace(/_/g, " ");
+}
+
 export function formatDeliverySource(source: string): string {
   if (source === "profile") {
     return "Profile";

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -9,13 +9,14 @@ import { dashboardHeaderMenuItems } from "@/components/layout/HeaderMenuItems";
 import { HeaderNavLink } from "@/components/layout/header-nav-link";
 import { LandingProductSearch } from "@/components/LandingPage/dashboard/modules/landing-product-search";
 import { LandingProfileLink } from "@/components/LandingPage/dashboard/modules/landing-profile-link";
-import { ProductCard } from "@/components/LandingPage/dashboard/modules/product-card";
 import { AnimateInView } from "@/components/common/animation/animate-in-view";
+import { ProductsCategorySection } from "@/components/user/products/modules/products-category-section";
 import { DashboardGlassSection } from "@/components/LandingPage/dashboard/modules/dashboard-glass-section";
 import {
   glassCardClassName,
   glassHeaderClassName,
 } from "@/lib/glass-styles";
+import { groupProductsByStorefrontSection } from "@/lib/storefront-categories";
 import { pickFeaturedProducts } from "@/lib/user-dashboard-products";
 import { cn } from "@/lib/utils";
 import { useAppDispatch, useAppSelector } from "@/hooks";
@@ -41,6 +42,10 @@ export default function DashboardList() {
   const [activeHash, setActiveHash] = useState("");
 
   const displayedProducts = pickFeaturedProducts(featuredProducts, LANDING_FEATURED_LIMIT);
+  const productSections = useMemo(
+    () => groupProductsByStorefrontSection(displayedProducts),
+    [displayedProducts],
+  );
   const isFeaturedLoading =
     featuredProductsStatus === "loading" && displayedProducts.length === 0;
 
@@ -257,6 +262,7 @@ export default function DashboardList() {
               <h2 className="font-serif text-2xl font-normal text-black sm:text-3xl">
                 Featured Products
               </h2>
+              <p className="text-[11px] uppercase tracking-[0.35em] text-black/45">New Arrivals</p>
             </div>
           </AnimateInView>
 
@@ -280,12 +286,25 @@ export default function DashboardList() {
             >
               No featured products yet. Check back soon for new arrivals.
             </div>
+          ) : productSections.length === 0 ? (
+            <div
+              className={cn(
+                glassCardClassName,
+                "border-dashed px-6 py-12 text-center text-sm text-black/50",
+              )}
+            >
+              Featured products are available, but none match Tops, Bottoms, or Essentials yet.
+            </div>
           ) : (
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 lg:gap-4">
-              {displayedProducts.map((product, index) => (
-                <AnimateInView key={product.id} delay={index * 60}>
-                  <ProductCard product={product} priority={index < 5} />
-                </AnimateInView>
+            <div className="space-y-12">
+              {productSections.map(({ section, products }, index) => (
+                <ProductsCategorySection
+                  key={section.id}
+                  title={section.title}
+                  products={products}
+                  priorityCount={index === 0 ? 5 : 0}
+                  cardVariant="landing"
+                />
               ))}
             </div>
           )}

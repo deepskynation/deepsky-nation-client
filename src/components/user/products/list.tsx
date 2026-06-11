@@ -8,11 +8,14 @@ import { AnimateInView } from "@/components/common/animation/animate-in-view";
 import { DashboardGlassSection } from "@/components/LandingPage/dashboard/modules/dashboard-glass-section";
 import { GlassPillFilter } from "@/components/common/filters/glass-pill-filter";
 import { GlassOptionsMenu } from "@/components/common/filters/glass-options-menu";
+import { EmailSubscribeSection } from "@/components/common/marketing/email-subscribe-section";
+import { TabPagination } from "@/components/common/pagination/tab-pagination";
 import { ProductsCategorySection } from "@/components/user/products/modules/products-category-section";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { glassCardClassName } from "@/lib/glass-styles";
 import {
   productSortOptions,
+  SHOP_PRODUCTS_PAGE_SIZE,
   type ProductSortOption,
 } from "@/lib/shop-filters";
 import {
@@ -43,6 +46,7 @@ export function ProductsList() {
   const [searchQuery, setSearchQuery] = useState(() => searchParams.get("q") ?? "");
   const [categoryId, setCategoryId] = useState<string>("all");
   const [sort, setSort] = useState<ProductSortOption>("Default");
+  const [page, setPage] = useState(1);
 
   const categoryOptions = useMemo(
     () => ["All", ...categories.map((category) => category.category_name)],
@@ -61,6 +65,10 @@ export function ProductsList() {
     }
   }, [searchParams]);
 
+  useEffect(() => {
+    setPage(1);
+  }, [searchQuery, categoryId, sort]);
+
   const categoryFilteredProducts = useMemo(
     () => filterProductsByCategoryId(products, categoryId),
     [categoryId, products],
@@ -76,9 +84,32 @@ export function ProductsList() {
     [filteredProducts, sort],
   );
 
+  const isCategoryFiltered = categoryId !== "all";
+
+  const totalPages = Math.max(
+    1,
+    Math.ceil(sortedProducts.length / SHOP_PRODUCTS_PAGE_SIZE),
+  );
+  const currentPage = Math.min(page, totalPages);
+
+  useEffect(() => {
+    if (isCategoryFiltered && page > totalPages) {
+      setPage(totalPages);
+    }
+  }, [isCategoryFiltered, page, totalPages]);
+
+  const paginatedProducts = useMemo(() => {
+    if (!isCategoryFiltered) {
+      return sortedProducts;
+    }
+
+    const start = (currentPage - 1) * SHOP_PRODUCTS_PAGE_SIZE;
+    return sortedProducts.slice(start, start + SHOP_PRODUCTS_PAGE_SIZE);
+  }, [currentPage, isCategoryFiltered, sortedProducts]);
+
   const sectionGroups = useMemo(() => {
-    if (categoryId !== "all") {
-      if (sortedProducts.length === 0) {
+    if (isCategoryFiltered) {
+      if (paginatedProducts.length === 0) {
         return [];
       }
 
@@ -88,13 +119,18 @@ export function ProductsList() {
       return [
         {
           section: { id: categoryId, title },
-          products: sortedProducts,
+          products: paginatedProducts,
         },
       ];
     }
 
     return groupProductsByStorefrontSection(sortedProducts);
-  }, [categories, categoryId, sortedProducts]);
+  }, [categories, categoryId, isCategoryFiltered, paginatedProducts, sortedProducts]);
+
+  const handlePageChange = (nextPage: number) => {
+    setPage(nextPage);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const handleCategoryChange = (label: string) => {
     if (label === "All") {
@@ -210,11 +246,23 @@ export function ProductsList() {
                   title={section.title}
                   products={sectionProducts}
                   isPageLoading={isPageLoading}
-                  priorityCount={index === 0 ? 5 : 0}
+                  priorityCount={index === 0 && (!isCategoryFiltered || currentPage === 1) ? 5 : 0}
                 />
               ))}
+
+              {isCategoryFiltered ? (
+                <TabPagination
+                  page={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                  disabled={isPageLoading}
+                  className="pt-2"
+                />
+              ) : null}
             </div>
           )}
+
+          <EmailSubscribeSection className="mt-12" />
         </div>
       </DashboardGlassSection>
     </div>

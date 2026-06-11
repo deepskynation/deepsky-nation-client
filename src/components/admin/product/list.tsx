@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Loader2Icon, PackageIcon, Search } from "lucide-react";
-import { TablePagination } from "@/components/common/pagination";
+import { TablePagination } from "@/components/common/pagination/table-pagination";
 import { AdminProductSearchPanel } from "@/components/admin/product/modules/admin-product-search-panel";
 import TableHeader from "@/components/admin/product/modules/TableHeader";
 import TableRow from "@/components/admin/product/modules/TableRow";

@@ -7,7 +7,7 @@ import {
   CenteredLoading,
   PageStateGate,
 } from "@/components/common/feedback/page-state-gate";
-import { TablePagination } from "@/components/common/pagination";
+import { TablePagination } from "@/components/common/pagination/table-pagination";
 import { OrdersTableHeader } from "@/components/user/orders/modules/table-header";
 import { OrdersTableRow } from "@/components/user/orders/modules/table-row";
 import { UserOrdersFilterBar } from "@/components/user/orders/modules/user-orders-filter-bar";

@@ -12,7 +12,7 @@ import {
   adminTableWrapClass,
 } from "@/components/admin/product/modules/admin-product-ui";
 import { DateRangeFilter } from "@/components/common/filters";
-import { TablePagination } from "@/components/common/pagination";
+import { TablePagination } from "@/components/common/pagination/table-pagination";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { ADMIN_USER_STATUS_FILTER_OPTIONS } from "@/lib/admin-user-status";
 import {

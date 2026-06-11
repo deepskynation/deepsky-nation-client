@@ -16,12 +16,15 @@ import { DashboardGlassSection } from "@/components/LandingPage/dashboard/module
 import { CheckoutDeliveryForm } from "@/components/user/checkout/modules/checkout-delivery-form";
 import { CheckoutOrderPlacedDialog } from "@/components/user/checkout/modules/checkout-order-placed-dialog";
 import { useAppDispatch, useAppSelector } from "@/hooks";
+import { buildLoginRedirectPath } from "@/lib/auth-redirect";
 import { getCartLineThumbnailSrc } from "@/lib/cart-image";
 import {
   deliveryFormFromUser,
   emptyCheckoutDeliveryForm,
+  isProfileDeliveryComplete,
   validateCheckoutDeliveryForm,
   type CheckoutDeliveryFormState,
+  type CheckoutDeliveryMode,
 } from "@/lib/checkout-delivery";
 import type { CheckoutPaymentMethod } from "@/lib/checkout-payment";
 import { glassPanelFlatClassName } from "@/lib/glass-styles";
@@ -91,10 +94,11 @@ export function CartCheckoutView() {
   const [form, setForm] = useState<CheckoutDeliveryFormState>(
     emptyCheckoutDeliveryForm,
   );
-  const [useProfileInfo, setUseProfileInfo] = useState(false);
+  const [deliveryMode, setDeliveryMode] = useState<CheckoutDeliveryMode>("custom");
   const manualFormRef = useRef<CheckoutDeliveryFormState>(
     emptyCheckoutDeliveryForm,
   );
+  const profileDeliveryInitializedRef = useRef(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<CheckoutPaymentMethod>("cod");
   const [paymentProofDataUrl, setPaymentProofDataUrl] = useState<string | null>(null);
@@ -110,6 +114,24 @@ export function CartCheckoutView() {
       void dispatch(fetchCart());
     }
   }, [authInitialized, cartStatus, dispatch, isAuthenticated]);
+
+  useEffect(() => {
+    if (!authUser || profileDeliveryInitializedRef.current) {
+      return;
+    }
+
+    profileDeliveryInitializedRef.current = true;
+
+    if (isProfileDeliveryComplete(authUser)) {
+      setDeliveryMode("profile");
+      setForm(deliveryFormFromUser(authUser));
+      return;
+    }
+
+    if (authUser.email) {
+      setForm((current) => ({ ...current, email: authUser.email }));
+    }
+  }, [authUser]);
 
   const subtotal = useMemo(
     () => parseApiProductPrice(selectedSubtotal),
@@ -151,7 +173,7 @@ export function CartCheckoutView() {
   const updateField = (field: keyof CheckoutDeliveryFormState, value: string) => {
     setForm((prev) => {
       const next = { ...prev, [field]: value };
-      if (!useProfileInfo) {
+      if (deliveryMode === "custom") {
         manualFormRef.current = next;
       }
       return next;
@@ -159,21 +181,33 @@ export function CartCheckoutView() {
     setFormError(null);
   };
 
-  const handleUseProfileInfoChange = (checked: boolean) => {
-    setUseProfileInfo(checked);
-    if (checked && authUser) {
-      if (!useProfileInfo) {
-        manualFormRef.current = form;
-      }
-      setForm(deliveryFormFromUser(authUser));
-    } else {
-      setForm(manualFormRef.current);
-    }
+  const handleDeliveryModeChange = (mode: CheckoutDeliveryMode) => {
     setFormError(null);
+
+    if (mode === "profile") {
+      if (!authUser || !isProfileDeliveryComplete(authUser)) {
+        return;
+      }
+      manualFormRef.current = form;
+      setForm(deliveryFormFromUser(authUser));
+      setDeliveryMode("profile");
+      return;
+    }
+
+    setForm(manualFormRef.current);
+    setDeliveryMode("custom");
   };
 
+  const profileAddressAvailable = Boolean(
+    authUser && isProfileDeliveryComplete(authUser),
+  );
+
   const handlePlaceOrder = async () => {
-    const deliveryError = validateCheckoutDeliveryForm(form);
+    const deliveryPayload =
+      deliveryMode === "profile" && authUser
+        ? deliveryFormFromUser(authUser)
+        : form;
+    const deliveryError = validateCheckoutDeliveryForm(deliveryPayload);
     if (deliveryError) {
       setFormError(deliveryError);
       toast.error(deliveryError);
@@ -214,8 +248,8 @@ export function CartCheckoutView() {
       placeOrder({
         fromCart: true,
         cartItemIds: selectedIds,
-        deliverySource: useProfileInfo ? "profile" : "custom",
-        delivery: form,
+        deliverySource: deliveryMode === "profile" ? "profile" : "custom",
+        delivery: deliveryPayload,
         paymentMethod,
         receiptBase64: paymentProofDataUrl,
       }),
@@ -243,7 +277,7 @@ export function CartCheckoutView() {
   }
 
   if (!isAuthenticated) {
-    const loginHref = `/login?redirect=${encodeURIComponent("/user/checkout")}`;
+    const loginHref = buildLoginRedirectPath("/user/checkout");
     return (
       <AuthRequiredPage
         title="Sign In To Checkout"
@@ -322,9 +356,8 @@ export function CartCheckoutView() {
               <div className="mb-6 space-y-1">
                 <h2 className="text-lg font-semibold text-black">Delivery Information</h2>
                 <p className="text-sm text-black/55">
-                  {authUser
-                    ? "Enter your details manually, or use your saved profile."
-                    : "Enter your contact and delivery details."}
+                  Choose your saved profile address or enter a different delivery
+                  address for this order.
                 </p>
               </div>
 
@@ -339,9 +372,10 @@ export function CartCheckoutView() {
                 form={form}
                 onFieldChange={updateField}
                 onSubmit={() => void handlePlaceOrder()}
-                showProfileCheckbox={Boolean(authUser)}
-                useProfileInfo={useProfileInfo}
-                onUseProfileInfoChange={handleUseProfileInfoChange}
+                showDeliveryModeChoice={Boolean(authUser)}
+                deliveryMode={deliveryMode}
+                onDeliveryModeChange={handleDeliveryModeChange}
+                profileAddressAvailable={profileAddressAvailable}
                 paymentMethod={paymentMethod}
                 paymentProofDataUrl={paymentProofDataUrl}
                 onPaymentMethodChange={(next) => {

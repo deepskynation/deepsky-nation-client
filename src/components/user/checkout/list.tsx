@@ -8,8 +8,10 @@ import { CheckoutBuyNowSummary } from "@/components/user/checkout/modules/checko
 import {
   deliveryFormFromUser,
   emptyCheckoutDeliveryForm,
+  isProfileDeliveryComplete,
   validateCheckoutDeliveryForm,
   type CheckoutDeliveryFormState,
+  type CheckoutDeliveryMode,
 } from "@/lib/checkout-delivery";
 import type { CheckoutPaymentMethod } from "@/lib/checkout-payment";
 import type { ApiOrder } from "@/types/order";
@@ -25,6 +27,7 @@ import { useToast } from "@/components/common/feedback/toast-provider";
 import { GlassHighlightCallout } from "@/components/common/feedback/glass-highlight-callout";
 import { DashboardGlassSection } from "@/components/LandingPage/dashboard/modules/dashboard-glass-section";
 import { useAppDispatch, useAppSelector } from "@/hooks";
+import { buildLoginRedirectPath } from "@/lib/auth-redirect";
 import { getProductThumbnailSrc } from "@/lib/product-image";
 import { findVariant, formatVariantLabel, getVariantUnitPrice } from "@/lib/product-variants";
 import { glassPanelFlatClassName } from "@/lib/glass-styles";
@@ -89,10 +92,11 @@ export function CheckoutView({ params }: CheckoutViewProps) {
   const [form, setForm] = useState<CheckoutDeliveryFormState>(
     emptyCheckoutDeliveryForm,
   );
-  const [useProfileInfo, setUseProfileInfo] = useState(false);
+  const [deliveryMode, setDeliveryMode] = useState<CheckoutDeliveryMode>("custom");
   const manualFormRef = useRef<CheckoutDeliveryFormState>(
     emptyCheckoutDeliveryForm,
   );
+  const profileDeliveryInitializedRef = useRef(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [placedOrder, setPlacedOrder] = useState<ApiOrder | null>(null);
@@ -111,19 +115,28 @@ export function CheckoutView({ params }: CheckoutViewProps) {
   }, [dispatch, productId]);
 
   useEffect(() => {
-    if (!authInitialized || authUser) {
+    if (!authUser) {
+      profileDeliveryInitializedRef.current = false;
+      setDeliveryMode("custom");
       return;
     }
 
-    setUseProfileInfo((checked) => {
-      if (!checked) {
-        return false;
-      }
-      setForm(emptyCheckoutDeliveryForm);
-      manualFormRef.current = emptyCheckoutDeliveryForm;
-      return false;
-    });
-  }, [authInitialized, authUser]);
+    if (profileDeliveryInitializedRef.current) {
+      return;
+    }
+
+    profileDeliveryInitializedRef.current = true;
+
+    if (isProfileDeliveryComplete(authUser)) {
+      setDeliveryMode("profile");
+      setForm(deliveryFormFromUser(authUser));
+      return;
+    }
+
+    if (authUser.email) {
+      setForm((current) => ({ ...current, email: authUser.email }));
+    }
+  }, [authUser]);
 
   const isLoading = detailStatus === "loading" || (detailStatus === "idle" && !product);
   const isReady = product?.id === productId;
@@ -178,7 +191,7 @@ export function CheckoutView({ params }: CheckoutViewProps) {
   }
 
   const checkoutReturnPath = `/user/checkout/${productId}?${searchParams.toString()}`;
-  const loginHref = `/login?redirect=${encodeURIComponent(checkoutReturnPath)}`;
+  const loginHref = buildLoginRedirectPath(checkoutReturnPath);
   const productHref = `/user/products/${productId}`;
 
   if (!authInitialized) {
@@ -212,7 +225,7 @@ export function CheckoutView({ params }: CheckoutViewProps) {
   const updateField = (field: keyof CheckoutDeliveryFormState, value: string) => {
     setForm((current) => {
       const next = { ...current, [field]: value };
-      if (!useProfileInfo) {
+      if (deliveryMode === "custom") {
         manualFormRef.current = next;
       }
       return next;
@@ -220,25 +233,33 @@ export function CheckoutView({ params }: CheckoutViewProps) {
     setFormError(null);
   };
 
-  const handleUseProfileInfoChange = (checked: boolean) => {
+  const handleDeliveryModeChange = (mode: CheckoutDeliveryMode) => {
     setFormError(null);
 
-    if (checked) {
-      if (!authUser) {
+    if (mode === "profile") {
+      if (!authUser || !isProfileDeliveryComplete(authUser)) {
         return;
       }
       manualFormRef.current = form;
       setForm(deliveryFormFromUser(authUser));
-      setUseProfileInfo(true);
+      setDeliveryMode("profile");
       return;
     }
 
     setForm(manualFormRef.current);
-    setUseProfileInfo(false);
+    setDeliveryMode("custom");
   };
 
+  const profileAddressAvailable = Boolean(
+    authUser && isProfileDeliveryComplete(authUser),
+  );
+
   const handlePlaceOrder = async () => {
-    const deliveryError = validateCheckoutDeliveryForm(form);
+    const deliveryPayload =
+      deliveryMode === "profile" && authUser
+        ? deliveryFormFromUser(authUser)
+        : form;
+    const deliveryError = validateCheckoutDeliveryForm(deliveryPayload);
     if (deliveryError) {
       setFormError(deliveryError);
       toast.error(deliveryError);
@@ -268,8 +289,8 @@ export function CheckoutView({ params }: CheckoutViewProps) {
         productId: product.id,
         variantId: selectedVariant?.id,
         quantity,
-        deliverySource: useProfileInfo ? "profile" : "custom",
-        delivery: form,
+        deliverySource: deliveryMode === "profile" ? "profile" : "custom",
+        delivery: deliveryPayload,
         paymentMethod,
         receiptBase64: paymentProofDataUrl,
       }),
@@ -298,8 +319,6 @@ export function CheckoutView({ params }: CheckoutViewProps) {
     paymentMethod === "cod" ? "Checkout Now (COD)" : "Complete Checkout";
 
   const orderVariantLabel = selectedVariant ? formatVariantLabel(selectedVariant) : "";
-  const showProfilePrefillHint = useProfileInfo && Boolean(authUser);
-
   const handleOrderPlacedDialogChange = (open: boolean) => {
     if (!open) {
       setOrderPlaced(false);
@@ -340,18 +359,9 @@ export function CheckoutView({ params }: CheckoutViewProps) {
               <div className="mb-6 space-y-1">
                 <h2 className="text-lg font-semibold text-black">Delivery Information</h2>
                 <p className="text-sm text-black/55">
-                  {authUser
-                    ? "Enter your details manually, or check the box below to fill from your saved profile."
-                    : "Enter your contact and delivery details, or sign in to use your saved profile."}
+                  Choose your saved profile address or enter a different delivery
+                  address for this order.
                 </p>
-                {showProfilePrefillHint ? (
-                  <p className="text-xs text-black/45">
-                    Missing or outdated details?{" "}
-                    <Link href="/user/profile" className="underline hover:text-black">
-                      Update your profile
-                    </Link>
-                  </p>
-                ) : null}
               </div>
 
               <GlassHighlightCallout
@@ -365,9 +375,10 @@ export function CheckoutView({ params }: CheckoutViewProps) {
                 form={form}
                 onFieldChange={updateField}
                 onSubmit={() => void handlePlaceOrder()}
-                showProfileCheckbox={Boolean(authUser)}
-                useProfileInfo={useProfileInfo}
-                onUseProfileInfoChange={handleUseProfileInfoChange}
+                showDeliveryModeChoice={Boolean(authUser)}
+                deliveryMode={deliveryMode}
+                onDeliveryModeChange={handleDeliveryModeChange}
+                profileAddressAvailable={profileAddressAvailable}
                 paymentMethod={paymentMethod}
                 paymentProofDataUrl={paymentProofDataUrl}
                 onPaymentMethodChange={(next) => {

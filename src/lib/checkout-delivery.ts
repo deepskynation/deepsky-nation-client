@@ -1,5 +1,7 @@
 import type { User } from "@/types";
 
+export type CheckoutDeliveryMode = "profile" | "custom";
+
 export type CheckoutDeliveryFormState = {
   email: string;
   phone_number: string;
@@ -41,6 +43,11 @@ export function hasProfileDeliveryData(user: User): boolean {
       user.country ||
       user.postal_code,
   );
+}
+
+/** True when the saved profile has every field required for checkout. */
+export function isProfileDeliveryComplete(user: User): boolean {
+  return validateCheckoutDeliveryForm(deliveryFormFromUser(user)) === null;
 }
 
 export function validateCheckoutDeliveryForm(

@@ -10,6 +10,7 @@ type ProductsCategorySectionProps = {
   products: ApiProduct[];
   isPageLoading?: boolean;
   priorityCount?: number;
+  cardVariant?: "shop" | "landing";
 };
 
 export function ProductsCategorySection({
@@ -17,6 +18,7 @@ export function ProductsCategorySection({
   products,
   isPageLoading = false,
   priorityCount = 0,
+  cardVariant = "shop",
 }: ProductsCategorySectionProps) {
   if (products.length === 0) {
     return null;
@@ -41,6 +43,7 @@ export function ProductsCategorySection({
             <ProductCard
               product={product}
               priority={index < priorityCount}
+              variant={cardVariant}
               href={`/user/products/${product.id}`}
             />
           </AnimateInView>

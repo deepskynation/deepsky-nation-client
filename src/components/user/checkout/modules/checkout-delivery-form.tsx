@@ -1,8 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { CheckoutPaymentMethodSection } from "@/components/user/checkout/modules/checkout-payment-method";
 import { FormField } from "@/components/common/forms/form-field";
-import type { CheckoutDeliveryFormState } from "@/lib/checkout-delivery";
+import type { CheckoutDeliveryFormState, CheckoutDeliveryMode } from "@/lib/checkout-delivery";
 import type { CheckoutPaymentMethod } from "@/lib/checkout-payment";
 import {
   glassHighlightFlatClassName,
@@ -14,9 +15,10 @@ type CheckoutDeliveryFormProps = {
   form: CheckoutDeliveryFormState;
   onFieldChange: (field: keyof CheckoutDeliveryFormState, value: string) => void;
   onSubmit: () => void;
-  showProfileCheckbox?: boolean;
-  useProfileInfo: boolean;
-  onUseProfileInfoChange: (checked: boolean) => void;
+  showDeliveryModeChoice?: boolean;
+  deliveryMode: CheckoutDeliveryMode;
+  onDeliveryModeChange: (mode: CheckoutDeliveryMode) => void;
+  profileAddressAvailable?: boolean;
   paymentMethod: CheckoutPaymentMethod;
   paymentProofDataUrl: string | null;
   onPaymentMethodChange: (method: CheckoutPaymentMethod) => void;
@@ -24,19 +26,26 @@ type CheckoutDeliveryFormProps = {
   formError: string | null;
 };
 
+const readOnlyFieldClassName =
+  "read-only:cursor-default read-only:bg-black/[0.03] read-only:text-black/70";
+
 export function CheckoutDeliveryForm({
   form,
   onFieldChange,
   onSubmit,
-  showProfileCheckbox = false,
-  useProfileInfo,
-  onUseProfileInfoChange,
+  showDeliveryModeChoice = false,
+  deliveryMode,
+  onDeliveryModeChange,
+  profileAddressAvailable = false,
   paymentMethod,
   paymentProofDataUrl,
   onPaymentMethodChange,
   onPaymentProofChange,
   formError,
 }: CheckoutDeliveryFormProps) {
+  const useProfileAddress = deliveryMode === "profile" && profileAddressAvailable;
+  const fieldsReadOnly = useProfileAddress;
+
   return (
     <form
       noValidate
@@ -46,32 +55,74 @@ export function CheckoutDeliveryForm({
         onSubmit();
       }}
     >
-      {showProfileCheckbox ? (
-        <label
-          htmlFor="checkout-use-profile"
-          className={cn(
-            glassHighlightFlatClassName,
-            "flex cursor-pointer items-start gap-3 p-4 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-black/20",
-            useProfileInfo && "ring-1 ring-neutral-300/80",
-          )}
-        >
-          <input
-            id="checkout-use-profile"
-            type="checkbox"
-            checked={useProfileInfo}
-            onChange={(event) => onUseProfileInfoChange(event.target.checked)}
-            className="mt-0.5 size-4 shrink-0 rounded border-black/25 accent-black"
-          />
-          <span className="min-w-0 flex-1">
-            <span className="block text-sm font-medium text-black">
-              Use My Profile Information
+      {showDeliveryModeChoice ? (
+        <fieldset className="space-y-3">
+          <legend className="mb-1 text-sm font-medium text-black">
+            Delivery address
+          </legend>
+
+          <label
+            className={cn(
+              glassHighlightFlatClassName,
+              "flex cursor-pointer items-start gap-3 p-4 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-black/20",
+              useProfileAddress && "ring-1 ring-neutral-300/80",
+              !profileAddressAvailable && "cursor-not-allowed opacity-60",
+            )}
+          >
+            <input
+              type="radio"
+              name="checkout-delivery-mode"
+              checked={deliveryMode === "profile"}
+              disabled={!profileAddressAvailable}
+              onChange={() => onDeliveryModeChange("profile")}
+              className="mt-0.5 size-4 shrink-0 accent-black"
+            />
+            <span className="min-w-0 flex-1">
+              <span className="block text-sm font-medium text-black">
+                Saved profile address
+              </span>
+              <span className="block text-xs text-black/55">
+                {profileAddressAvailable
+                  ? "Use the delivery details from your account."
+                  : "Complete your profile to use a saved address."}
+              </span>
             </span>
-            <span className="block text-xs text-black/55">
-              Fill delivery fields from your saved profile. You can still edit
-              anything before checkout.
+          </label>
+
+          <label
+            className={cn(
+              glassHighlightFlatClassName,
+              "flex cursor-pointer items-start gap-3 p-4 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-black/20",
+              deliveryMode === "custom" && "ring-1 ring-neutral-300/80",
+            )}
+          >
+            <input
+              type="radio"
+              name="checkout-delivery-mode"
+              checked={deliveryMode === "custom"}
+              onChange={() => onDeliveryModeChange("custom")}
+              className="mt-0.5 size-4 shrink-0 accent-black"
+            />
+            <span className="min-w-0 flex-1">
+              <span className="block text-sm font-medium text-black">
+                Different delivery address
+              </span>
+              <span className="block text-xs text-black/55">
+                Enter a one-time shipping address for this order.
+              </span>
             </span>
-          </span>
-        </label>
+          </label>
+        </fieldset>
+      ) : null}
+
+      {useProfileAddress ? (
+        <p className="text-xs text-black/45">
+          Filled from your profile.{" "}
+          <Link href="/user/profile" className="underline hover:text-black">
+            Update profile
+          </Link>{" "}
+          or choose a different delivery address to edit here.
+        </p>
       ) : null}
 
       <FormField id="checkout-email" label="Email *">
@@ -80,9 +131,10 @@ export function CheckoutDeliveryForm({
           type="email"
           autoComplete="email"
           value={form.email}
+          readOnly={fieldsReadOnly}
           onChange={(event) => onFieldChange("email", event.target.value)}
           placeholder="Enter email address"
-          className={glassInputFlatClassName}
+          className={cn(glassInputFlatClassName, readOnlyFieldClassName)}
           required
         />
       </FormField>
@@ -93,9 +145,10 @@ export function CheckoutDeliveryForm({
           type="tel"
           autoComplete="tel"
           value={form.phone_number}
+          readOnly={fieldsReadOnly}
           onChange={(event) => onFieldChange("phone_number", event.target.value)}
           placeholder="Enter phone number"
-          className={glassInputFlatClassName}
+          className={cn(glassInputFlatClassName, readOnlyFieldClassName)}
           required
         />
       </FormField>
@@ -106,9 +159,15 @@ export function CheckoutDeliveryForm({
           rows={3}
           autoComplete="street-address"
           value={form.home_address}
+          readOnly={fieldsReadOnly}
           onChange={(event) => onFieldChange("home_address", event.target.value)}
           placeholder="Street, building, unit"
-          className={cn(glassInputFlatClassName, "min-h-[88px] resize-y py-2.5")}
+          className={cn(
+            glassInputFlatClassName,
+            readOnlyFieldClassName,
+            "min-h-[88px] resize-y py-2.5",
+            fieldsReadOnly && "resize-none",
+          )}
           required
         />
       </FormField>
@@ -120,9 +179,10 @@ export function CheckoutDeliveryForm({
             type="text"
             autoComplete="address-level2"
             value={form.city}
+            readOnly={fieldsReadOnly}
             onChange={(event) => onFieldChange("city", event.target.value)}
             placeholder="City"
-            className={glassInputFlatClassName}
+            className={cn(glassInputFlatClassName, readOnlyFieldClassName)}
             required
           />
         </FormField>
@@ -133,9 +193,10 @@ export function CheckoutDeliveryForm({
             type="text"
             autoComplete="address-level1"
             value={form.region}
+            readOnly={fieldsReadOnly}
             onChange={(event) => onFieldChange("region", event.target.value)}
             placeholder="Region or state"
-            className={glassInputFlatClassName}
+            className={cn(glassInputFlatClassName, readOnlyFieldClassName)}
             required
           />
         </FormField>
@@ -148,9 +209,10 @@ export function CheckoutDeliveryForm({
             type="text"
             autoComplete="country-name"
             value={form.country}
+            readOnly={fieldsReadOnly}
             onChange={(event) => onFieldChange("country", event.target.value)}
             placeholder="Country"
-            className={glassInputFlatClassName}
+            className={cn(glassInputFlatClassName, readOnlyFieldClassName)}
             required
           />
         </FormField>
@@ -161,9 +223,10 @@ export function CheckoutDeliveryForm({
             type="text"
             autoComplete="postal-code"
             value={form.postal_code}
+            readOnly={fieldsReadOnly}
             onChange={(event) => onFieldChange("postal_code", event.target.value)}
             placeholder="Postal Code"
-            className={glassInputFlatClassName}
+            className={cn(glassInputFlatClassName, readOnlyFieldClassName)}
             required
           />
         </FormField>

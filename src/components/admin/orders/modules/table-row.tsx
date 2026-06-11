@@ -34,24 +34,26 @@ export function AdminOrdersTableRow({ order }: AdminOrdersTableRowProps) {
   return (
     <>
       <tr className={adminTableRowClass}>
-        <td className="px-4 py-3 font-medium text-neutral-900">
+        <td className="px-4 py-3 font-medium whitespace-nowrap text-neutral-900">
           {formatOrderNumber(order.order_number)}
         </td>
-        <td className="max-w-[10rem] px-4 py-3">
-          <div className="truncate font-medium text-neutral-900">
+        <td className="px-4 py-3">
+          <div className="font-medium text-neutral-900">
             {formatAdminCustomerLabel(order)}
           </div>
-          <div className="truncate text-xs text-muted-foreground">
+          <div className="text-xs text-muted-foreground">
             {order.delivery_email}
           </div>
         </td>
-        <td className="px-4 py-3 text-neutral-700">{formatOrderItemCount(order)}</td>
-        <td className="px-4 py-3 font-medium tabular-nums text-neutral-900">
+        <td className="px-4 py-3 whitespace-nowrap text-neutral-700">
+          {formatOrderItemCount(order)}
+        </td>
+        <td className="px-4 py-3 font-medium whitespace-nowrap tabular-nums text-neutral-900">
           {formatOrderTotal(order)}
         </td>
         <td className="px-4 py-3">
           <div className="space-y-1">
-            <p className="text-neutral-700">
+            <p className="whitespace-nowrap text-neutral-700">
               {formatPaymentMethod(order.payment.payment_method)}
             </p>
             {order.payment.has_receipt ? (
@@ -66,10 +68,12 @@ export function AdminOrdersTableRow({ order }: AdminOrdersTableRowProps) {
             ) : null}
           </div>
         </td>
-        <td className="px-4 py-3 text-neutral-600">{formatOrderDate(order.created_at)}</td>
-        <td className="px-4 py-3 text-neutral-600">
+        <td className="px-4 py-3 whitespace-nowrap text-neutral-600">
+          {formatOrderDate(order.created_at)}
+        </td>
+        <td className="px-4 py-3 whitespace-nowrap text-neutral-600">
           {deliveredAtLabel ? (
-            <span className="whitespace-nowrap">{deliveredAtLabel}</span>
+            <span>{deliveredAtLabel}</span>
           ) : (
             <span className="text-muted-foreground">—</span>
           )}

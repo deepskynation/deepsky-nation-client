@@ -10,7 +10,7 @@ import {
   adminEmptyStateClass,
   adminTableWrapClass,
 } from "@/components/admin/product/modules/admin-product-ui";
-import { TablePagination } from "@/components/common/pagination";
+import { TablePagination } from "@/components/common/pagination/table-pagination";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { adminOrdersHasActiveFilters } from "@/lib/admin-order-filters";
 import { cn } from "@/lib/utils";
@@ -102,7 +102,7 @@ export function AdminOrdersList() {
       />
 
       {status === "loading" && orders.length === 0 ? (
-        <div className={adminEmptyStateClass}>
+        <div className={cn(adminEmptyStateClass, "border-0")}>
           <Loader2Icon className="size-8 animate-spin text-neutral-400" />
           <p className="text-sm font-medium text-neutral-700">Loading orders…</p>
         </div>
@@ -115,7 +115,7 @@ export function AdminOrdersList() {
       ) : null}
 
       {status === "succeeded" && orders.length === 0 && !error ? (
-        <div className={adminEmptyStateClass}>
+        <div className={cn(adminEmptyStateClass, "border-0")}>
           <PackageIcon className="size-10 text-neutral-300" strokeWidth={1.25} />
           <p className="text-sm font-medium text-neutral-800">No orders found</p>
           <p className="max-w-sm text-sm text-muted-foreground">
@@ -128,8 +128,8 @@ export function AdminOrdersList() {
 
       {orders.length > 0 ? (
         <div className={cn(adminTableWrapClass, isLoading && "opacity-70")}>
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[1080px] border-collapse">
+          <div className="w-full min-w-0 overflow-x-auto">
+            <table className="w-full border-collapse">
               <AdminOrdersTableHeader />
               <tbody>
                 {orders.map((order) => (

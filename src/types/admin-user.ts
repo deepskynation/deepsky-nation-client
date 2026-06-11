@@ -14,6 +14,7 @@ export type AdminUserListItem = {
   id: string;
   name: string;
   email: string;
+  role: AdminUserRole;
   status: AdminUserActivityStatus;
   last_login_at: string | null;
 };
@@ -78,9 +79,7 @@ export type AdminUsersListState = {
 };
 
 export type CreateAdminAccountPayload = {
-  username: string;
   email: string;
-  password: string;
   role: AdminUserRole;
 };
 

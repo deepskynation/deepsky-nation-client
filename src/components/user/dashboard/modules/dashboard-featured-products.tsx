@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { useMemo } from "react";
 import { Loader2Icon } from "lucide-react";
 import { AnimateInView } from "@/components/common/animation/animate-in-view";
-import { ProductCard } from "@/components/common/product/ProductCard";
+import { ProductsCategorySection } from "@/components/user/products/modules/products-category-section";
 import { glassCardClassName } from "@/lib/glass-styles";
+import { groupProductsByStorefrontSection } from "@/lib/storefront-categories";
 import { pickFeaturedProducts } from "@/lib/user-dashboard-products";
 import { cn } from "@/lib/utils";
 import type { ApiProduct } from "@/types/product";
@@ -21,6 +23,10 @@ export function DashboardFeaturedProducts({
   error,
 }: DashboardFeaturedProductsProps) {
   const featuredProducts = pickFeaturedProducts(products);
+  const productSections = useMemo(
+    () => groupProductsByStorefrontSection(featuredProducts),
+    [featuredProducts],
+  );
   const isLoading = status === "loading" && featuredProducts.length === 0;
 
   return (
@@ -34,6 +40,7 @@ export function DashboardFeaturedProducts({
             <h2 className="font-serif text-xl font-normal text-black sm:text-2xl">
               Featured products
             </h2>
+            <p className="text-[11px] uppercase tracking-[0.35em] text-black/45">New Arrivals</p>
           </div>
           <Link
             href="/user/products"
@@ -64,16 +71,24 @@ export function DashboardFeaturedProducts({
         >
           No released products yet. Check back soon for new arrivals.
         </div>
+      ) : productSections.length === 0 ? (
+        <div
+          className={cn(
+            glassCardClassName,
+            "border-dashed px-6 py-12 text-center text-sm text-black/50",
+          )}
+        >
+          Featured products are available, but none match Tops, Bottoms, or Essentials yet.
+        </div>
       ) : (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6 lg:gap-4">
-          {featuredProducts.map((product, index) => (
-            <AnimateInView key={product.id} delay={index * 60}>
-              <ProductCard
-                product={product}
-                priority={index < 3}
-                href={`/user/products/${product.id}`}
-              />
-            </AnimateInView>
+        <div className="space-y-10">
+          {productSections.map(({ section, products: sectionProducts }, index) => (
+            <ProductsCategorySection
+              key={section.id}
+              title={section.title}
+              products={sectionProducts}
+              priorityCount={index === 0 ? 3 : 0}
+            />
           ))}
         </div>
       )}

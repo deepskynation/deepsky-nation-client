@@ -167,9 +167,7 @@ export const createAdminAccount = createAsyncThunk<
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        username: payload.username.trim(),
         email: payload.email.trim(),
-        password: payload.password,
         role: payload.role,
       }),
     });

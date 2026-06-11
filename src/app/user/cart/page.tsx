@@ -12,6 +12,7 @@ import {
 } from "@/components/common/feedback/page-state-gate";
 import { DashboardGlassSection } from "@/components/LandingPage/dashboard/modules/dashboard-glass-section";
 import { useAppDispatch, useAppSelector } from "@/hooks";
+import { buildLoginRedirectPath } from "@/lib/auth-redirect";
 import { availableCartItemIds } from "@/lib/cart-selection";
 import { getCartLineThumbnailSrc } from "@/lib/cart-image";
 import { parseApiProductPrice } from "@/types/product";
@@ -115,7 +116,7 @@ export default function UserCartPage() {
   }
 
   if (!isAuthenticated) {
-    const loginHref = `/login?redirect=${encodeURIComponent("/user/cart")}`;
+    const loginHref = buildLoginRedirectPath("/user/cart");
     return (
       <AuthRequiredPage
         title="Sign In To View Your Cart"

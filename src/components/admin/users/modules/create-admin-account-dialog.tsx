@@ -34,36 +34,23 @@ type CreateAdminAccountDialogProps = {
 };
 
 type FormState = {
-  username: string;
   email: string;
-  password: string;
-  confirmPassword: string;
   role: AdminUserRole;
 };
 
 const EMPTY_FORM: FormState = {
-  username: "",
   email: "",
-  password: "",
-  confirmPassword: "",
   role: "admin",
 };
 
 function validateForm(form: FormState): string | null {
-  const username = form.username.trim();
   const email = form.email.trim();
 
-  if (username.length < 3) {
-    return "Username must be at least 3 characters.";
-  }
   if (!email) {
     return "Email is required.";
   }
-  if (form.password.length < 8) {
-    return "Password must be at least 8 characters.";
-  }
-  if (form.password !== form.confirmPassword) {
-    return "Passwords do not match.";
+  if (!email.includes("@")) {
+    return "Enter a valid email address.";
   }
   return null;
 }
@@ -116,9 +103,7 @@ export function CreateAdminAccountDialog({
 
     const result = await dispatch(
       createAdminAccount({
-        username: form.username.trim(),
         email: form.email.trim(),
-        password: form.password,
         role: form.role,
       }),
     );
@@ -145,30 +130,14 @@ export function CreateAdminAccountDialog({
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md" showCloseButton={!isSubmitting}>
         <DialogHeader>
-          <DialogTitle>Create Admin Account</DialogTitle>
+          <DialogTitle>Create Account</DialogTitle>
           <DialogDescription>
-            Add a new admin who can sign in to the admin dashboard. The account is
-            email-verified immediately and can log in right away.
+            Add a new user or admin. They can sign in at the login page using their
+            email and a verification code.
           </DialogDescription>
         </DialogHeader>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
-          <div className="space-y-1.5">
-            <label htmlFor="create-admin-username" className={adminLabelClass}>
-              Username
-            </label>
-            <input
-              id="create-admin-username"
-              type="text"
-              autoComplete="username"
-              value={form.username}
-              onChange={(event) => updateField("username", event.target.value)}
-              className={adminFieldClass}
-              disabled={isSubmitting}
-              required
-            />
-          </div>
-
           <div className="space-y-1.5">
             <label htmlFor="create-admin-email" className={adminLabelClass}>
               Email
@@ -204,38 +173,6 @@ export function CreateAdminAccountDialog({
             <p className={adminHintClass}>
               Choose Admin for dashboard access, or User for a regular customer account.
             </p>
-          </div>
-
-          <div className="space-y-1.5">
-            <label htmlFor="create-admin-password" className={adminLabelClass}>
-              Password
-            </label>
-            <input
-              id="create-admin-password"
-              type="password"
-              autoComplete="new-password"
-              value={form.password}
-              onChange={(event) => updateField("password", event.target.value)}
-              className={adminFieldClass}
-              disabled={isSubmitting}
-              required
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <label htmlFor="create-admin-confirm-password" className={adminLabelClass}>
-              Confirm password
-            </label>
-            <input
-              id="create-admin-confirm-password"
-              type="password"
-              autoComplete="new-password"
-              value={form.confirmPassword}
-              onChange={(event) => updateField("confirmPassword", event.target.value)}
-              className={adminFieldClass}
-              disabled={isSubmitting}
-              required
-            />
           </div>
 
           {displayError ? (

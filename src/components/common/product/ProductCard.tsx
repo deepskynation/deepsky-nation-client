@@ -100,14 +100,23 @@ function ProductCardMedia({ product, priority = false }: ProductCardMediaProps) 
 type ProductCardProps = {
   product: ApiProduct;
   priority?: boolean;
-  /** When set, the whole card links to this route (e.g. checkout page). */
+  /** When set, the whole card links to this route (e.g. product detail). */
   href?: string;
+  /** `landing` shows a longer description preview for homepage grids. */
+  variant?: "shop" | "landing";
 };
 
-export function ProductCard({ product, priority = false, href }: ProductCardProps) {
+export function ProductCard({
+  product,
+  priority = false,
+  href,
+  variant = "shop",
+}: ProductCardProps) {
   const price = parseApiProductPrice(product.price);
   const description = product.description?.trim() || "Deepsky collection.";
-  const isDescriptionTruncated = description.length > DESCRIPTION_PREVIEW_LENGTH;
+  const isLanding = variant === "landing";
+  const isDescriptionTruncated =
+    !isLanding && description.length > DESCRIPTION_PREVIEW_LENGTH;
   const descriptionPreview = isDescriptionTruncated
     ? `${description.slice(0, DESCRIPTION_PREVIEW_LENGTH)}…`
     : description;
@@ -127,7 +136,12 @@ export function ProductCard({ product, priority = false, href }: ProductCardProp
 
       <div className="mt-3 space-y-1.5 p-2">
         <h3 className="text-sm font-semibold text-black">{product.title}</h3>
-        <p className="text-xs leading-relaxed text-black/55">
+        <p
+          className={cn(
+            "text-xs leading-relaxed text-black/55",
+            isLanding && "line-clamp-2",
+          )}
+        >
           {descriptionPreview}
           {isDescriptionTruncated && href && (
             <span className="font-medium text-black/70"> See more</span>

@@ -10,6 +10,7 @@ import cartReducer from "@/store/slices/cartSlice";
 import ordersReducer from "@/store/slices/orderSlice";
 import productsReducer from "@/store/slices/productSlice";
 import settingsReducer from "@/store/slices/settingsSlice";
+import subscriberReducer from "@/store/slices/subscriberSlice";
 
 export const makeStore = () =>
   configureStore({
@@ -25,6 +26,7 @@ export const makeStore = () =>
       colors: colorReducer,
       products: productsReducer,
       settings: settingsReducer,
+      subscriber: subscriberReducer,
     },
   });
 

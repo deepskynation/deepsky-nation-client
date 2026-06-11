@@ -13,6 +13,7 @@ import { GoogleContinueButton } from "@/components/(auth)/modules/google-continu
 import { VerifyEmailIllustration } from "@/components/(auth)/modules/verify-email-illustration";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { getDashboardPathForRole } from "@/lib/auth-session";
+import { safeRedirectPath } from "@/lib/auth-redirect";
 import {
   clearAuthError,
   selectAuthError,
@@ -26,13 +27,6 @@ type LoginStep = "signin" | "code";
 
 const LAST_AUTH_METHOD_KEY = "deepsky-last-auth-method";
 const LAST_EMAIL_KEY = "deepsky-last-email";
-
-function safeRedirectPath(value: string | null): string | null {
-  if (!value || !value.startsWith("/") || value.startsWith("//")) {
-    return null;
-  }
-  return value;
-}
 
 function OrDivider() {
   return (

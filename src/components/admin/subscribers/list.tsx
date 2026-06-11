@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Loader2Icon, MailIcon } from "lucide-react";
 import { DateRangeFilter } from "@/components/common/filters";
-import { TablePagination } from "@/components/common/pagination";
+import { TablePagination } from "@/components/common/pagination/table-pagination";
 import {
   adminAlertErrorClass,
   adminEmptyStateClass,
