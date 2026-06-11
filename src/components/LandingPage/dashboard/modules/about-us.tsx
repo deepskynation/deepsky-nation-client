@@ -22,7 +22,7 @@ export function AboutUsSection() {
               {aboutUsContent.label}
             </p>
             <h2 className="font-serif text-2xl font-normal text-black sm:text-3xl">
-              About DeepSky
+              About Deepsky
             </h2>
           </div>
         </AnimateInView>
@@ -61,7 +61,7 @@ export function AboutUsSection() {
                 <div className="relative aspect-[4/5] overflow-hidden rounded-lg border border-white/40">
                   <Image
                     src={aboutUsContent.image}
-                    alt="DeepSky brand"
+                    alt="Deepsky brand"
                     fill
                     sizes="(max-width: 1024px) 80vw, 320px"
                     className="object-cover object-top"

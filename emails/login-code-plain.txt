@@ -1,4 +1,4 @@
-Your DeepSky Nation sign-in code is:
+Your Deepsky Nation sign-in code is:
 
 {{LOGIN_CODE}}
 

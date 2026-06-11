@@ -106,7 +106,7 @@ type ProductCardProps = {
 
 export function ProductCard({ product, priority = false, href }: ProductCardProps) {
   const price = parseApiProductPrice(product.price);
-  const description = product.description?.trim() || "DeepSky collection.";
+  const description = product.description?.trim() || "Deepsky collection.";
   const isDescriptionTruncated = description.length > DESCRIPTION_PREVIEW_LENGTH;
   const descriptionPreview = isDescriptionTruncated
     ? `${description.slice(0, DESCRIPTION_PREVIEW_LENGTH)}…`

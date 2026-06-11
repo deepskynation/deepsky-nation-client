@@ -94,7 +94,7 @@ function ModelSlideFrame({
           )}
         >
           <span className="text-[10px] font-medium tracking-[0.35em] text-white/50 uppercase">
-            DeepSky
+          Deepsky
           </span>
           <span className={cn("font-serif text-white/95", isBanner ? "text-4xl" : "text-3xl")}>
             {name}

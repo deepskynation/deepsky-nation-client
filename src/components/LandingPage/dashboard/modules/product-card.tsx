@@ -106,7 +106,7 @@ type ProductCardProps = {
 export function ProductCard({ product, priority = false }: ProductCardProps) {
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const price = parseApiProductPrice(product.price);
-  const description = product.description?.trim() || "DeepSky collection.";
+  const description = product.description?.trim() || "Deepsky collection.";
 
   const openAuthDialog = () => setAuthDialogOpen(true);
 

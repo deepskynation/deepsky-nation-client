@@ -18,14 +18,14 @@ export function AuthGlassTestimonialPanel() {
         <div className="space-y-5">
           <p className="font-serif text-5xl leading-none text-white/30">“</p>
           <blockquote className="max-w-md text-2xl leading-snug font-medium text-white/95">
-            DeepSky pieces help me stand out — bold designs, clean fit,
+          Deepsky pieces help me stand out — bold designs, clean fit,
             and quality that feels built for the streets.
           </blockquote>
           <div className="space-y-1">
             <p className="text-base font-semibold">Joshua Gerald</p>
             <p className="text-xs text-white/60">Streetwear Collector</p>
             <p className="pt-1 text-xs font-bold uppercase tracking-[0.18em] text-white/90">
-              DeepSky
+            Deepsky
             </p>
           </div>
         </div>

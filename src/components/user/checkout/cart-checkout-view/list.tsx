@@ -292,7 +292,7 @@ export function CartCheckoutView() {
           <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="space-y-1">
               <p className="text-[11px] uppercase tracking-[0.35em] text-black/45">
-                DeepSky
+              Deepsky
               </p>
               <h1 className="font-serif text-2xl font-normal text-black sm:text-3xl">
                 Checkout

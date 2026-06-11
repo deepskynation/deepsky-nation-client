@@ -32,7 +32,7 @@ export type SidebarConfig = {
 };
 
 export const adminSidebarConfig: SidebarConfig = {
-  productTitle: "DeepSky",
+  productTitle: "Deepsky",
   sections: [
     {
       id: "manage",
@@ -94,7 +94,7 @@ export const adminSidebarConfig: SidebarConfig = {
 
 
 export const userSidebarConfig: SidebarConfig = {
-  productTitle: "DeepSky",
+  productTitle: "Deepsky",
   sections: [
     {
       id: "shop",

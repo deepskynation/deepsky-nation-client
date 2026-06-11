@@ -4,8 +4,8 @@ import VerifyEmail from "@/components/(auth)/VerifyEmail";
 import { Loader2Icon } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Verify Email | DeepSky",
-  description: "Confirm your DeepSky account email address",
+  title: "Verify Email | Deepsky",
+  description: "Confirm your Deepsky account email address",
 };
 
 function VerifyEmailFallback() {

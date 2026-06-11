@@ -101,7 +101,7 @@ export default function DashboardList() {
             >
               <Image
                 src="/deepsky-logo.png"
-                alt="DeepSky"
+                alt="Deepsky"
                 width={140}
                 height={28}
                 className="h-6 w-auto md:h-7"
@@ -133,7 +133,7 @@ export default function DashboardList() {
               <Link href="/" className="transition-opacity hover:opacity-70">
                 <Image
                   src="/deepsky-logo.png"
-                  alt="DeepSky"
+                  alt="Deepsky"
                   width={140}
                   height={28}
                   className="h-6 w-auto md:h-7"
@@ -191,7 +191,7 @@ export default function DashboardList() {
                   className="animate-hero-fade-up font-serif text-[2.35rem] leading-[1.08] font-normal text-black sm:text-5xl lg:text-[3.35rem]"
                   style={{ animationDelay: "100ms" }}
                 >
-                  Explore DeepSky
+                  Explore Deepsky
                   <br />
                   Style
                 </h1>
@@ -231,7 +231,7 @@ export default function DashboardList() {
             >
               <Image
                 src="/landing-image.jpg"
-                alt="DeepSky collection"
+                alt="Deepsky collection"
                 width={480}
                 height={480}
                 priority

@@ -46,7 +46,7 @@ export function DashboardWelcomeHeader({
     <header className="space-y-5">
       <div className="space-y-1">
         <p className="text-[11px] uppercase tracking-[0.35em] text-black/45">
-          DeepSky
+        Deepsky
         </p>
         <h1 className="font-serif text-2xl font-normal text-black sm:text-3xl">
           Welcome Back, {userName}

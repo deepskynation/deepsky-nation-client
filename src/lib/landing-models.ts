@@ -11,7 +11,7 @@ function modelSlide(index: number, name: string): LandingModelSlide {
   return {
     id: `model-${index}`,
     name,
-    alt: `DeepSky — ${name}`,
+    alt: `Deepsky — ${name}`,
     imageSources: [
       `${base}.webp`,
       `${base}.jpg`,

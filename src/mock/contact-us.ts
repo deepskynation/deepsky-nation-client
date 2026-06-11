@@ -19,6 +19,6 @@ export const contactUsContent = {
 };
 
 export const footerContent = {
-  brand: "DeepSky",
-  copyright: `© ${new Date().getFullYear()} DeepSky. All rights reserved.`,
+  brand: "Deepsky",
+  copyright: `© ${new Date().getFullYear()} Deepsky. All rights reserved.`,
 };

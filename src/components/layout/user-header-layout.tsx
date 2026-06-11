@@ -74,7 +74,7 @@ export function UserHeaderLayout({ children }: UserHeaderLayoutProps) {
             >
               <Image
                 src="/deepsky-logo.png"
-                alt="DeepSky"
+                alt="Deepsky"
                 width={140}
                 height={28}
                 className="h-6 w-auto md:h-7"
@@ -121,7 +121,7 @@ export function UserHeaderLayout({ children }: UserHeaderLayoutProps) {
               >
                 <Image
                   src="/deepsky-logo.png"
-                  alt="DeepSky"
+                  alt="Deepsky"
                   width={140}
                   height={28}
                   className="h-6 w-auto md:h-7"

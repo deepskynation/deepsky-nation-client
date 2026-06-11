@@ -100,7 +100,7 @@ export function OrdersList() {
           <div className="mx-auto max-w-6xl px-6 py-8 lg:px-12 lg:py-10">
             <header className="mb-8 space-y-1">
               <p className="text-[11px] uppercase tracking-[0.35em] text-black/45">
-                DeepSky
+              Deepsky
               </p>
               <h1 className="font-serif text-2xl font-normal text-black sm:text-3xl">
                 My Orders
