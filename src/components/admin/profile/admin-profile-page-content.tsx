@@ -5,13 +5,13 @@ import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/common/forms/form-field";
 import {
-  adminAlertErrorClass,
-  adminAlertSuccessClass,
-  adminFieldClass,
-  adminHintClass,
-  adminSectionClass,
-  adminSectionTitleClass,
-} from "@/components/admin/product/modules/admin-product-ui";
+  alertErrorClassName,
+  alertSuccessClassName,
+  fieldClassName,
+  hintClassName,
+  sectionClassName,
+  sectionTitleClassName,
+} from "@/lib/panel-styles";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import {
   adminAccountFormFromUser,
@@ -159,7 +159,7 @@ export function AdminProfilePageContent() {
 
   if (!isAuthenticated || !user) {
     return (
-      <p className={adminAlertErrorClass} role="alert">
+      <p className={alertErrorClassName} role="alert">
         Sign in to manage your profile.
       </p>
     );
@@ -171,15 +171,15 @@ export function AdminProfilePageContent() {
         <h1 className="text-2xl font-semibold tracking-tight text-neutral-900">
           Profile
         </h1>
-        <p className={adminHintClass}>
+        <p className={hintClassName}>
           Manage your admin account and store settings.
         </p>
       </div>
 
       <form onSubmit={(event) => void handleAccountSubmit(event)} className="space-y-6">
-        <div className={adminSectionClass}>
-          <h2 className={adminSectionTitleClass}>Account</h2>
-          <p className={adminHintClass}>
+        <div className={sectionClassName}>
+          <h2 className={sectionTitleClassName}>Account</h2>
+          <p className={hintClassName}>
             Update your username, email, or password. Your current password is required
             to save any changes.
           </p>
@@ -192,7 +192,7 @@ export function AdminProfilePageContent() {
                 autoComplete="username"
                 value={form.username}
                 onChange={(event) => updateField("username", event.target.value)}
-                className={adminFieldClass}
+                className={fieldClassName}
                 disabled={isSavingAccount}
               />
             </FormField>
@@ -204,7 +204,7 @@ export function AdminProfilePageContent() {
                 autoComplete="email"
                 value={form.email}
                 onChange={(event) => updateField("email", event.target.value)}
-                className={adminFieldClass}
+                className={fieldClassName}
                 disabled={isSavingAccount}
               />
             </FormField>
@@ -216,7 +216,7 @@ export function AdminProfilePageContent() {
                 autoComplete="current-password"
                 value={form.current_password}
                 onChange={(event) => updateField("current_password", event.target.value)}
-                className={adminFieldClass}
+                className={fieldClassName}
                 disabled={isSavingAccount}
               />
             </FormField>
@@ -228,7 +228,7 @@ export function AdminProfilePageContent() {
                 autoComplete="new-password"
                 value={form.new_password}
                 onChange={(event) => updateField("new_password", event.target.value)}
-                className={adminFieldClass}
+                className={fieldClassName}
                 disabled={isSavingAccount}
                 placeholder="Leave blank to keep current password"
               />
@@ -241,7 +241,7 @@ export function AdminProfilePageContent() {
                 autoComplete="new-password"
                 value={form.confirm_password}
                 onChange={(event) => updateField("confirm_password", event.target.value)}
-                className={adminFieldClass}
+                className={fieldClassName}
                 disabled={isSavingAccount}
                 placeholder="Leave blank to keep current password"
               />
@@ -250,17 +250,17 @@ export function AdminProfilePageContent() {
         </div>
 
         {accountLocalError ? (
-          <p className={adminAlertErrorClass} role="alert">
+          <p className={alertErrorClassName} role="alert">
             {accountLocalError}
           </p>
         ) : null}
         {accountUpdateError ? (
-          <p className={adminAlertErrorClass} role="alert">
+          <p className={alertErrorClassName} role="alert">
             {accountUpdateError}
           </p>
         ) : null}
         {accountSuccess ? (
-          <p className={adminAlertSuccessClass} role="status">
+          <p className={alertSuccessClassName} role="status">
             {accountSuccess}
           </p>
         ) : null}
@@ -281,9 +281,9 @@ export function AdminProfilePageContent() {
         onSubmit={(event) => void handleSettingsSubmit(event)}
         className="space-y-6"
       >
-        <div className={adminSectionClass}>
-          <h2 className={adminSectionTitleClass}>Store Settings</h2>
-          <p className={adminHintClass}>
+        <div className={sectionClassName}>
+          <h2 className={sectionTitleClassName}>Store Settings</h2>
+          <p className={hintClassName}>
             Default flat shipping fee applied to every checkout order.
           </p>
 
@@ -306,7 +306,7 @@ export function AdminProfilePageContent() {
                   setSettingsLocalError(null);
                   dispatch(resetUpdateShopSettings());
                 }}
-                className={adminFieldClass}
+                className={fieldClassName}
                 disabled={isSavingSettings || shopSettingsStatus === "loading"}
               />
             </FormField>
@@ -314,22 +314,22 @@ export function AdminProfilePageContent() {
         </div>
 
         {shopSettingsError ? (
-          <p className={adminAlertErrorClass} role="alert">
+          <p className={alertErrorClassName} role="alert">
             {shopSettingsError}
           </p>
         ) : null}
         {settingsLocalError ? (
-          <p className={adminAlertErrorClass} role="alert">
+          <p className={alertErrorClassName} role="alert">
             {settingsLocalError}
           </p>
         ) : null}
         {updateShopSettingsError ? (
-          <p className={adminAlertErrorClass} role="alert">
+          <p className={alertErrorClassName} role="alert">
             {updateShopSettingsError}
           </p>
         ) : null}
         {settingsSuccess ? (
-          <p className={adminAlertSuccessClass} role="status">
+          <p className={alertSuccessClassName} role="status">
             {settingsSuccess}
           </p>
         ) : null}

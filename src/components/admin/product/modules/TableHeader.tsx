@@ -1,4 +1,4 @@
-import { adminTableHeadClass } from "@/components/admin/product/modules/admin-product-ui";
+import { tableHeadClassName } from "@/lib/panel-styles";
 import { cn } from "@/lib/utils";
 
 export type TableHeaderProps = {
@@ -7,7 +7,7 @@ export type TableHeaderProps = {
 
 export default function TableHeader({ className }: TableHeaderProps) {
   return (
-    <thead className={cn(adminTableHeadClass, className)}>
+    <thead className={cn(tableHeadClassName, className)}>
       <tr>
         <th scope="col" className="w-20 px-4 py-3.5 font-semibold">
           Image

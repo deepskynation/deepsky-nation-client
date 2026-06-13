@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Loader2Icon, PackageIcon } from "lucide-react";
 import { DashboardGlassSection } from "@/components/LandingPage/dashboard/modules/dashboard-glass-section";
 import {
@@ -8,8 +8,13 @@ import {
   PageStateGate,
 } from "@/components/common/feedback/page-state-gate";
 import { TablePagination } from "@/components/common/pagination/table-pagination";
+import { OrderCard } from "@/components/user/orders/modules/order-card";
 import { OrdersTableHeader } from "@/components/user/orders/modules/table-header";
 import { OrdersTableRow } from "@/components/user/orders/modules/table-row";
+import {
+  OrdersViewToggle,
+  type OrdersListView,
+} from "@/components/user/orders/modules/orders-view-toggle";
 import { UserOrdersFilterBar } from "@/components/user/orders/modules/user-orders-filter-bar";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { glassCardClassName } from "@/lib/glass-styles";
@@ -41,6 +46,11 @@ export function OrdersList() {
   const listError = useAppSelector(selectMyOrdersListError);
   const listQuery = useAppSelector(selectMyOrdersListQuery);
   const pagination = useAppSelector(selectMyOrdersPagination);
+  const [viewMode, setViewMode] = useState<OrdersListView>("cards");
+
+  useEffect(() => {
+    setViewMode(window.matchMedia("(min-width: 768px)").matches ? "table" : "cards");
+  }, []);
 
   const loadOrders = useCallback(
     (query?: Partial<MyOrdersQuery>) => {
@@ -97,8 +107,8 @@ export function OrdersList() {
     >
       <div className="min-h-full bg-gradient-to-b from-neutral-100 via-white to-neutral-200/90 text-black">
         <DashboardGlassSection variant="light" className="min-h-full">
-          <div className="mx-auto max-w-6xl px-6 py-8 lg:px-12 lg:py-10">
-            <header className="mb-8 space-y-1">
+          <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-12 lg:py-10">
+            <header className="mb-6 space-y-1 sm:mb-8">
               <p className="text-[11px] uppercase tracking-[0.35em] text-black/45">
               Deepsky
               </p>
@@ -124,6 +134,16 @@ export function OrdersList() {
                 </p>
               ) : null}
 
+              {orders.length > 0 || (isLoading && orders.length > 0) ? (
+                <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="text-sm text-black/55">
+                    {pagination?.total ?? orders.length} order
+                    {(pagination?.total ?? orders.length) === 1 ? "" : "s"}
+                  </p>
+                  <OrdersViewToggle value={viewMode} onChange={setViewMode} />
+                </div>
+              ) : null}
+
               {isLoading && orders.length === 0 ? (
                 <CenteredLoading message="Loading orders…" className="min-h-[240px]" />
               ) : orders.length === 0 && listStatus === "succeeded" ? (
@@ -141,30 +161,41 @@ export function OrdersList() {
                   </p>
                 </div>
               ) : (
-                <div className="overflow-x-auto">
-                  <div
-                    role="table"
-                    aria-label="Your Orders"
-                    className="min-w-[52rem] space-y-2"
-                  >
-                    <OrdersTableHeader />
-                    <div role="rowgroup" className="space-y-2">
-                      {isLoading && orders.length > 0 ? (
-                        <div className="flex items-center justify-center gap-2 py-6 text-sm text-black/45">
-                          <Loader2Icon className="size-4 animate-spin" aria-hidden />
-                          Updating…
-                        </div>
-                      ) : null}
+                <>
+                  {isLoading && orders.length > 0 ? (
+                    <div className="mb-3 flex items-center justify-center gap-2 py-2 text-sm text-black/45">
+                      <Loader2Icon className="size-4 animate-spin" aria-hidden />
+                      Updating…
+                    </div>
+                  ) : null}
+
+                  {viewMode === "cards" ? (
+                    <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                       {orders.map((order) => (
-                        <OrdersTableRow
-                          key={order.id}
-                          order={order}
-                          userName={userName}
-                        />
+                        <OrderCard key={order.id} order={order} />
                       ))}
                     </div>
-                  </div>
-                </div>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <div
+                        role="table"
+                        aria-label="Your Orders"
+                        className="min-w-[52rem] space-y-2"
+                      >
+                        <OrdersTableHeader />
+                        <div role="rowgroup" className="space-y-2">
+                          {orders.map((order) => (
+                            <OrdersTableRow
+                              key={order.id}
+                              order={order}
+                              userName={userName}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
 
               {showPagination && totalPages > 0 ? (

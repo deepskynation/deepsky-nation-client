@@ -2,7 +2,8 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Project conventions
 
-Backend API calls live in Redux slices (`src/store/slices/`), not in `src/lib`. See [docs/redux-and-api.md](./docs/redux-and-api.md).
+- Reusable UI components and patterns: [docs/REUSABLE_COMPONENT.md](./docs/REUSABLE_COMPONENT.md)
+- Backend API calls live in Redux slices (`src/store/slices/`), not in `src/lib`. See [docs/redux-and-api.md](./docs/redux-and-api.md).
 
 ## Getting Started
 

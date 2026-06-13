@@ -7,10 +7,10 @@ import { AdminProductSearchPanel } from "@/components/admin/product/modules/admi
 import TableHeader from "@/components/admin/product/modules/TableHeader";
 import TableRow from "@/components/admin/product/modules/TableRow";
 import {
-  adminAlertErrorClass,
-  adminEmptyStateClass,
-  adminTableWrapClass,
-} from "@/components/admin/product/modules/admin-product-ui";
+  alertErrorClassName,
+  emptyStateClassName,
+  tableWrapClassName,
+} from "@/lib/panel-styles";
 import { Button } from "@/components/ui/button";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { adminProductsHasActiveFilters } from "@/lib/admin-product-filters";
@@ -158,20 +158,20 @@ export function AdminProductsList({
       />
 
       {status === "loading" && products.length === 0 && (
-        <div className={adminEmptyStateClass}>
+        <div className={emptyStateClassName}>
           <Loader2Icon className="size-8 animate-spin text-neutral-400" />
           <p className="text-sm font-medium text-neutral-700">Loading products…</p>
         </div>
       )}
 
       {error && (
-        <p className={adminAlertErrorClass} role="alert">
+        <p className={alertErrorClassName} role="alert">
           {error}
         </p>
       )}
 
       {showEmptyCatalog && (
-        <div className={adminEmptyStateClass}>
+        <div className={emptyStateClassName}>
           <PackageIcon className="size-10 text-neutral-300" strokeWidth={1.25} />
           <p className="text-sm font-medium text-neutral-800">No products yet</p>
           <p className="max-w-sm text-sm text-muted-foreground">
@@ -182,7 +182,7 @@ export function AdminProductsList({
       )}
 
       {showNoResults && (
-        <div className={adminEmptyStateClass}>
+        <div className={emptyStateClassName}>
           <Search className="size-10 text-neutral-300" strokeWidth={1.25} />
           <p className="text-sm font-medium text-neutral-800">No products found</p>
           <p className="max-w-sm text-sm text-muted-foreground">
@@ -195,7 +195,7 @@ export function AdminProductsList({
       )}
 
       {products.length > 0 && (
-        <div className={cn(adminTableWrapClass, isLoading && "opacity-70")}>
+        <div className={cn(tableWrapClassName, isLoading && "opacity-70")}>
           <div className="overflow-x-auto">
             <table className="w-full min-w-[860px] border-collapse">
               <TableHeader />

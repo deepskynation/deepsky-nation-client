@@ -1,5 +1,6 @@
-import { AdminToastShell } from "@/components/admin/admin-toast-shell";
+import { ToastProvider } from "@/components/common/feedback/toast-provider";
 import { SidebarLayout } from "@/components/layout/sidebar-layout";
+import { RoleRouteGuard } from "@/components/layout/role-route-guard";
 import { adminSidebarConfig } from "@/components/layout/SideBarMenuItems";
 
 export default function AdminLayout({
@@ -8,8 +9,10 @@ export default function AdminLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <SidebarLayout config={adminSidebarConfig} brandHref="/admin/dashboard">
-      <AdminToastShell>{children}</AdminToastShell>
-    </SidebarLayout>
+    <RoleRouteGuard allowedRoles={["admin"]}>
+      <SidebarLayout config={adminSidebarConfig} brandHref="/admin/dashboard">
+        <ToastProvider>{children}</ToastProvider>
+      </SidebarLayout>
+    </RoleRouteGuard>
   );
 }

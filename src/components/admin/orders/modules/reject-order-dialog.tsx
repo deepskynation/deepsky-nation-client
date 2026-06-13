@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import {
-  adminFieldClass,
-  adminLabelClass,
-} from "@/components/admin/product/modules/admin-product-ui";
+  fieldClassName,
+  labelClassName,
+} from "@/lib/panel-styles";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -64,12 +64,12 @@ export function RejectOrderDialog({
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-2">
-          <label htmlFor={`reject-reason-${orderId}`} className={adminLabelClass}>
+          <label htmlFor={`reject-reason-${orderId}`} className={labelClassName}>
             Rejection Reason
           </label>
           <textarea
             id={`reject-reason-${orderId}`}
-            className={adminFieldClass.replace("h-10", "min-h-[96px] py-2")}
+            className={fieldClassName.replace("h-10", "min-h-[96px] py-2")}
             rows={4}
             value={rejectReason}
             onChange={(event) => {

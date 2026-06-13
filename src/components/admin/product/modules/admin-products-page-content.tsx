@@ -5,10 +5,10 @@ import { LayersIcon, PackagePlusIcon, PackageIcon } from "lucide-react";
 import { AddProductForm } from "@/components/admin/product/modules/add-product-form";
 import { CatalogSetup } from "@/components/admin/product/modules/catalog-setup";
 import {
-  adminCardClass,
-  adminSegmentListClass,
-  adminSegmentTabClass,
-} from "@/components/admin/product/modules/admin-product-ui";
+  cardClassName,
+  segmentListClassName,
+  segmentTabClassName,
+} from "@/lib/panel-styles";
 import { AdminProductsList } from "@/components/admin/product/list";
 import { useAppDispatch } from "@/hooks";
 import { clearProductDetail } from "@/store/slices/productSlice";
@@ -96,7 +96,7 @@ export function AdminProductsPageContent() {
           id={tabListId}
           role="tablist"
           aria-label="Admin Products Views"
-          className={adminSegmentListClass}
+          className={segmentListClassName}
         >
           {VIEW_TABS.map((tab) => {
             const isActive = activeView === tab.id;
@@ -113,7 +113,7 @@ export function AdminProductsPageContent() {
                 tabIndex={isActive ? 0 : -1}
                 onClick={() => handleTabChange(tab.id)}
                 className={cn(
-                  adminSegmentTabClass(isActive),
+                  segmentTabClassName(isActive),
                   "inline-flex items-center gap-2",
                 )}
               >
@@ -125,7 +125,7 @@ export function AdminProductsPageContent() {
         </div>
       </header>
 
-      <div className={adminCardClass}>
+      <div className={cardClassName}>
         {VIEW_TABS.map((tab) => {
           const isActive = activeView === tab.id;
 

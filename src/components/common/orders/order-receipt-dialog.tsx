@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { OrderReceiptSummary } from "@/components/common/orders/order-receipt-summary";
 import {
   Dialog,
   DialogContent,
@@ -8,7 +9,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { OrderReceiptSummary } from "@/components/user/orders/modules/order-receipt-summary";
 import { apiUrl } from "@/lib/api-config";
 import {
   buildOrderReceiptLineItems,
@@ -23,7 +23,13 @@ type OrderReceiptDialogProps = {
   onOpenChange: (open: boolean) => void;
   /** Optional labels when product catalog is already loaded (e.g. checkout). */
   itemLabels?: Record<string, OrderReceiptItemLabel>;
+  title?: string;
+  description?: string;
 };
+
+const DEFAULT_TITLE = "Order Receipt";
+const DEFAULT_DESCRIPTION =
+  "Save or print this summary anytime from your order history.";
 
 async function fetchReleasedProduct(productId: string): Promise<ApiProduct | null> {
   try {
@@ -59,6 +65,8 @@ export function OrderReceiptDialog({
   open,
   onOpenChange,
   itemLabels,
+  title = DEFAULT_TITLE,
+  description = DEFAULT_DESCRIPTION,
 }: OrderReceiptDialogProps) {
   const [resolvedLabels, setResolvedLabels] = useState<
     Record<string, OrderReceiptItemLabel>
@@ -145,11 +153,9 @@ export function OrderReceiptDialog({
         className="max-h-[90vh] gap-0 overflow-y-auto border-black/10 bg-white p-0 sm:max-w-[480px]"
       >
         <DialogHeader className="border-b border-black/8 px-6 pt-6 pb-4 text-left">
-          <DialogTitle className="font-serif text-xl text-black">
-            Order Receipt
-          </DialogTitle>
+          <DialogTitle className="font-serif text-xl text-black">{title}</DialogTitle>
           <DialogDescription className="text-sm text-black/55">
-            Save or print this summary anytime from your order history.
+            {description}
           </DialogDescription>
         </DialogHeader>
 

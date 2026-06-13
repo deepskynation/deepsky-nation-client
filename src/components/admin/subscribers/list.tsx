@@ -2,23 +2,23 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Loader2Icon, MailIcon } from "lucide-react";
+import { AdminSubscribersTableHeader } from "@/components/admin/subscribers/modules/table-header";
+import { AdminSubscribersTableRow } from "@/components/admin/subscribers/modules/table-row";
 import { DateRangeFilter } from "@/components/common/filters";
 import { TablePagination } from "@/components/common/pagination/table-pagination";
 import {
-  adminAlertErrorClass,
-  adminEmptyStateClass,
-  adminFieldClass,
-  adminLabelClass,
-  adminTableRowClass,
-  adminTableWrapClass,
-} from "@/components/admin/product/modules/admin-product-ui";
+  alertErrorClassName,
+  emptyStateClassName,
+  fieldClassName,
+  labelClassName,
+  tableWrapClassName,
+} from "@/lib/panel-styles";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import {
   dateRangeFromBounds,
   resolveDateRangeBounds,
   type DateRangeFilterValue,
 } from "@/lib/date-range-filter";
-import { formatAdminUserDateTime } from "@/lib/admin-user-status";
 import { cn } from "@/lib/utils";
 import { DEFAULT_PAGE_SIZE_OPTIONS } from "@/types/pagination";
 import { selectAuthInitialized, selectIsAuthenticated } from "@/store/slices/authSlice";
@@ -110,7 +110,7 @@ export function AdminSubscribersList() {
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
           <div className="min-w-[12rem] space-y-1.5">
-            <label htmlFor="admin-subscribers-search" className={adminLabelClass}>
+            <label htmlFor="admin-subscribers-search" className={labelClassName}>
               Search
             </label>
             <input
@@ -119,41 +119,36 @@ export function AdminSubscribersList() {
               value={searchInput}
               onChange={(event) => setSearchInput(event.target.value)}
               placeholder="Email"
-              className={adminFieldClass}
+              className={fieldClassName}
             />
           </div>
           <div className="min-w-[12rem] space-y-1.5">
-            <span className={adminLabelClass}>Subscribed</span>
+            <span className={labelClassName}>Subscribed</span>
             <DateRangeFilter
               value={dateRange}
               onChange={handleDateRangeChange}
               placeholder="All time"
-              triggerClassName={cn(adminFieldClass, "w-full justify-between text-left")}
+              triggerClassName={cn(fieldClassName, "w-full justify-between text-left")}
             />
           </div>
         </div>
       </div>
 
       {error ? (
-        <p className={adminAlertErrorClass} role="alert">
+        <p className={alertErrorClassName} role="alert">
           {error}
         </p>
       ) : null}
 
-      <div className={adminTableWrapClass}>
+      <div className={tableWrapClassName}>
         <div className="overflow-x-auto">
           <table className="min-w-[640px] w-full text-sm">
-            <thead>
-              <tr className="border-b border-neutral-200 bg-neutral-50/80 text-left text-xs font-medium uppercase tracking-wide text-neutral-500">
-                <th className="px-4 py-3">Email</th>
-                <th className="px-4 py-3">Subscribed</th>
-              </tr>
-            </thead>
+            <AdminSubscribersTableHeader />
             <tbody>
               {isLoading && subscribers.length === 0 ? (
                 <tr>
                   <td colSpan={2}>
-                    <div className={cn(adminEmptyStateClass, "border-0")}>
+                    <div className={cn(emptyStateClassName, "border-0")}>
                       <Loader2Icon className="size-5 animate-spin" aria-hidden />
                       <span>Loading subscribers…</span>
                     </div>
@@ -164,7 +159,7 @@ export function AdminSubscribersList() {
               {!isLoading && subscribers.length === 0 ? (
                 <tr>
                   <td colSpan={2}>
-                    <div className={cn(adminEmptyStateClass, "border-0")}>
+                    <div className={cn(emptyStateClassName, "border-0")}>
                       <MailIcon className="size-8 text-neutral-300" aria-hidden />
                       <span>No subscribers found.</span>
                     </div>
@@ -173,14 +168,7 @@ export function AdminSubscribersList() {
               ) : null}
 
               {subscribers.map((subscriber) => (
-                <tr key={subscriber.id} className={adminTableRowClass}>
-                  <td className="px-4 py-3 font-medium text-neutral-900">
-                    {subscriber.email}
-                  </td>
-                  <td className="px-4 py-3 text-neutral-600">
-                    {formatAdminUserDateTime(subscriber.created_at)}
-                  </td>
-                </tr>
+                <AdminSubscribersTableRow key={subscriber.id} subscriber={subscriber} />
               ))}
             </tbody>
           </table>

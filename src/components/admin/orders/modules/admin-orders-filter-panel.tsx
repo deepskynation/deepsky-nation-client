@@ -7,9 +7,9 @@ import {
 } from "@/components/common/filters/list-filter-panel";
 import { useFilterPanel } from "@/components/common/filters/use-list-filter-panel";
 import {
-  adminFieldClass,
-  adminLabelClass,
-} from "@/components/admin/product/modules/admin-product-ui";
+  fieldClassName,
+  labelClassName,
+} from "@/lib/panel-styles";
 import { DateRangeFilter } from "@/components/common/filters";
 import { AdminOrderStatusTabs } from "@/components/admin/orders/modules/admin-order-status-tabs";
 import {
@@ -133,23 +133,23 @@ export function AdminOrdersFilterPanel({
       >
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           <div className="space-y-1.5">
-            <span className={adminLabelClass}>Placed Date</span>
+            <span className={labelClassName}>Placed Date</span>
             <DateRangeFilter
               value={draft.dateRange}
               onChange={(dateRange) => setDraft((prev) => ({ ...prev, dateRange }))}
               placeholder="All time"
-              triggerClassName={cn(adminFieldClass, "w-full justify-between text-left")}
+              triggerClassName={cn(fieldClassName, "w-full justify-between text-left")}
             />
           </div>
 
           <div className="space-y-1.5">
-            <label htmlFor="admin-orders-order-number-filter" className={adminLabelClass}>
+            <label htmlFor="admin-orders-order-number-filter" className={labelClassName}>
               Order number
             </label>
             <input
               id="admin-orders-order-number-filter"
               type="text"
-              className={adminFieldClass}
+              className={fieldClassName}
               placeholder="e.g. ORD-105230"
               value={draft.order_number}
               onChange={(event) =>
@@ -160,13 +160,13 @@ export function AdminOrdersFilterPanel({
           </div>
 
           <div className="space-y-1.5">
-            <label htmlFor="admin-orders-customer-filter" className={adminLabelClass}>
+            <label htmlFor="admin-orders-customer-filter" className={labelClassName}>
               Customer
             </label>
             <input
               id="admin-orders-customer-filter"
               type="search"
-              className={adminFieldClass}
+              className={fieldClassName}
               placeholder="Username or email"
               value={draft.customer}
               onChange={(event) =>
@@ -177,12 +177,12 @@ export function AdminOrdersFilterPanel({
           </div>
 
           <div className="space-y-1.5">
-            <label htmlFor="admin-orders-payment-filter" className={adminLabelClass}>
+            <label htmlFor="admin-orders-payment-filter" className={labelClassName}>
               Payment
             </label>
             <select
               id="admin-orders-payment-filter"
-              className={adminFieldClass}
+              className={fieldClassName}
               value={draft.payment_method}
               onChange={(event) =>
                 setDraft((prev) => ({
@@ -201,12 +201,12 @@ export function AdminOrdersFilterPanel({
           </div>
 
           <div className="space-y-1.5">
-            <label htmlFor="admin-orders-status-filter" className={adminLabelClass}>
+            <label htmlFor="admin-orders-status-filter" className={labelClassName}>
               Status
             </label>
             <select
               id="admin-orders-status-filter"
-              className={adminFieldClass}
+              className={fieldClassName}
               value={draft.status}
               onChange={(event) =>
                 setDraft((prev) => ({

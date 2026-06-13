@@ -2,7 +2,9 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Loader2Icon, Search } from "lucide-react";
+import { Search } from "lucide-react";
+import { ListSectionState } from "@/components/common/feedback/list-section-state";
+import { GlassInlineAlert } from "@/components/common/feedback/glass-inline-alert";
 import { authGlassInputClassName } from "@/components/(auth)/modules/auth-glass-styles";
 import { AnimateInView } from "@/components/common/animation/animate-in-view";
 import { DashboardGlassSection } from "@/components/LandingPage/dashboard/modules/dashboard-glass-section";
@@ -12,7 +14,6 @@ import { EmailSubscribeSection } from "@/components/common/marketing/email-subsc
 import { TabPagination } from "@/components/common/pagination/tab-pagination";
 import { ProductsCategorySection } from "@/components/user/products/modules/products-category-section";
 import { useAppDispatch, useAppSelector } from "@/hooks";
-import { glassCardClassName } from "@/lib/glass-styles";
 import {
   productSortOptions,
   SHOP_PRODUCTS_PAGE_SIZE,
@@ -155,7 +156,7 @@ export function ProductsList() {
   return (
     <div className="min-h-full bg-gradient-to-b from-neutral-100 via-white to-neutral-200/90 text-black">
       <DashboardGlassSection variant="light" className="min-h-full">
-        <div className="mx-auto max-w-7xl px-6 py-10 lg:px-12 lg:py-14">
+        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-12 lg:py-14">
           <AnimateInView>
             <div className="mb-8 space-y-2">
               <p className="text-[11px] uppercase tracking-[0.35em] text-black/45">
@@ -173,7 +174,7 @@ export function ProductsList() {
           </AnimateInView>
 
           <AnimateInView delay={80}>
-            <div className="relative z-30 mb-8 flex flex-col gap-3 overflow-visible lg:flex-row lg:items-center lg:gap-4">
+            <div className="relative z-30 mb-6 flex flex-col gap-3 overflow-visible sm:mb-8 lg:flex-row lg:items-center lg:gap-4">
               <div className="relative w-full shrink-0 lg:max-w-xs">
                 <Search
                   className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-black/40"
@@ -189,56 +190,45 @@ export function ProductsList() {
                 />
               </div>
 
-              <GlassPillFilter
-                variant="simple"
-                options={categoryOptions}
-                value={activeCategoryLabel}
-                onChange={handleCategoryChange}
-                ariaLabel="Filter By Category"
-                className="min-w-0 flex-1 lg:pb-0"
-              />
+              <div className="flex min-w-0 items-center gap-2 lg:flex-1">
+                <GlassPillFilter
+                  variant="simple"
+                  options={categoryOptions}
+                  value={activeCategoryLabel}
+                  onChange={handleCategoryChange}
+                  ariaLabel="Filter By Category"
+                  className="min-w-0 flex-1"
+                />
 
-              <GlassOptionsMenu
-                options={productSortOptions}
-                value={sort}
-                onChange={setSort}
-                ariaLabel="Sort Products"
-                menuTitle="Price"
-              />
+                <GlassOptionsMenu
+                  options={productSortOptions}
+                  value={sort}
+                  onChange={setSort}
+                  ariaLabel="Sort Products"
+                  menuTitle="Price"
+                  className="shrink-0"
+                />
+              </div>
             </div>
           </AnimateInView>
 
-          {listError && listStatus === "failed" && (
-            <p
-              className={cn(
-                glassCardClassName,
-                "mb-6 border-red-200/80 bg-red-50/80 px-6 py-4 text-center text-sm text-red-700",
-              )}
-              role="alert"
-            >
-              {listError}
-            </p>
-          )}
+          <GlassInlineAlert
+            message={listStatus === "failed" ? listError : null}
+            className="mb-6"
+          />
 
-          {isLoading ? (
-            <div className="flex items-center justify-center gap-2 py-16 text-sm text-black/50">
-              <Loader2Icon className="size-5 animate-spin" />
-              Loading products…
-            </div>
-          ) : !hasVisibleProducts ? (
-            <p
-              className={cn(
-                glassCardClassName,
-                "border-dashed px-6 py-12 text-center text-sm text-black/50",
-              )}
-            >
-              {products.length === 0
+          <ListSectionState
+            loading={isLoading}
+            loadingMessage="Loading products…"
+            empty={!hasVisibleProducts}
+            emptyMessage={
+              products.length === 0
                 ? "No released products yet."
                 : categoryId !== "all"
                   ? "No products in this category match your search."
-                  : "No products match your search."}
-            </p>
-          ) : (
+                  : "No products match your search."
+            }
+          >
             <div className="space-y-12">
               {sectionGroups.map(({ section, products: sectionProducts }, index) => (
                 <ProductsCategorySection
@@ -260,7 +250,7 @@ export function ProductsList() {
                 />
               ) : null}
             </div>
-          )}
+          </ListSectionState>
 
           <EmailSubscribeSection className="mt-12" />
         </div>

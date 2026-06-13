@@ -1,8 +1,8 @@
-import { adminTableHeadClass } from "@/components/admin/product/modules/admin-product-ui";
+import { tableHeadClassName } from "@/lib/panel-styles";
 
 export function AdminUsersTableHeader() {
   return (
-    <thead className={adminTableHeadClass}>
+    <thead className={tableHeadClassName}>
       <tr>
         <th className="px-4 py-3 text-left font-medium">Name</th>
         <th className="px-4 py-3 text-left font-medium">Email</th>

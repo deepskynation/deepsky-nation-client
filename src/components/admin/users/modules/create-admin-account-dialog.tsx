@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 import { Loader2Icon } from "lucide-react";
 import {
-  adminAlertErrorClass,
-  adminFieldClass,
-  adminHintClass,
-  adminLabelClass,
-} from "@/components/admin/product/modules/admin-product-ui";
+  alertErrorClassName,
+  fieldClassName,
+  hintClassName,
+  labelClassName,
+} from "@/lib/panel-styles";
 import { useToast } from "@/components/common/feedback/toast-provider";
 import { Button } from "@/components/ui/button";
 import {
@@ -139,7 +139,7 @@ export function CreateAdminAccountDialog({
 
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="space-y-1.5">
-            <label htmlFor="create-admin-email" className={adminLabelClass}>
+            <label htmlFor="create-admin-email" className={labelClassName}>
               Email
             </label>
             <input
@@ -148,14 +148,14 @@ export function CreateAdminAccountDialog({
               autoComplete="email"
               value={form.email}
               onChange={(event) => updateField("email", event.target.value)}
-              className={adminFieldClass}
+              className={fieldClassName}
               disabled={isSubmitting}
               required
             />
           </div>
 
           <div className="space-y-1.5">
-            <label htmlFor="create-admin-role" className={adminLabelClass}>
+            <label htmlFor="create-admin-role" className={labelClassName}>
               Role
             </label>
             <select
@@ -164,19 +164,19 @@ export function CreateAdminAccountDialog({
               onChange={(event) =>
                 updateField("role", event.target.value as AdminUserRole)
               }
-              className={adminFieldClass}
+              className={fieldClassName}
               disabled={isSubmitting}
             >
               <option value="admin">Admin</option>
               <option value="user">User</option>
             </select>
-            <p className={adminHintClass}>
+            <p className={hintClassName}>
               Choose Admin for dashboard access, or User for a regular customer account.
             </p>
           </div>
 
           {displayError ? (
-            <p className={adminAlertErrorClass} role="alert">
+            <p className={alertErrorClassName} role="alert">
               {displayError}
             </p>
           ) : null}

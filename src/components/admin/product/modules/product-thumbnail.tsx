@@ -26,29 +26,26 @@ export function ProductThumbnail({
   const src = getProductThumbnailSrc(product);
   const sizeClass = sizeClasses[size];
 
-  if (src) {
-    return (
-      <div className={cn(frameClass, sizeClass, className)}>
+  return (
+    <div
+      aria-hidden={src ? undefined : true}
+      className={cn(
+        frameClass,
+        sizeClass,
+        !src &&
+          "flex items-center justify-center text-sm font-semibold text-neutral-500",
+        className,
+      )}
+    >
+      {src ? (
         <img
           src={src}
           alt={product.title}
           className="block size-full object-cover"
         />
-      </div>
-    );
-  }
-
-  return (
-    <div
-      aria-hidden
-      className={cn(
-        frameClass,
-        sizeClass,
-        "flex items-center justify-center text-sm font-semibold text-neutral-500",
-        className,
+      ) : (
+        product.title.slice(0, 1).toUpperCase()
       )}
-    >
-      {product.title.slice(0, 1).toUpperCase()}
     </div>
   );
 }
