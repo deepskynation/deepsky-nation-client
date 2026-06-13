@@ -1,4 +1,5 @@
 import { parseApiProductPrice, type ApiProduct } from "@/types/product";
+import type { ApiProductCategory } from "@/types/catalog";
 import type { ProductSortOption } from "@/lib/shop-filters";
 
 export const STOREFRONT_CATALOG_PAGE_SIZE = 100;
@@ -9,32 +10,61 @@ export const STOREFRONT_CATALOG_QUERY = {
   include_gallery_images: true,
 } as const;
 
-export type StorefrontProductSection = {
-  id: "tops" | "bottoms" | "essentials";
+const UNCATEGORIZED_SECTION_ID = "uncategorized";
+
+export type ProductCategorySection = {
+  id: string;
   title: string;
-  matchNames: readonly string[];
 };
 
-export const STOREFRONT_PRODUCT_SECTIONS: StorefrontProductSection[] = [
-  { id: "tops", title: "Tops", matchNames: ["top", "tops"] },
-  { id: "bottoms", title: "Bottoms", matchNames: ["bottom", "bottoms"] },
-  { id: "essentials", title: "Essentials", matchNames: ["essential", "essentials"] },
-];
+export type ProductCategorySectionGroup = {
+  section: ProductCategorySection;
+  products: ApiProduct[];
+};
 
-function normalizeCategoryName(categoryName: string): string {
-  return categoryName.trim().toLowerCase();
+export function getCategorySectionTitle(
+  categoryName: string | null | undefined,
+): string {
+  return categoryName?.trim() || "Uncategorized";
 }
 
-export function matchesStorefrontSection(
-  categoryName: string | null | undefined,
-  matchNames: readonly string[],
-): boolean {
-  if (!categoryName) {
-    return false;
+export function groupProductsByCategory(
+  products: ApiProduct[],
+  categories: ApiProductCategory[] = [],
+): ProductCategorySectionGroup[] {
+  const productsByCategoryId = new Map<string, ApiProduct[]>();
+
+  for (const product of products) {
+    const categoryId = product.category_id ?? UNCATEGORIZED_SECTION_ID;
+    const bucket = productsByCategoryId.get(categoryId) ?? [];
+    bucket.push(product);
+    productsByCategoryId.set(categoryId, bucket);
   }
 
-  const normalized = normalizeCategoryName(categoryName);
-  return matchNames.some((name) => normalized === name);
+  const knownCategoryIds = categories
+    .map((category) => category.id)
+    .filter((id) => productsByCategoryId.has(id));
+
+  const extraCategoryIds = [...productsByCategoryId.keys()].filter(
+    (id) => !knownCategoryIds.includes(id),
+  );
+
+  const orderedCategoryIds = [...knownCategoryIds, ...extraCategoryIds];
+
+  return orderedCategoryIds.map((categoryId) => {
+    const category = categories.find((item) => item.id === categoryId);
+    const sectionProducts = productsByCategoryId.get(categoryId) ?? [];
+
+    return {
+      section: {
+        id: categoryId,
+        title: getCategorySectionTitle(
+          category?.category_name ?? sectionProducts[0]?.category_name,
+        ),
+      },
+      products: sectionProducts,
+    };
+  });
 }
 
 export function sortStorefrontProducts(
@@ -84,36 +114,4 @@ export function filterProductsByCategoryId(
   }
 
   return products.filter((product) => product.category_id === categoryId);
-}
-
-export function findStorefrontSectionByCategoryName(
-  categoryName: string | null | undefined,
-): StorefrontProductSection | null {
-  return (
-    STOREFRONT_PRODUCT_SECTIONS.find((section) =>
-      matchesStorefrontSection(categoryName, section.matchNames),
-    ) ?? null
-  );
-}
-
-export function getStorefrontSectionTitle(
-  categoryName: string | null | undefined,
-): string {
-  return findStorefrontSectionByCategoryName(categoryName)?.title ?? categoryName ?? "Products";
-}
-
-export type StorefrontProductSectionGroup = {
-  section: StorefrontProductSection;
-  products: ApiProduct[];
-};
-
-export function groupProductsByStorefrontSection(
-  products: ApiProduct[],
-): StorefrontProductSectionGroup[] {
-  return STOREFRONT_PRODUCT_SECTIONS.map((section) => ({
-    section,
-    products: products.filter((product) =>
-      matchesStorefrontSection(product.category_name, section.matchNames),
-    ),
-  })).filter((group) => group.products.length > 0);
 }

@@ -16,7 +16,7 @@ import {
   glassCardClassName,
   glassHeaderClassName,
 } from "@/lib/glass-styles";
-import { groupProductsByStorefrontSection } from "@/lib/storefront-categories";
+import { groupProductsByCategory } from "@/lib/storefront-categories";
 import { pickFeaturedProducts } from "@/lib/user-dashboard-products";
 import { cn } from "@/lib/utils";
 import { useAppDispatch, useAppSelector } from "@/hooks";
@@ -26,6 +26,7 @@ import {
   selectDashboardFeaturedProductsError,
   selectDashboardFeaturedProductsStatus,
 } from "@/store/slices/productSlice";
+import { fetchShopCategories, selectShopCategories } from "@/store/slices/categorySlice";
 import { AboutUsSection } from "@/components/LandingPage/dashboard/modules/about-us";
 import { ContactUsSection } from "@/components/LandingPage/dashboard/modules/contact-us";
 import { FooterSection } from "@/components/LandingPage/dashboard/modules/footer";
@@ -39,12 +40,13 @@ export default function DashboardList() {
   const featuredProducts = useAppSelector(selectDashboardFeaturedProducts);
   const featuredProductsStatus = useAppSelector(selectDashboardFeaturedProductsStatus);
   const featuredProductsError = useAppSelector(selectDashboardFeaturedProductsError);
+  const categories = useAppSelector(selectShopCategories);
   const [activeHash, setActiveHash] = useState("");
 
   const displayedProducts = pickFeaturedProducts(featuredProducts, LANDING_FEATURED_LIMIT);
   const productSections = useMemo(
-    () => groupProductsByStorefrontSection(displayedProducts),
-    [displayedProducts],
+    () => groupProductsByCategory(displayedProducts, categories),
+    [categories, displayedProducts],
   );
   const isFeaturedLoading =
     featuredProductsStatus === "loading" && displayedProducts.length === 0;
@@ -69,6 +71,7 @@ export default function DashboardList() {
   };
 
   useEffect(() => {
+    void dispatch(fetchShopCategories());
     void dispatch(
       fetchDashboardFeaturedProducts({
         page: 1,
@@ -285,15 +288,6 @@ export default function DashboardList() {
               )}
             >
               No featured products yet. Check back soon for new arrivals.
-            </div>
-          ) : productSections.length === 0 ? (
-            <div
-              className={cn(
-                glassCardClassName,
-                "border-dashed px-6 py-12 text-center text-sm text-black/50",
-              )}
-            >
-              Featured products are available, but none match Tops, Bottoms, or Essentials yet.
             </div>
           ) : (
             <div className="space-y-12">

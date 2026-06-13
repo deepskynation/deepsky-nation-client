@@ -1,14 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { Loader2Icon } from "lucide-react";
 import { AnimateInView } from "@/components/common/animation/animate-in-view";
 import { ProductsCategorySection } from "@/components/user/products/modules/products-category-section";
+import { useAppDispatch, useAppSelector } from "@/hooks";
 import { glassCardClassName } from "@/lib/glass-styles";
-import { groupProductsByStorefrontSection } from "@/lib/storefront-categories";
+import { groupProductsByCategory } from "@/lib/storefront-categories";
 import { pickFeaturedProducts } from "@/lib/user-dashboard-products";
 import { cn } from "@/lib/utils";
+import { fetchShopCategories, selectShopCategories } from "@/store/slices/categorySlice";
 import type { ApiProduct } from "@/types/product";
 
 type DashboardFeaturedProductsProps = {
@@ -22,12 +24,18 @@ export function DashboardFeaturedProducts({
   status,
   error,
 }: DashboardFeaturedProductsProps) {
+  const dispatch = useAppDispatch();
+  const categories = useAppSelector(selectShopCategories);
   const featuredProducts = pickFeaturedProducts(products);
   const productSections = useMemo(
-    () => groupProductsByStorefrontSection(featuredProducts),
-    [featuredProducts],
+    () => groupProductsByCategory(featuredProducts, categories),
+    [categories, featuredProducts],
   );
   const isLoading = status === "loading" && featuredProducts.length === 0;
+
+  useEffect(() => {
+    void dispatch(fetchShopCategories());
+  }, [dispatch]);
 
   return (
     <section className="space-y-5">
@@ -70,15 +78,6 @@ export function DashboardFeaturedProducts({
           )}
         >
           No released products yet. Check back soon for new arrivals.
-        </div>
-      ) : productSections.length === 0 ? (
-        <div
-          className={cn(
-            glassCardClassName,
-            "border-dashed px-6 py-12 text-center text-sm text-black/50",
-          )}
-        >
-          Featured products are available, but none match Tops, Bottoms, or Essentials yet.
         </div>
       ) : (
         <div className="space-y-10">

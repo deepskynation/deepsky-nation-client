@@ -21,8 +21,8 @@ import {
 import {
   filterProductsByCategoryId,
   filterStorefrontProducts,
-  getStorefrontSectionTitle,
-  groupProductsByStorefrontSection,
+  getCategorySectionTitle,
+  groupProductsByCategory,
   sortStorefrontProducts,
   STOREFRONT_CATALOG_QUERY,
 } from "@/lib/storefront-categories";
@@ -114,7 +114,7 @@ export function ProductsList() {
       }
 
       const activeCategory = categories.find((category) => category.id === categoryId);
-      const title = getStorefrontSectionTitle(activeCategory?.category_name);
+      const title = getCategorySectionTitle(activeCategory?.category_name);
 
       return [
         {
@@ -124,7 +124,7 @@ export function ProductsList() {
       ];
     }
 
-    return groupProductsByStorefrontSection(sortedProducts);
+    return groupProductsByCategory(sortedProducts, categories);
   }, [categories, categoryId, isCategoryFiltered, paginatedProducts, sortedProducts]);
 
   const handlePageChange = (nextPage: number) => {
