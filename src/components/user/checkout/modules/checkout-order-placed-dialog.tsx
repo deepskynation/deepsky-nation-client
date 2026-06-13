@@ -11,7 +11,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { CancelOrderButton } from "@/components/user/orders/modules/cancel-order-button";
-import { OrderReceiptSummary } from "@/components/user/orders/modules/order-receipt-summary";
+import { OrderReceiptSummary } from "@/components/common/orders/order-receipt-summary";
 import {
   buildOrderReceiptLineItems,
   type OrderReceiptItemLabel,

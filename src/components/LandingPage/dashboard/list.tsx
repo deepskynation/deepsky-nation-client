@@ -4,8 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Loader2Icon } from "lucide-react";
 import { dashboardHeaderMenuItems } from "@/components/layout/HeaderMenuItems";
+import { ListSectionState } from "@/components/common/feedback/list-section-state";
+import { GlassInlineAlert } from "@/components/common/feedback/glass-inline-alert";
 import { HeaderNavLink } from "@/components/layout/header-nav-link";
 import { LandingProductSearch } from "@/components/LandingPage/dashboard/modules/landing-product-search";
 import { LandingProfileLink } from "@/components/LandingPage/dashboard/modules/landing-profile-link";
@@ -269,27 +270,20 @@ export default function DashboardList() {
             </div>
           </AnimateInView>
 
-          {featuredProductsError && featuredProductsStatus === "failed" ? (
-            <p className="mb-6 text-sm text-red-600" role="alert">
-              {featuredProductsError}
-            </p>
-          ) : null}
+          <GlassInlineAlert
+            message={featuredProductsStatus === "failed" ? featuredProductsError : null}
+            surface="plain"
+            centered={false}
+            className="mb-6"
+          />
 
-          {isFeaturedLoading ? (
-            <div className="flex min-h-[220px] items-center justify-center gap-2 text-sm text-black/50">
-              <Loader2Icon className="size-5 animate-spin" aria-hidden />
-              Loading featured products…
-            </div>
-          ) : displayedProducts.length === 0 ? (
-            <div
-              className={cn(
-                glassCardClassName,
-                "border-dashed px-6 py-12 text-center text-sm text-black/50",
-              )}
-            >
-              No featured products yet. Check back soon for new arrivals.
-            </div>
-          ) : (
+          <ListSectionState
+            loading={isFeaturedLoading}
+            loadingMessage="Loading featured products…"
+            loadingClassName="min-h-[220px] py-0"
+            empty={displayedProducts.length === 0}
+            emptyMessage="No featured products yet. Check back soon for new arrivals."
+          >
             <div className="space-y-12">
               {productSections.map(({ section, products }, index) => (
                 <ProductsCategorySection
@@ -301,7 +295,7 @@ export default function DashboardList() {
                 />
               ))}
             </div>
-          )}
+          </ListSectionState>
         </div>
       </DashboardGlassSection>
 

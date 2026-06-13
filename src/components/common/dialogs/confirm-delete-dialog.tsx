@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { Loader2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,51 +11,46 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { adminAlertErrorClass } from "@/components/admin/product/modules/admin-product-ui";
+import { alertErrorClassName } from "@/lib/panel-styles";
 
-type DeleteCatalogItemDialogProps = {
-  itemLabel: string;
-  itemName: string | null;
+type ConfirmDeleteDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  title: string;
+  description: ReactNode;
   onConfirm: () => void;
-  isDeleting: boolean;
-  error: string | null;
+  isDeleting?: boolean;
+  error?: string | null;
+  confirmLabel?: string;
+  cancelLabel?: string;
+  deletingLabel?: string;
 };
 
-export function DeleteCatalogItemDialog({
-  itemLabel,
-  itemName,
+export function ConfirmDeleteDialog({
   open,
   onOpenChange,
+  title,
+  description,
   onConfirm,
-  isDeleting,
-  error,
-}: DeleteCatalogItemDialogProps) {
+  isDeleting = false,
+  error = null,
+  confirmLabel = "Delete",
+  cancelLabel = "Cancel",
+  deletingLabel = "Deleting…",
+}: ConfirmDeleteDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Delete {itemLabel.toLowerCase()}</DialogTitle>
-          <DialogDescription>
-            {itemName ? (
-              <>
-                Permanently delete{" "}
-                <span className="font-medium text-neutral-900">{itemName}</span>?
-                Products using this {itemLabel.toLowerCase()} may be affected. This
-                cannot be undone.
-              </>
-            ) : (
-              `This ${itemLabel.toLowerCase()} will be permanently removed.`
-            )}
-          </DialogDescription>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
 
-        {error && (
-          <p className={adminAlertErrorClass} role="alert">
+        {error ? (
+          <p className={alertErrorClassName} role="alert">
             {error}
           </p>
-        )}
+        ) : null}
 
         <DialogFooter className="gap-2 sm:gap-0">
           <Button
@@ -63,7 +59,7 @@ export function DeleteCatalogItemDialog({
             disabled={isDeleting}
             onClick={() => onOpenChange(false)}
           >
-            Cancel
+            {cancelLabel}
           </Button>
           <Button
             type="button"
@@ -74,10 +70,10 @@ export function DeleteCatalogItemDialog({
             {isDeleting ? (
               <>
                 <Loader2Icon className="size-4 animate-spin" />
-                Deleting…
+                {deletingLabel}
               </>
             ) : (
-              "Delete"
+              confirmLabel
             )}
           </Button>
         </DialogFooter>

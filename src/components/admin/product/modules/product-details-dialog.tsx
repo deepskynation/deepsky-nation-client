@@ -22,10 +22,10 @@ import {
 } from "@/store/slices/productSlice";
 import type { ApiProduct, ApiProductImage, ProductImageRole } from "@/types/product";
 import {
-  adminAlertErrorClass,
-  adminSectionClass,
-  adminSectionTitleClass,
-} from "@/components/admin/product/modules/admin-product-ui";
+  alertErrorClassName,
+  sectionClassName,
+  sectionTitleClassName,
+} from "@/lib/panel-styles";
 import { parseApiProductPrice } from "@/types/product";
 
 const ROLE_SECTIONS: { role: ProductImageRole; title: string }[] = [
@@ -146,7 +146,7 @@ export function ProductDetailsDialog({
         )}
 
         {detailError && detailStatus === "failed" && (
-          <p className={adminAlertErrorClass} role="alert">
+          <p className={alertErrorClassName} role="alert">
             {detailError}
           </p>
         )}
@@ -196,8 +196,8 @@ export function ProductDetailsDialog({
               )}
             </dl>
 
-            <div className={adminSectionClass}>
-              <h3 className={adminSectionTitleClass}>Images</h3>
+            <div className={sectionClassName}>
+              <h3 className={sectionTitleClassName}>Images</h3>
               {ROLE_SECTIONS.map(({ role, title }) => {
                 const roleImages = imagesByRole(display.images, role);
                 if (
@@ -233,8 +233,8 @@ export function ProductDetailsDialog({
             </div>
 
             {display.variants.length > 0 && (
-              <div className={adminSectionClass}>
-                <h3 className={adminSectionTitleClass}>Variants</h3>
+              <div className={sectionClassName}>
+                <h3 className={sectionTitleClassName}>Variants</h3>
                 <div className="overflow-x-auto rounded-lg border border-neutral-200/90 bg-white shadow-sm">
                   <table className="w-full min-w-[320px] border-collapse text-sm">
                     <thead>

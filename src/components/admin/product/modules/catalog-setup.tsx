@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useState } from "react";
 import { Loader2Icon, PencilIcon, PlusIcon, Trash2Icon } from "lucide-react";
-import { DeleteCatalogItemDialog } from "@/components/admin/product/modules/delete-catalog-item-dialog";
+import { ConfirmDeleteDialog } from "@/components/common/dialogs/confirm-delete-dialog";
 import { Button } from "@/components/ui/button";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { cn } from "@/lib/utils";
@@ -46,13 +46,13 @@ import { selectAuthInitialized, selectIsAuthenticated } from "@/store/slices/aut
 import type { ApiProductCategory } from "@/types/catalog";
 import type { ApiProductColor } from "@/types/product";
 import {
-  adminAlertErrorClass,
-  adminAlertSuccessClass,
-  adminFieldClass,
-  adminHintClass,
-  adminSegmentListClass,
-  adminSegmentTabClass,
-} from "@/components/admin/product/modules/admin-product-ui";
+  alertErrorClassName,
+  alertSuccessClassName,
+  fieldClassName,
+  hintClassName,
+  segmentListClassName,
+  segmentTabClassName,
+} from "@/lib/panel-styles";
 
 type CatalogTab = "categories" | "colors";
 
@@ -68,6 +68,22 @@ const TAB_ITEMS: { id: CatalogTab; label: string; description: string }[] = [
     description: "Add colors for product variants (e.g. Multiblack, White).",
   },
 ];
+
+function catalogDeleteDescription(itemLabel: string, itemName: string | null) {
+  const lower = itemLabel.toLowerCase();
+
+  if (itemName) {
+    return (
+      <>
+        Permanently delete{" "}
+        <span className="font-medium text-neutral-900">{itemName}</span>? Products using
+        this {lower} may be affected. This cannot be undone.
+      </>
+    );
+  }
+
+  return `This ${lower} will be permanently removed.`;
+}
 
 function CatalogItemList({
   children,
@@ -183,7 +199,7 @@ function CategoriesPanel() {
 
   return (
     <div className="flex flex-col gap-5">
-      <p className={adminHintClass}>{TAB_ITEMS[0].description}</p>
+      <p className={hintClassName}>{TAB_ITEMS[0].description}</p>
 
       <form onSubmit={handleSubmit} className="space-y-2">
         {isEditMode && (
@@ -201,7 +217,7 @@ function CategoriesPanel() {
             }}
             placeholder="Category name"
             maxLength={50}
-            className={adminFieldClass}
+            className={fieldClassName}
             disabled={isSubmitting}
           />
           <div className="flex shrink-0 gap-2">
@@ -237,13 +253,13 @@ function CategoriesPanel() {
       </form>
 
       {mutationError && (
-        <p className={adminAlertErrorClass} role="alert">
+        <p className={alertErrorClassName} role="alert">
           {mutationError}
         </p>
       )}
 
       {successMessage && (
-        <p className={adminAlertSuccessClass}>{successMessage}</p>
+        <p className={alertSuccessClassName}>{successMessage}</p>
       )}
 
       <div className="border-t border-neutral-200/80 pt-5">
@@ -296,9 +312,12 @@ function CategoriesPanel() {
         </CatalogItemList>
       </div>
 
-      <DeleteCatalogItemDialog
-        itemLabel="Category"
-        itemName={deleteTarget?.category_name ?? null}
+      <ConfirmDeleteDialog
+        title="Delete category"
+        description={catalogDeleteDescription(
+          "Category",
+          deleteTarget?.category_name ?? null,
+        )}
         open={deleteTarget !== null}
         onOpenChange={(open) => {
           if (!open) {
@@ -413,7 +432,7 @@ function ColorsPanel() {
 
   return (
     <div className="flex flex-col gap-5">
-      <p className={adminHintClass}>{TAB_ITEMS[1].description}</p>
+      <p className={hintClassName}>{TAB_ITEMS[1].description}</p>
 
       <form onSubmit={handleSubmit} className="space-y-3">
         {isEditMode && (
@@ -430,7 +449,7 @@ function ColorsPanel() {
           }}
           placeholder="Color name (e.g. Multiblack)"
           maxLength={50}
-          className={adminFieldClass}
+          className={fieldClassName}
           disabled={isSubmitting}
         />
         <div className="flex flex-wrap items-center gap-2">
@@ -466,13 +485,13 @@ function ColorsPanel() {
       </form>
 
       {mutationError && (
-        <p className={adminAlertErrorClass} role="alert">
+        <p className={alertErrorClassName} role="alert">
           {mutationError}
         </p>
       )}
 
       {successMessage && (
-        <p className={adminAlertSuccessClass}>{successMessage}</p>
+        <p className={alertSuccessClassName}>{successMessage}</p>
       )}
 
       <div className="border-t border-neutral-200/80 pt-5">
@@ -534,9 +553,9 @@ function ColorsPanel() {
         </CatalogItemList>
       </div>
 
-      <DeleteCatalogItemDialog
-        itemLabel="Color"
-        itemName={deleteTarget?.color_name ?? null}
+      <ConfirmDeleteDialog
+        title="Delete color"
+        description={catalogDeleteDescription("Color", deleteTarget?.color_name ?? null)}
         open={deleteTarget !== null}
         onOpenChange={(open) => {
           if (!open) {
@@ -599,7 +618,7 @@ export function CatalogSetup({ embedded = false }: CatalogSetupProps) {
           id={tabListId}
           role="tablist"
           aria-label="Catalog Setup"
-          className={cn(embedded ? "mt-0" : "mt-4", adminSegmentListClass)}
+          className={cn(embedded ? "mt-0" : "mt-4", segmentListClassName)}
         >
           {TAB_ITEMS.map((tab) => {
             const isActive = activeTab === tab.id;
@@ -616,7 +635,7 @@ export function CatalogSetup({ embedded = false }: CatalogSetupProps) {
                 tabIndex={isActive ? 0 : -1}
                 onClick={() => setActiveTab(tab.id)}
                 className={cn(
-                  adminSegmentTabClass(isActive),
+                  segmentTabClassName(isActive),
                   "inline-flex items-center gap-2",
                 )}
               >

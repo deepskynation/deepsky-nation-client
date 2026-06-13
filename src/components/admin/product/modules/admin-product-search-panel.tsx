@@ -9,9 +9,9 @@ import {
 } from "@/components/common/filters/list-filter-panel";
 import { useFilterPanel } from "@/components/common/filters/use-list-filter-panel";
 import {
-  adminFieldClass,
-  adminLabelClass,
-} from "@/components/admin/product/modules/admin-product-ui";
+  fieldClassName,
+  labelClassName,
+} from "@/lib/panel-styles";
 import { DateRangeFilter } from "@/components/common/filters";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import {
@@ -225,7 +225,7 @@ export function AdminProductSearchPanel({
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <div className="space-y-1.5">
-            <label htmlFor="admin-filter-by" className={adminLabelClass}>
+            <label htmlFor="admin-filter-by" className={labelClassName}>
               Filter By
             </label>
             <select
@@ -233,7 +233,7 @@ export function AdminProductSearchPanel({
               value={filterPicker}
               onChange={(event) => handleFilterPickerChange(event.target.value)}
               disabled={availableToAdd.length === 0}
-              className={cn(adminFieldClass, "bg-white")}
+              className={cn(fieldClassName, "bg-white")}
             >
               <option value="">
                 {availableToAdd.length === 0 ? "All Filters Added" : "Choose A Filter…"}
@@ -246,7 +246,7 @@ export function AdminProductSearchPanel({
             </select>
           </div>
           <div className="space-y-1.5">
-            <span className={adminLabelClass}>Date Added</span>
+            <span className={labelClassName}>Date Added</span>
             <DateRangeFilter
               value={draft.dateRange}
               onChange={(dateRange) => updateDraft({ dateRange })}
@@ -274,7 +274,7 @@ export function AdminProductSearchPanel({
                         onChange={(event) =>
                           updateDraft({ category_id: event.target.value })
                         }
-                        className={adminFieldClass}
+                        className={fieldClassName}
                       >
                         <option value="">All Categories</option>
                         {categories.map((category) => (
@@ -300,7 +300,7 @@ export function AdminProductSearchPanel({
                             visibility: event.target.value as FilterDraft["visibility"],
                           })
                         }
-                        className={adminFieldClass}
+                        className={fieldClassName}
                       >
                         <option value="">All Statuses</option>
                         <option value="released">Released</option>
@@ -323,7 +323,7 @@ export function AdminProductSearchPanel({
                           updateDraft({ product_code: event.target.value })
                         }
                         placeholder="e.g. DS-001"
-                        className={adminFieldClass}
+                        className={fieldClassName}
                       />
                     </OptionalFilterRow>
                   );
@@ -345,7 +345,7 @@ export function AdminProductSearchPanel({
                           }
                           placeholder="Min"
                           aria-label="Minimum Price"
-                          className={adminFieldClass}
+                          className={fieldClassName}
                         />
                         <input
                           type="number"
@@ -357,7 +357,7 @@ export function AdminProductSearchPanel({
                           }
                           placeholder="Max"
                           aria-label="Maximum Price"
-                          className={adminFieldClass}
+                          className={fieldClassName}
                         />
                       </div>
                     </OptionalFilterRow>
@@ -380,7 +380,7 @@ export function AdminProductSearchPanel({
                           }
                           placeholder="Min"
                           aria-label="Minimum Stock"
-                          className={adminFieldClass}
+                          className={fieldClassName}
                         />
                         <input
                           type="number"
@@ -392,7 +392,7 @@ export function AdminProductSearchPanel({
                           }
                           placeholder="Max"
                           aria-label="Maximum Stock"
-                          className={adminFieldClass}
+                          className={fieldClassName}
                         />
                       </div>
                     </OptionalFilterRow>

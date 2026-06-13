@@ -1,18 +1,22 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Loader2Icon, UsersIcon } from "lucide-react";
+import { Loader2Icon, UserPlusIcon, UsersIcon } from "lucide-react";
 import { AdminUsersTableHeader } from "@/components/admin/users/modules/table-header";
 import { AdminUsersTableRow } from "@/components/admin/users/modules/table-row";
+import { CreateAdminAccountDialog } from "@/components/admin/users/modules/create-admin-account-dialog";
+import { UserStatCards } from "@/components/admin/users/modules/user-stat-cards";
 import {
-  adminAlertErrorClass,
-  adminEmptyStateClass,
-  adminFieldClass,
-  adminLabelClass,
-  adminTableWrapClass,
-} from "@/components/admin/product/modules/admin-product-ui";
+  alertErrorClassName,
+  cardClassName,
+  emptyStateClassName,
+  fieldClassName,
+  labelClassName,
+  tableWrapClassName,
+} from "@/lib/panel-styles";
 import { DateRangeFilter } from "@/components/common/filters";
 import { TablePagination } from "@/components/common/pagination/table-pagination";
+import { Button } from "@/components/ui/button";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { ADMIN_USER_STATUS_FILTER_OPTIONS } from "@/lib/admin-user-status";
 import {
@@ -48,6 +52,7 @@ export function AdminUsersList() {
   const error = useAppSelector(selectAdminUsersListError);
 
   const [searchInput, setSearchInput] = useState(listQuery.search ?? "");
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
 
   const loadUsers = useCallback(
     (query?: Parameters<typeof fetchAdminUsersList>[0]) => {
@@ -113,117 +118,148 @@ export function AdminUsersList() {
       : "Registered accounts will appear here.";
 
   return (
-    <div className="space-y-5">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+    <section className="mx-auto max-w-6xl space-y-8 p-4 sm:p-6 lg:p-8">
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="space-y-1">
-          <h2 className="text-lg font-semibold text-neutral-900">All Users</h2>
-          <p className="text-sm text-muted-foreground">{headingSubtitle}</p>
+          <p className="text-xs font-medium tracking-wide text-neutral-500 uppercase">
+            Admin
+          </p>
+          <h1 className="text-2xl font-semibold tracking-tight text-neutral-900 sm:text-3xl">
+            User Management
+          </h1>
+          <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            View registered users, create admin accounts, and open detailed profile
+            information for each account.
+          </p>
         </div>
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-          <div className="min-w-[12rem] space-y-1.5">
-            <label htmlFor="admin-users-search" className={adminLabelClass}>
-              Search
-            </label>
-            <input
-              id="admin-users-search"
-              type="search"
-              value={searchInput}
-              onChange={(event) => setSearchInput(event.target.value)}
-              placeholder="Name or email"
-              className={adminFieldClass}
-            />
+        <Button type="button" onClick={() => setCreateDialogOpen(true)}>
+          <UserPlusIcon className="size-4" aria-hidden />
+          Create Admin Account
+        </Button>
+      </header>
+
+      <UserStatCards statistics={statistics} />
+
+      <div className={cardClassName}>
+        <div className="space-y-5 p-5 sm:p-6 lg:p-8">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div className="space-y-1">
+              <h2 className="text-lg font-semibold text-neutral-900">All Users</h2>
+              <p className="text-sm text-muted-foreground">{headingSubtitle}</p>
+            </div>
+
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+              <div className="min-w-[12rem] space-y-1.5">
+                <label htmlFor="admin-users-search" className={labelClassName}>
+                  Search
+                </label>
+                <input
+                  id="admin-users-search"
+                  type="search"
+                  value={searchInput}
+                  onChange={(event) => setSearchInput(event.target.value)}
+                  placeholder="Name or email"
+                  className={fieldClassName}
+                />
+              </div>
+              <div className="min-w-[10rem] space-y-1.5">
+                <label htmlFor="admin-users-status" className={labelClassName}>
+                  Status
+                </label>
+                <select
+                  id="admin-users-status"
+                  value={statusFilter}
+                  onChange={(event) => handleStatusFilterChange(event.target.value)}
+                  className={fieldClassName}
+                >
+                  {ADMIN_USER_STATUS_FILTER_OPTIONS.map((option) => (
+                    <option key={option.value || "all"} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="min-w-[12rem] space-y-1.5">
+                <span className={labelClassName}>Registered</span>
+                <DateRangeFilter
+                  value={dateRange}
+                  onChange={handleDateRangeChange}
+                  placeholder="All time"
+                  triggerClassName={cn(fieldClassName, "w-full justify-between text-left")}
+                />
+              </div>
+            </div>
           </div>
-          <div className="min-w-[10rem] space-y-1.5">
-            <label htmlFor="admin-users-status" className={adminLabelClass}>
-              Status
-            </label>
-            <select
-              id="admin-users-status"
-              value={statusFilter}
-              onChange={(event) => handleStatusFilterChange(event.target.value)}
-              className={adminFieldClass}
-            >
-              {ADMIN_USER_STATUS_FILTER_OPTIONS.map((option) => (
-                <option key={option.value || "all"} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+
+          {error ? (
+            <p className={alertErrorClassName} role="alert">
+              {error}
+            </p>
+          ) : null}
+
+          <div className={tableWrapClassName}>
+            <div className="overflow-x-auto">
+              <table className="min-w-[860px] w-full text-sm">
+                <AdminUsersTableHeader />
+                <tbody>
+                  {isLoading && users.length === 0 ? (
+                    <tr>
+                      <td colSpan={5}>
+                        <div className={cn(emptyStateClassName, "border-0")}>
+                          <Loader2Icon className="size-5 animate-spin" aria-hidden />
+                          <span>Loading users…</span>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : null}
+
+                  {!isLoading && users.length === 0 ? (
+                    <tr>
+                      <td colSpan={5}>
+                        <div className={cn(emptyStateClassName, "border-0")}>
+                          <UsersIcon className="size-8 text-neutral-300" aria-hidden />
+                          <span>No users found.</span>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : null}
+
+                  {users.map((user) => (
+                    <AdminUsersTableRow key={user.id} user={user} />
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {showPagination ? (
+              <div className="border-t border-neutral-200 bg-neutral-50/50 px-4 py-3">
+                <TablePagination
+                  page={pagination.page}
+                  totalPages={pagination.total_pages}
+                  pageSize={pagination.page_size}
+                  onPageChange={handlePageChange}
+                  onPageSizeChange={handlePageSizeChange}
+                  disabled={isLoading}
+                  pageSizeOptions={[...DEFAULT_PAGE_SIZE_OPTIONS]}
+                />
+              </div>
+            ) : null}
           </div>
-          <div className="min-w-[12rem] space-y-1.5">
-            <span className={adminLabelClass}>Registered</span>
-            <DateRangeFilter
-              value={dateRange}
-              onChange={handleDateRangeChange}
-              placeholder="All time"
-              triggerClassName={cn(adminFieldClass, "w-full justify-between text-left")}
-            />
-          </div>
+
+          {statistics ? (
+            <p className="sr-only" aria-live="polite">
+              {statistics.registered_users} registered, {statistics.active_users} active,{" "}
+              {statistics.inactive_users} inactive
+            </p>
+          ) : null}
         </div>
       </div>
 
-      {error ? (
-        <p className={adminAlertErrorClass} role="alert">
-          {error}
-        </p>
-      ) : null}
-
-      <div className={adminTableWrapClass}>
-        <div className="overflow-x-auto">
-          <table className="min-w-[860px] w-full text-sm">
-            <AdminUsersTableHeader />
-            <tbody>
-              {isLoading && users.length === 0 ? (
-                <tr>
-                  <td colSpan={5}>
-                    <div className={cn(adminEmptyStateClass, "border-0")}>
-                      <Loader2Icon className="size-5 animate-spin" aria-hidden />
-                      <span>Loading users…</span>
-                    </div>
-                  </td>
-                </tr>
-              ) : null}
-
-              {!isLoading && users.length === 0 ? (
-                <tr>
-                  <td colSpan={5}>
-                    <div className={cn(adminEmptyStateClass, "border-0")}>
-                      <UsersIcon className="size-8 text-neutral-300" aria-hidden />
-                      <span>No users found.</span>
-                    </div>
-                  </td>
-                </tr>
-              ) : null}
-
-              {users.map((user) => (
-                <AdminUsersTableRow key={user.id} user={user} />
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {showPagination ? (
-          <div className="border-t border-neutral-200 bg-neutral-50/50 px-4 py-3">
-            <TablePagination
-              page={pagination.page}
-              totalPages={pagination.total_pages}
-              pageSize={pagination.page_size}
-              onPageChange={handlePageChange}
-              onPageSizeChange={handlePageSizeChange}
-              disabled={isLoading}
-              pageSizeOptions={[...DEFAULT_PAGE_SIZE_OPTIONS]}
-            />
-          </div>
-        ) : null}
-      </div>
-
-      {statistics ? (
-        <p className="sr-only" aria-live="polite">
-          {statistics.registered_users} registered, {statistics.active_users} active,{" "}
-          {statistics.inactive_users} inactive
-        </p>
-      ) : null}
-    </div>
+      <CreateAdminAccountDialog
+        open={createDialogOpen}
+        onOpenChange={setCreateDialogOpen}
+      />
+    </section>
   );
 }

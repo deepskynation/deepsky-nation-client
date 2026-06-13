@@ -8,10 +8,10 @@ import {
 } from "@/components/common/orders/payment-proof-dialog";
 import { AdminOrderStatusActions } from "@/components/admin/orders/modules/order-status-actions";
 import {
-  adminAlertErrorClass,
-  adminSectionClass,
-  adminSectionTitleClass,
-} from "@/components/admin/product/modules/admin-product-ui";
+  alertErrorClassName,
+  sectionClassName,
+  sectionTitleClassName,
+} from "@/lib/panel-styles";
 import {
   Dialog,
   DialogContent,
@@ -109,7 +109,7 @@ export function AdminOrderDetailDialog({
         ) : null}
 
         {detailError && !order ? (
-          <p className={adminAlertErrorClass} role="alert">
+          <p className={alertErrorClassName} role="alert">
             {detailError}
           </p>
         ) : null}
@@ -133,8 +133,8 @@ export function AdminOrderDetailDialog({
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <section className={adminSectionClass}>
-                <h3 className={adminSectionTitleClass}>Customer</h3>
+              <section className={sectionClassName}>
+                <h3 className={sectionTitleClassName}>Customer</h3>
                 <dl className="space-y-2 text-sm">
                   <div>
                     <dt className="text-muted-foreground">Name</dt>
@@ -153,8 +153,8 @@ export function AdminOrderDetailDialog({
                 </dl>
               </section>
 
-              <section className={adminSectionClass}>
-                <h3 className={adminSectionTitleClass}>Payment</h3>
+              <section className={sectionClassName}>
+                <h3 className={sectionTitleClassName}>Payment</h3>
                 <dl className="space-y-2 text-sm">
                   <div>
                     <dt className="text-muted-foreground">Method</dt>
@@ -182,8 +182,8 @@ export function AdminOrderDetailDialog({
               </section>
             </div>
 
-            <section className={adminSectionClass}>
-              <h3 className={adminSectionTitleClass}>
+            <section className={sectionClassName}>
+              <h3 className={sectionTitleClassName}>
                 Items ({order.items.length})
               </h3>
               <ul className="space-y-2 text-sm">
@@ -235,8 +235,8 @@ export function AdminOrderDetailDialog({
               </dl>
             </section>
 
-            <section className={adminSectionClass}>
-              <h3 className={adminSectionTitleClass}>Delivery</h3>
+            <section className={sectionClassName}>
+              <h3 className={sectionTitleClassName}>Delivery</h3>
               {deliveredAtLabel ? (
                 <p className="mb-3 text-sm font-medium text-emerald-800">
                   Delivered on {deliveredAtLabel}
@@ -260,14 +260,14 @@ export function AdminOrderDetailDialog({
             </section>
 
             {order.rejection_reason ? (
-              <section className={adminSectionClass}>
-                <h3 className={adminSectionTitleClass}>Rejection Reason</h3>
+              <section className={sectionClassName}>
+                <h3 className={sectionTitleClassName}>Rejection Reason</h3>
                 <p className="text-sm text-neutral-800">{order.rejection_reason}</p>
               </section>
             ) : null}
 
-            <section className={adminSectionClass}>
-              <h3 className={adminSectionTitleClass}>Fulfillment Actions</h3>
+            <section className={sectionClassName}>
+              <h3 className={sectionTitleClassName}>Fulfillment Actions</h3>
               <AdminOrderStatusActions
                 order={order}
                 onActionComplete={refreshDetail}

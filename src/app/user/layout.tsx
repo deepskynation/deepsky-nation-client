@@ -1,4 +1,5 @@
 import { UserHeaderLayout } from "@/components/layout/user-header-layout";
+import { RoleRouteGuard } from "@/components/layout/role-route-guard";
 import { UserToastShell } from "@/components/user/user-toast-shell";
 
 export default function UserLayout({
@@ -7,8 +8,10 @@ export default function UserLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <UserHeaderLayout>
-      <UserToastShell>{children}</UserToastShell>
-    </UserHeaderLayout>
+    <RoleRouteGuard allowedRoles={["user"]} allowGuest>
+      <UserHeaderLayout>
+        <UserToastShell>{children}</UserToastShell>
+      </UserHeaderLayout>
+    </RoleRouteGuard>
   );
 }

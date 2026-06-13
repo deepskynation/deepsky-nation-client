@@ -34,7 +34,10 @@ export function ProductsCategorySection({
 
       <div
         className={cn(
-          "grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 lg:gap-4",
+          "grid gap-4",
+          cardVariant === "landing"
+            ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 lg:gap-4"
+            : "grid-cols-1 min-[420px]:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5",
           isPageLoading && "pointer-events-none opacity-60",
         )}
       >

@@ -1,5 +1,5 @@
-import { AdminUsersPageContent } from "@/components/admin/users/modules/admin-users-page-content";
+import { AdminUsersList } from "@/components/admin/users/list";
 
 export default function AdminUsersPage() {
-  return <AdminUsersPageContent />;
+  return <AdminUsersList />;
 }

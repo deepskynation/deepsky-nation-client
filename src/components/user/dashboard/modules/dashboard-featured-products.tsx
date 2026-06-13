@@ -2,14 +2,13 @@
 
 import Link from "next/link";
 import { useEffect, useMemo } from "react";
-import { Loader2Icon } from "lucide-react";
 import { AnimateInView } from "@/components/common/animation/animate-in-view";
+import { ListSectionState } from "@/components/common/feedback/list-section-state";
+import { GlassInlineAlert } from "@/components/common/feedback/glass-inline-alert";
 import { ProductsCategorySection } from "@/components/user/products/modules/products-category-section";
 import { useAppDispatch, useAppSelector } from "@/hooks";
-import { glassCardClassName } from "@/lib/glass-styles";
 import { groupProductsByCategory } from "@/lib/storefront-categories";
 import { pickFeaturedProducts } from "@/lib/user-dashboard-products";
-import { cn } from "@/lib/utils";
 import { fetchShopCategories, selectShopCategories } from "@/store/slices/categorySlice";
 import type { ApiProduct } from "@/types/product";
 
@@ -59,27 +58,19 @@ export function DashboardFeaturedProducts({
         </div>
       </AnimateInView>
 
-      {error && status === "failed" ? (
-        <p className="text-sm text-red-600" role="alert">
-          {error}
-        </p>
-      ) : null}
+      <GlassInlineAlert
+        message={status === "failed" ? error : null}
+        surface="plain"
+        centered={false}
+      />
 
-      {isLoading ? (
-        <div className="flex min-h-[220px] items-center justify-center gap-2 text-sm text-black/50">
-          <Loader2Icon className="size-5 animate-spin" aria-hidden />
-          Loading featured products…
-        </div>
-      ) : featuredProducts.length === 0 ? (
-        <div
-          className={cn(
-            glassCardClassName,
-            "border-dashed px-6 py-12 text-center text-sm text-black/50",
-          )}
-        >
-          No released products yet. Check back soon for new arrivals.
-        </div>
-      ) : (
+      <ListSectionState
+        loading={isLoading}
+        loadingMessage="Loading featured products…"
+        loadingClassName="min-h-[220px] py-0"
+        empty={featuredProducts.length === 0}
+        emptyMessage="No released products yet. Check back soon for new arrivals."
+      >
         <div className="space-y-10">
           {productSections.map(({ section, products: sectionProducts }, index) => (
             <ProductsCategorySection
@@ -90,7 +81,7 @@ export function DashboardFeaturedProducts({
             />
           ))}
         </div>
-      )}
+      </ListSectionState>
     </section>
   );
 }

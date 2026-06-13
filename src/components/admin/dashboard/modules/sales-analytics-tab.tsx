@@ -1,20 +1,16 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { OrderTrendChart } from "@/components/admin/dashboard/modules/order-trend-chart";
+import { RevenueTrendChart } from "@/components/admin/dashboard/modules/revenue-trend-chart";
+import { TopProductsChart } from "@/components/admin/dashboard/modules/top-products-chart";
+import { ChartCard } from "@/components/common/feedback/chart-panel";
+import { SalesAnalyticsTopProductsTable } from "@/components/admin/dashboard/modules/sales-analytics-top-products-table";
+import { ChartPanelsSkeleton } from "@/components/common/feedback/chart-panels-skeleton";
 import {
-  adminAlertErrorClass,
-  adminEmptyStateClass,
-  adminSectionTitleClass,
-  adminTableHeadClass,
-  adminTableRowClass,
-  adminTableWrapClass,
-} from "@/components/admin/product/modules/admin-product-ui";
-import {
-  ChartCard,
-  OrderTrendChart,
-  RevenueTrendChart,
-  TopProductsChart,
-} from "@/components/admin/dashboard/modules/dashboard-charts";
+  alertErrorClassName,
+  emptyStateClassName,
+} from "@/lib/panel-styles";
 import { Button } from "@/components/ui/button";
 import {
   aggregateOrderTrends,
@@ -23,7 +19,6 @@ import {
   inferChartGranularity,
   type ChartGranularity,
 } from "@/lib/admin-dashboard-charts";
-import { formatMoney } from "@/lib/order-display";
 import { cn } from "@/lib/utils";
 import type { SalesAnalytics } from "@/types/admin-dashboard";
 
@@ -52,8 +47,8 @@ export function SalesAnalyticsTab({
 }: SalesAnalyticsTabProps) {
   const suggestedGranularity = inferChartGranularity(dateFrom, dateTo);
   const [granularity, setGranularity] = useState<ChartGranularity>(suggestedGranularity);
-
   const activeGranularity = granularity;
+  const isInitialLoading = status === "loading" && !data;
 
   const timeSeries = useMemo(
     () => aggregateSalesTimeSeries(data?.time_series ?? [], activeGranularity),
@@ -97,127 +92,65 @@ export function SalesAnalyticsTab({
     [data?.top_products],
   );
 
-  if (status === "loading" && !data) {
-    return (
-      <div className="space-y-4 p-5 sm:p-6 lg:p-8">
-        <div className="h-8 w-48 animate-pulse rounded bg-neutral-200" />
-        <div className="grid gap-4 lg:grid-cols-2">
-          <div className="h-72 animate-pulse rounded-xl bg-neutral-100" />
-          <div className="h-72 animate-pulse rounded-xl bg-neutral-100" />
-        </div>
-      </div>
-    );
-  }
-
-  if (status === "failed") {
-    return (
-      <div className="space-y-4 p-5 sm:p-6 lg:p-8">
-        <div className={adminAlertErrorClass}>{error ?? "Failed to load sales analytics."}</div>
-        <Button type="button" variant="outline" onClick={onRetry}>
-          Retry
-        </Button>
-      </div>
-    );
-  }
-
-  if (!data) {
-    return (
-      <div className={cn(adminEmptyStateClass, "m-5 sm:m-6 lg:m-8")}>
-        <p className="text-sm text-muted-foreground">Sales analytics will appear here.</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-6 p-5 sm:p-6 lg:p-8">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="grid gap-4 sm:grid-cols-3">
-          <SummaryTile label="Revenue" value={formatMoney(data.summary.revenue)} />
-          <SummaryTile label="Orders" value={data.summary.orders.toLocaleString()} />
-          <SummaryTile label="Units Sold" value={data.summary.units_sold.toLocaleString()} />
+    <>
+      {isInitialLoading ? (
+        <ChartPanelsSkeleton />
+      ) : status === "failed" ? (
+        <div className="space-y-4 p-5 sm:p-6 lg:p-8">
+          <div className={alertErrorClassName}>{error ?? "Failed to load sales analytics."}</div>
+          <Button type="button" variant="outline" onClick={onRetry}>
+            Retry
+          </Button>
         </div>
+      ) : !data ? (
+        <div className={cn(emptyStateClassName, "m-5 sm:m-6 lg:m-8")}>
+          <p className="text-sm text-muted-foreground">Sales analytics will appear here.</p>
+        </div>
+      ) : (
+        <div className="space-y-6 p-5 sm:p-6 lg:p-8">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <SalesAnalyticsTopProductsTable section="summary" summary={data.summary} />
 
-        <div className="inline-flex gap-1 rounded-lg bg-neutral-100/90 p-1">
-          {GRANULARITY_OPTIONS.map((option) => (
-            <button
-              key={option.id}
-              type="button"
-              onClick={() => setGranularity(option.id)}
-              className={cn(
-                "rounded-md px-3 py-1.5 text-xs font-medium transition-colors",
-                activeGranularity === option.id
-                  ? "bg-white text-neutral-900 shadow-sm"
-                  : "text-neutral-600 hover:text-neutral-900",
-              )}
+            <div className="inline-flex gap-1 rounded-lg bg-neutral-100/90 p-1">
+              {GRANULARITY_OPTIONS.map((option) => (
+                <button
+                  key={option.id}
+                  type="button"
+                  onClick={() => setGranularity(option.id)}
+                  className={cn(
+                    "rounded-md px-3 py-1.5 text-xs font-medium transition-colors",
+                    activeGranularity === option.id
+                      ? "bg-white text-neutral-900 shadow-sm"
+                      : "text-neutral-600 hover:text-neutral-900",
+                  )}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid gap-6 lg:grid-cols-2">
+            <ChartCard
+              title="Revenue Trend"
+              description={`${activeGranularity.charAt(0).toUpperCase()}${activeGranularity.slice(1)} revenue from completed orders`}
             >
-              {option.label}
-            </button>
-          ))}
+              <RevenueTrendChart data={revenueChartData} />
+            </ChartCard>
+
+            <ChartCard title="Order Trends" description="Order volume by status over time">
+              <OrderTrendChart data={orderChartData} />
+            </ChartCard>
+          </div>
+
+          <ChartCard title="Top-Selling Products" description="By units sold in the selected period">
+            <TopProductsChart data={topProductsChartData} />
+          </ChartCard>
+
+          <SalesAnalyticsTopProductsTable section="detail" products={data.top_products} />
         </div>
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-2">
-        <ChartCard
-          title="Revenue Trend"
-          description={`${activeGranularity.charAt(0).toUpperCase()}${activeGranularity.slice(1)} revenue from completed orders`}
-        >
-          <RevenueTrendChart data={revenueChartData} />
-        </ChartCard>
-
-        <ChartCard
-          title="Order Trends"
-          description="Order volume by status over time"
-        >
-          <OrderTrendChart data={orderChartData} />
-        </ChartCard>
-      </div>
-
-      <ChartCard title="Top-Selling Products" description="By units sold in the selected period">
-        <TopProductsChart data={topProductsChartData} />
-      </ChartCard>
-
-      <div className="space-y-3">
-        <h3 className={adminSectionTitleClass}>Top Products Detail</h3>
-        {data.top_products.length === 0 ? (
-          <div className={adminEmptyStateClass}>
-            <p className="text-sm text-muted-foreground">No product sales in this period.</p>
-          </div>
-        ) : (
-          <div className={adminTableWrapClass}>
-            <table className="w-full min-w-[640px]">
-              <thead>
-                <tr>
-                  <th className={cn(adminTableHeadClass, "px-4 py-3")}>Product</th>
-                  <th className={cn(adminTableHeadClass, "px-4 py-3")}>Code</th>
-                  <th className={cn(adminTableHeadClass, "px-4 py-3 text-right")}>Units</th>
-                  <th className={cn(adminTableHeadClass, "px-4 py-3 text-right")}>Revenue</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.top_products.map((product) => (
-                  <tr key={product.product_id} className={adminTableRowClass}>
-                    <td className="px-4 py-3 font-medium text-neutral-900">{product.title}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{product.product_code}</td>
-                    <td className="px-4 py-3 text-right tabular-nums">{product.units_sold}</td>
-                    <td className="px-4 py-3 text-right tabular-nums">
-                      {formatMoney(product.revenue)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function SummaryTile({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-lg border border-neutral-200 bg-white px-4 py-3">
-      <p className="text-xs font-medium tracking-wide text-neutral-500 uppercase">{label}</p>
-      <p className="mt-1 text-xl font-semibold tabular-nums text-neutral-900">{value}</p>
-    </div>
+      )}
+    </>
   );
 }

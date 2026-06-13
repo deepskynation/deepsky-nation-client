@@ -3,19 +3,20 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { GripVerticalIcon, Loader2Icon, PlusIcon, Trash2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { PanelSectionState } from "@/components/common/feedback/panel-section-state";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { cn } from "@/lib/utils";
 import {
-  adminAlertErrorClass,
-  adminAlertSuccessClass,
-  adminAlertWarningClass,
-  adminFieldClass,
-  adminHintClass,
-  adminLabelClass,
-  adminSectionClass,
-  adminSectionTitleClass,
-  adminTextareaClass,
-} from "@/components/admin/product/modules/admin-product-ui";
+  alertErrorClassName,
+  alertSuccessClassName,
+  alertWarningClassName,
+  fieldClassName,
+  hintClassName,
+  labelClassName,
+  sectionClassName,
+  sectionTitleClassName,
+  textareaClassName,
+} from "@/lib/panel-styles";
 import { ProductImageSlot } from "@/components/admin/product/modules/product-image-slot";
 import {
   fetchCategories,
@@ -501,32 +502,19 @@ export function AddProductForm({
 
   const mutationError = createError ?? updateError;
 
-  if (isLoadingProduct) {
-    return (
-      <div className="flex flex-col items-center justify-center gap-2 py-16 text-sm text-muted-foreground">
-        <Loader2Icon className="size-6 animate-spin" />
-        Loading product…
-      </div>
-    );
-  }
-
-  if (isEditMode && detailStatus === "failed" && detailError) {
-    return (
-      <div className="space-y-4 py-8">
-        <p className={adminAlertErrorClass} role="alert">
-          {detailError}
-        </p>
-        {onCancel && (
-          <Button type="button" variant="outline" onClick={onCancel}>
-            Back To Products
-          </Button>
-        )}
-      </div>
-    );
-  }
+  const loadError =
+    isEditMode && detailStatus === "failed" && detailError ? detailError : null;
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
+    <PanelSectionState
+      loading={isLoadingProduct}
+      loadingMessage="Loading product…"
+      error={loadError}
+      errorAction={
+        onCancel ? { label: "Back To Products", onClick: onCancel } : undefined
+      }
+    >
+      <form onSubmit={handleSubmit} className="space-y-8">
       {isEditMode && detailProduct?.product_code && (
         <p className="font-mono text-xs text-muted-foreground">
           Editing {detailProduct.product_code}
@@ -534,11 +522,11 @@ export function AddProductForm({
       )}
       <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:gap-8">
         <div className="space-y-6">
-          <div className={adminSectionClass}>
-            <h2 className={adminSectionTitleClass}>Basic Information</h2>
+          <div className={sectionClassName}>
+            <h2 className={sectionTitleClassName}>Basic Information</h2>
 
             <div className="space-y-1.5">
-              <label htmlFor="product-category" className={adminLabelClass}>
+              <label htmlFor="product-category" className={labelClassName}>
                 Category <span className="text-destructive">*</span>
               </label>
               <select
@@ -547,7 +535,7 @@ export function AddProductForm({
                 onChange={(e) =>
                   setForm((prev) => ({ ...prev, category_id: e.target.value }))
                 }
-                className={adminFieldClass}
+                className={fieldClassName}
                 disabled={isSubmitting || catalogLoading}
                 required
               >
@@ -559,14 +547,14 @@ export function AddProductForm({
                 ))}
               </select>
               {categories.length === 0 && categoriesStatus === "succeeded" && (
-                <p className={adminAlertWarningClass}>
+                <p className={alertWarningClassName}>
                   No Categories Yet. Add one under Catalog Setup.
                 </p>
               )}
             </div>
 
             <div className="space-y-1.5">
-              <label htmlFor="product-title" className={adminLabelClass}>
+              <label htmlFor="product-title" className={labelClassName}>
                 Title <span className="text-destructive">*</span>
               </label>
               <input
@@ -575,14 +563,14 @@ export function AddProductForm({
                 value={form.title}
                 onChange={(e) => setForm((prev) => ({ ...prev, title: e.target.value }))}
                 maxLength={255}
-                className={adminFieldClass}
+                className={fieldClassName}
                 disabled={isSubmitting}
                 required
               />
             </div>
 
             <div className="space-y-1.5">
-              <label htmlFor="product-description" className={adminLabelClass}>
+              <label htmlFor="product-description" className={labelClassName}>
                 Description
               </label>
               <textarea
@@ -591,7 +579,7 @@ export function AddProductForm({
                 onChange={(e) =>
                   setForm((prev) => ({ ...prev, description: e.target.value }))
                 }
-                className={adminTextareaClass}
+                className={textareaClassName}
                 disabled={isSubmitting}
                 rows={4}
               />
@@ -600,8 +588,8 @@ export function AddProductForm({
             <div className="space-y-3">
               <div className="flex items-center justify-between gap-2">
                 <div>
-                  <p className={adminLabelClass}>Details (specs)</p>
-                  <p className={adminHintClass}>
+                  <p className={labelClassName}>Details (specs)</p>
+                  <p className={hintClassName}>
                     Optional bullet points shown on the product page (e.g. Material: Cotton).
                   </p>
                 </div>
@@ -628,7 +616,7 @@ export function AddProductForm({
                           ? "e.g. 100% premium cotton"
                           : "Another spec or detail"
                       }
-                      className={adminFieldClass}
+                      className={fieldClassName}
                       disabled={isSubmitting}
                     />
                     <Button
@@ -648,7 +636,7 @@ export function AddProductForm({
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
-                <label htmlFor="product-price" className={adminLabelClass}>
+                <label htmlFor="product-price" className={labelClassName}>
                   Price <span className="text-destructive">*</span>
                 </label>
                 <input
@@ -658,7 +646,7 @@ export function AddProductForm({
                   step={0.01}
                   value={form.price}
                   onChange={(e) => setForm((prev) => ({ ...prev, price: e.target.value }))}
-                  className={adminFieldClass}
+                  className={fieldClassName}
                   disabled={isSubmitting}
                   required
                 />
@@ -668,7 +656,7 @@ export function AddProductForm({
               </div>
 
               <div className="space-y-1.5">
-                <label htmlFor="product-visibility" className={adminLabelClass}>
+                <label htmlFor="product-visibility" className={labelClassName}>
                   Visibility
                 </label>
                 <select
@@ -680,7 +668,7 @@ export function AddProductForm({
                       visibility: e.target.value as ProductVisibility,
                     }))
                   }
-                  className={adminFieldClass}
+                  className={fieldClassName}
                   disabled={isSubmitting}
                 >
                   <option value="private">Private (admin only)</option>
@@ -703,19 +691,19 @@ export function AddProductForm({
                 className="mt-0.5 size-4 rounded border-neutral-300"
               />
               <span className="space-y-1">
-                <span className={adminLabelClass}>Featured On User Dashboard</span>
-                <span className={cn(adminHintClass, "block")}>
+                <span className={labelClassName}>Featured On User Dashboard</span>
+                <span className={cn(hintClassName, "block")}>
                   Highlight this product in the signed-in dashboard when released.
                 </span>
               </span>
             </label>
           </div>
 
-          <div className={adminSectionClass}>
+          <div className={sectionClassName}>
             <div className="flex items-center justify-between gap-2">
               <div>
-                <h2 className={adminSectionTitleClass}>Variants</h2>
-                <p className={cn(adminHintClass, "mt-1")}>
+                <h2 className={sectionTitleClassName}>Variants</h2>
+                <p className={cn(hintClassName, "mt-1")}>
                   At least one size, color, and stock. Drag rows to reorder. No duplicate
                   size + color pairs.
                 </p>
@@ -733,7 +721,7 @@ export function AddProductForm({
             </div>
 
             {colors.length === 0 && colorsStatus === "succeeded" && (
-              <p className={adminAlertWarningClass}>
+              <p className={alertWarningClassName}>
                 No Colors Yet. Add colors under Catalog Setup.
               </p>
             )}
@@ -800,7 +788,7 @@ export function AddProductForm({
                     </div>
                     <div className="space-y-1">
                       {index === 0 && (
-                        <span className={adminLabelClass}>
+                        <span className={labelClassName}>
                           Size <span className="text-destructive">*</span>
                         </span>
                       )}
@@ -812,13 +800,13 @@ export function AddProductForm({
                         }
                         placeholder="e.g. M"
                         maxLength={20}
-                        className={adminFieldClass}
+                        className={fieldClassName}
                         disabled={isSubmitting}
                       />
                     </div>
                     <div className="space-y-1">
                       {index === 0 && (
-                        <span className={adminLabelClass}>
+                        <span className={labelClassName}>
                           Color <span className="text-destructive">*</span>
                         </span>
                       )}
@@ -827,7 +815,7 @@ export function AddProductForm({
                         onChange={(e) =>
                           updateVariant(row.key, { color_id: e.target.value })
                         }
-                        className={adminFieldClass}
+                        className={fieldClassName}
                         disabled={isSubmitting || colors.length === 0}
                       >
                         <option value="">Select Color</option>
@@ -840,7 +828,7 @@ export function AddProductForm({
                     </div>
                     <div className="space-y-1">
                       {index === 0 && (
-                        <span className={adminLabelClass}>
+                        <span className={labelClassName}>
                           Stock <span className="text-destructive">*</span>
                         </span>
                       )}
@@ -852,7 +840,7 @@ export function AddProductForm({
                         onChange={(e) =>
                           updateVariant(row.key, { stock: e.target.value })
                         }
-                        className={adminFieldClass}
+                        className={fieldClassName}
                         disabled={isSubmitting}
                       />
                     </div>
@@ -880,10 +868,10 @@ export function AddProductForm({
           </div>
         </div>
 
-        <div className={adminSectionClass}>
+        <div className={sectionClassName}>
           <div>
-            <h2 className={adminSectionTitleClass}>Images</h2>
-            <p className={cn(adminHintClass, "mt-1")}>
+            <h2 className={sectionTitleClassName}>Images</h2>
+            <p className={cn(hintClassName, "mt-1")}>
               Placeholder 1 is required. Placeholder 2, galleries, and size chart are optional.
             </p>
           </div>
@@ -912,8 +900,8 @@ export function AddProductForm({
 
             <div className="space-y-2">
               <div>
-                <p className={adminLabelClass}>Galleries</p>
-                <p className={adminHintClass}>Optional extra photos for the slide show.</p>
+                <p className={labelClassName}>Galleries</p>
+                <p className={hintClassName}>Optional extra photos for the slide show.</p>
               </div>
               <div className="grid grid-cols-3 gap-3">
                 {galleryImages.map((value, index) => (
@@ -941,7 +929,7 @@ export function AddProductForm({
           </div>
 
           {!placeholderImage && (
-            <p className={adminAlertWarningClass}>
+            <p className={alertWarningClassName}>
               Upload Placeholder 1 to enable {isEditMode ? "save" : "create"}.
             </p>
           )}
@@ -951,12 +939,12 @@ export function AddProductForm({
       <div className="flex flex-col gap-4 rounded-xl border border-neutral-200/80 bg-neutral-50/60 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
         <div className="min-w-0 space-y-2">
           {mutationError && (
-            <p className={adminAlertErrorClass} role="alert">
+            <p className={alertErrorClassName} role="alert">
               {mutationError}
             </p>
           )}
           {successMessage && (
-            <p className={adminAlertSuccessClass}>{successMessage}</p>
+            <p className={alertSuccessClassName}>{successMessage}</p>
           )}
         </div>
 
@@ -994,5 +982,6 @@ export function AddProductForm({
         </div>
       </div>
     </form>
+    </PanelSectionState>
   );
 }

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { AdminUserDetailDialog } from "@/components/admin/users/modules/user-detail-dialog";
-import { adminTableRowClass } from "@/components/admin/product/modules/admin-product-ui";
+import { tableRowClassName } from "@/lib/panel-styles";
 import { Button } from "@/components/ui/button";
 import {
   formatAdminUserDateTime,
@@ -22,7 +22,7 @@ export function AdminUsersTableRow({ user }: AdminUsersTableRowProps) {
 
   return (
     <>
-      <tr className={adminTableRowClass}>
+      <tr className={tableRowClassName}>
         <td className="px-4 py-3 font-medium text-neutral-900">{user.name}</td>
         <td className="px-4 py-3 text-neutral-700">{user.email}</td>
         <td className="px-4 py-3">

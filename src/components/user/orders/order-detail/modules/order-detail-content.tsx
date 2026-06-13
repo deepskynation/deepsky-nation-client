@@ -10,7 +10,7 @@ import { getProductThumbnailSrc } from "@/lib/product-image";
 import { glassMediaFlatClassName, glassPanelFlatClassName } from "@/lib/glass-styles";
 import { CancelOrderButton } from "@/components/user/orders/modules/cancel-order-button";
 import { PaymentProofPreview } from "@/components/common/orders/payment-proof-dialog";
-import { OrderReceiptDialog } from "@/components/user/orders/modules/order-receipt-dialog";
+import { OrderReceiptDialog } from "@/components/common/orders/order-receipt-dialog";
 import {
   formatDeliveryAddress,
   formatDeliverySource,

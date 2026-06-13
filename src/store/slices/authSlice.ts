@@ -544,6 +544,10 @@ export const selectAuthUser = (state: AuthRootState) => state.auth.user;
 export const selectAuthToken = (state: AuthRootState) => state.auth.accessToken;
 export const selectIsAuthenticated = (state: AuthRootState) =>
   Boolean(state.auth.accessToken && state.auth.user);
+export const selectIsAdmin = (state: AuthRootState) =>
+  state.auth.user?.role === "admin";
+export const selectIsCustomer = (state: AuthRootState) =>
+  state.auth.user?.role === "user";
 export const selectAuthStatus = (state: AuthRootState) => state.auth.status;
 export const selectAuthError = (state: AuthRootState) => state.auth.error;
 export const selectAuthInitialized = (state: AuthRootState) => state.auth.initialized;

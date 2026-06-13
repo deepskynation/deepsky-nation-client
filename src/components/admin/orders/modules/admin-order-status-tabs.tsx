@@ -8,9 +8,9 @@ import {
   XIcon,
 } from "lucide-react";
 import {
-  adminSegmentListClass,
-  adminSegmentTabClass,
-} from "@/components/admin/product/modules/admin-product-ui";
+  segmentListClassName,
+  segmentTabClassName,
+} from "@/lib/panel-styles";
 import { ADMIN_ORDER_STATUS_QUICK_TABS } from "@/lib/admin-order-status";
 import { cn } from "@/lib/utils";
 import type { OrderStatus } from "@/types/order";
@@ -40,7 +40,7 @@ export function AdminOrderStatusTabs({
     <div
       role="tablist"
       aria-label="Filter Orders By Status"
-      className={adminSegmentListClass}
+      className={segmentListClassName}
     >
       {ADMIN_ORDER_STATUS_QUICK_TABS.map((tab) => {
         const isActive = (activeStatus ?? undefined) === tab.value;
@@ -55,7 +55,7 @@ export function AdminOrderStatusTabs({
             disabled={disabled}
             onClick={() => onStatusChange(tab.value)}
             className={cn(
-              adminSegmentTabClass(isActive),
+              segmentTabClassName(isActive),
               "inline-flex items-center gap-1.5 disabled:cursor-not-allowed disabled:opacity-60",
             )}
           >

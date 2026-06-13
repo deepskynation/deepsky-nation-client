@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { Search, X } from "lucide-react";
 import { authGlassInputClassName } from "@/components/(auth)/modules/auth-glass-styles";
 import { DateRangeFilter } from "@/components/common/filters";
-import { GlassOptionsMenu } from "@/components/common/filters/glass-options-menu";
 import {
   dateRangeFromBounds,
   resolveDateRangeBounds,
@@ -12,12 +11,10 @@ import {
 } from "@/lib/date-range-filter";
 import {
   myOrdersHasActiveFilters,
-  USER_ORDER_STATUS_MENU_LABELS,
-  userOrderStatusFromLabel,
-  userOrderStatusLabel,
+  USER_ORDER_STATUS_FILTER_OPTIONS,
 } from "@/lib/user-order-filters";
 import { cn } from "@/lib/utils";
-import type { MyOrdersQuery } from "@/types/order";
+import type { MyOrdersQuery, OrderStatus } from "@/types/order";
 
 type UserOrdersFilterBarProps = {
   query: MyOrdersQuery;
@@ -55,17 +52,17 @@ export function UserOrdersFilterBar({
     });
   };
 
-  const handleStatusChange = (label: string) => {
+  const handleStatusChange = (value: string) => {
     onApplyFilters({
       page: 1,
-      status: userOrderStatusFromLabel(label),
+      status: value ? (value as OrderStatus) : undefined,
     });
   };
 
   return (
     <div className="mb-6 space-y-3">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-4">
-        <div className="relative w-full shrink-0 lg:max-w-xs">
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+        <div className="relative min-w-[10rem] flex-1">
           <Search
             className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-black/40"
             aria-hidden
@@ -92,17 +89,26 @@ export function UserOrdersFilterBar({
           onChange={handleDateRangeChange}
           label="Date"
           placeholder="All time"
-          className="w-full lg:w-auto"
+          className="shrink-0"
         />
 
-        <GlassOptionsMenu
-          options={USER_ORDER_STATUS_MENU_LABELS}
-          value={userOrderStatusLabel(query.status)}
-          onChange={handleStatusChange}
-          ariaLabel="Filter By Order Status"
-          menuTitle="Status"
-          className="w-full lg:w-auto"
-        />
+        <select
+          id="user-orders-status-filter"
+          value={query.status ?? ""}
+          onChange={(event) => handleStatusChange(event.target.value)}
+          disabled={disabled}
+          aria-label="Filter By Order Status"
+          className={cn(
+            authGlassInputClassName,
+            "h-10 w-auto min-w-[8.5rem] shrink-0 cursor-pointer pr-8",
+          )}
+        >
+          {USER_ORDER_STATUS_FILTER_OPTIONS.map((option) => (
+            <option key={option.value || "all"} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
 
         <button
           type="button"

@@ -12,8 +12,7 @@ import {
 import { GoogleContinueButton } from "@/components/(auth)/modules/google-continue-button";
 import { VerifyEmailIllustration } from "@/components/(auth)/modules/verify-email-illustration";
 import { useAppDispatch, useAppSelector } from "@/hooks";
-import { getDashboardPathForRole } from "@/lib/auth-session";
-import { safeRedirectPath } from "@/lib/auth-redirect";
+import { getPostLoginPath, safeRedirectPath } from "@/lib/auth-redirect";
 import {
   clearAuthError,
   selectAuthError,
@@ -70,7 +69,7 @@ function LoginContent() {
   }, []);
 
   const finishLogin = (role: "user" | "admin") => {
-    router.push(redirectAfterLogin ?? getDashboardPathForRole(role));
+    router.push(getPostLoginPath(role, redirectAfterLogin));
   };
 
   const handleGoogleSuccess = async (credential: string) => {

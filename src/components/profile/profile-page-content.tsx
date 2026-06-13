@@ -5,15 +5,15 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/common/forms/form-field";
 import {
-  adminAlertErrorClass,
-  adminAlertSuccessClass,
-  adminFieldClass,
-  adminHintClass,
-  adminLabelClass,
-  adminSectionClass,
-  adminSectionTitleClass,
-  adminTextareaClass,
-} from "@/components/admin/product/modules/admin-product-ui";
+  alertErrorClassName,
+  alertSuccessClassName,
+  fieldClassName,
+  hintClassName,
+  labelClassName,
+  sectionClassName,
+  sectionTitleClassName,
+  textareaClassName,
+} from "@/lib/panel-styles";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import {
   emptyProfileForm,
@@ -148,7 +148,7 @@ export function ProfilePageContent({
 
   if (!isAuthenticated || !user) {
     return (
-      <p className={adminAlertErrorClass} role="alert">
+      <p className={alertErrorClassName} role="alert">
         Sign in to manage your profile.
       </p>
     );
@@ -160,23 +160,23 @@ export function ProfilePageContent({
         <h1 className="text-2xl font-semibold tracking-tight text-neutral-900">
           Profile
         </h1>
-        <p className={adminHintClass}>
+        <p className={hintClassName}>
           Update your delivery details for faster checkout.
         </p>
       </div>
 
       <form onSubmit={(event) => void handleProfileSubmit(event)} className="space-y-6">
-        <div className={adminSectionClass}>
-          <h2 className={adminSectionTitleClass}>Account</h2>
+        <div className={sectionClassName}>
+          <h2 className={sectionTitleClassName}>Account</h2>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
-              <span className={adminLabelClass}>Username</span>
+              <span className={labelClassName}>Username</span>
               <p className="rounded-lg border border-neutral-200 bg-white px-3 py-2.5 text-sm text-neutral-700">
                 {user.name}
               </p>
             </div>
             <div className="space-y-1.5">
-              <span className={adminLabelClass}>Email</span>
+              <span className={labelClassName}>Email</span>
               <p className="rounded-lg border border-neutral-200 bg-white px-3 py-2.5 text-sm text-neutral-700">
                 {user.email}
               </p>
@@ -184,9 +184,9 @@ export function ProfilePageContent({
           </div>
         </div>
 
-        <div className={adminSectionClass}>
-          <h2 className={adminSectionTitleClass}>Delivery Details</h2>
-          <p className={adminHintClass}>
+        <div className={sectionClassName}>
+          <h2 className={sectionTitleClassName}>Delivery Details</h2>
+          <p className={hintClassName}>
             Used when you choose &quot;Use My Profile Information&quot; at checkout.
           </p>
 
@@ -197,7 +197,7 @@ export function ProfilePageContent({
                 type="tel"
                 value={form.phone_number}
                 onChange={(event) => updateField("phone_number", event.target.value)}
-                className={adminFieldClass}
+                className={fieldClassName}
                 disabled={isSavingProfile}
               />
             </FormField>
@@ -208,7 +208,7 @@ export function ProfilePageContent({
                 rows={3}
                 value={form.home_address}
                 onChange={(event) => updateField("home_address", event.target.value)}
-                className={adminTextareaClass}
+                className={textareaClassName}
                 disabled={isSavingProfile}
               />
             </FormField>
@@ -220,7 +220,7 @@ export function ProfilePageContent({
                   type="text"
                   value={form.city}
                   onChange={(event) => updateField("city", event.target.value)}
-                  className={adminFieldClass}
+                  className={fieldClassName}
                   disabled={isSavingProfile}
                 />
               </FormField>
@@ -230,7 +230,7 @@ export function ProfilePageContent({
                   type="text"
                   value={form.region}
                   onChange={(event) => updateField("region", event.target.value)}
-                  className={adminFieldClass}
+                  className={fieldClassName}
                   disabled={isSavingProfile}
                 />
               </FormField>
@@ -243,7 +243,7 @@ export function ProfilePageContent({
                   type="text"
                   value={form.country}
                   onChange={(event) => updateField("country", event.target.value)}
-                  className={adminFieldClass}
+                  className={fieldClassName}
                   disabled={isSavingProfile}
                 />
               </FormField>
@@ -253,7 +253,7 @@ export function ProfilePageContent({
                   type="text"
                   value={form.postal_code}
                   onChange={(event) => updateField("postal_code", event.target.value)}
-                  className={adminFieldClass}
+                  className={fieldClassName}
                   disabled={isSavingProfile}
                 />
               </FormField>
@@ -262,17 +262,17 @@ export function ProfilePageContent({
         </div>
 
         {profileLocalError ? (
-          <p className={adminAlertErrorClass} role="alert">
+          <p className={alertErrorClassName} role="alert">
             {profileLocalError}
           </p>
         ) : null}
         {profileUpdateError ? (
-          <p className={adminAlertErrorClass} role="alert">
+          <p className={alertErrorClassName} role="alert">
             {profileUpdateError}
           </p>
         ) : null}
         {profileSuccess ? (
-          <p className={adminAlertSuccessClass} role="status">
+          <p className={alertSuccessClassName} role="status">
             {profileSuccess}
           </p>
         ) : null}
@@ -294,9 +294,9 @@ export function ProfilePageContent({
           onSubmit={(event) => void handleSettingsSubmit(event)}
           className="space-y-6"
         >
-          <div className={adminSectionClass}>
-            <h2 className={adminSectionTitleClass}>Store Settings</h2>
-            <p className={adminHintClass}>
+          <div className={sectionClassName}>
+            <h2 className={sectionTitleClassName}>Store Settings</h2>
+            <p className={hintClassName}>
               Default flat shipping fee applied to every checkout order.
             </p>
 
@@ -319,7 +319,7 @@ export function ProfilePageContent({
                     setSettingsLocalError(null);
                     dispatch(resetUpdateShopSettings());
                   }}
-                  className={adminFieldClass}
+                  className={fieldClassName}
                   disabled={isSavingSettings || shopSettingsStatus === "loading"}
                 />
               </FormField>
@@ -327,22 +327,22 @@ export function ProfilePageContent({
           </div>
 
           {shopSettingsError ? (
-            <p className={adminAlertErrorClass} role="alert">
+            <p className={alertErrorClassName} role="alert">
               {shopSettingsError}
             </p>
           ) : null}
           {settingsLocalError ? (
-            <p className={adminAlertErrorClass} role="alert">
+            <p className={alertErrorClassName} role="alert">
               {settingsLocalError}
             </p>
           ) : null}
           {updateShopSettingsError ? (
-            <p className={adminAlertErrorClass} role="alert">
+            <p className={alertErrorClassName} role="alert">
               {updateShopSettingsError}
             </p>
           ) : null}
           {settingsSuccess ? (
-            <p className={adminAlertSuccessClass} role="status">
+            <p className={alertSuccessClassName} role="status">
               {settingsSuccess}
             </p>
           ) : null}

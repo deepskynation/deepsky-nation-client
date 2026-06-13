@@ -12,7 +12,6 @@ import { getProductCarouselSrcs } from "@/lib/product-image";
 import { cn } from "@/lib/utils";
 import { parseApiProductPrice, type ApiProduct } from "@/types/product";
 
-const DESCRIPTION_PREVIEW_LENGTH = 18;
 const CAROUSEL_INTERVAL_MS = 1000;
 
 type ProductCardMediaProps = {
@@ -115,11 +114,6 @@ export function ProductCard({
   const price = parseApiProductPrice(product.price);
   const description = product.description?.trim() || "Deepsky collection.";
   const isLanding = variant === "landing";
-  const isDescriptionTruncated =
-    !isLanding && description.length > DESCRIPTION_PREVIEW_LENGTH;
-  const descriptionPreview = isDescriptionTruncated
-    ? `${description.slice(0, DESCRIPTION_PREVIEW_LENGTH)}…`
-    : description;
 
   const cardClassName = cn(
     glassCardClassName,
@@ -134,22 +128,22 @@ export function ProductCard({
         <ProductCardMedia product={product} priority={priority} />
       </div>
 
-      <div className="mt-3 space-y-1.5 p-2">
-        <h3 className="text-sm font-semibold text-black">{product.title}</h3>
+      <div className="mt-3 space-y-1.5 px-1 pb-1 sm:px-2">
+        <h3 className="text-sm font-semibold text-black sm:text-base">{product.title}</h3>
         <p
           className={cn(
             "text-xs leading-relaxed text-black/55",
-            isLanding && "line-clamp-2",
+            isLanding ? "line-clamp-2" : "line-clamp-2 sm:line-clamp-3",
           )}
         >
-          {descriptionPreview}
-          {isDescriptionTruncated && href && (
+          {description}
+          {!isLanding && href ? (
             <span className="font-medium text-black/70"> See more</span>
-          )}
+          ) : null}
         </p>
       </div>
 
-      <div className="mt-3 p-2">
+      <div className="mt-2 px-1 pb-2 sm:mt-3 sm:px-2">
         <span className={glassPriceClassName}>PHP {price.toFixed(2)}</span>
       </div>
     </>

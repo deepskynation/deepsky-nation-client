@@ -6,7 +6,7 @@ import { OrderRowActionsMenu } from "@/components/admin/orders/modules/order-row
 import {
   PaymentProofDialog,
 } from "@/components/common/orders/payment-proof-dialog";
-import { adminTableRowClass } from "@/components/admin/product/modules/admin-product-ui";
+import { tableRowClassName } from "@/lib/panel-styles";
 import { Button } from "@/components/ui/button";
 import { formatAdminCustomerLabel } from "@/lib/admin-order-status";
 import {
@@ -33,7 +33,7 @@ export function AdminOrdersTableRow({ order }: AdminOrdersTableRowProps) {
 
   return (
     <>
-      <tr className={adminTableRowClass}>
+      <tr className={tableRowClassName}>
         <td className="px-4 py-3 font-medium whitespace-nowrap text-neutral-900">
           {formatOrderNumber(order.order_number)}
         </td>

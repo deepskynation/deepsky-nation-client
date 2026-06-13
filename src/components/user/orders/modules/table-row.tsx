@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Calendar, Copy, Check, ChevronRight, FileText } from "lucide-react";
-import { OrderReceiptDialog } from "@/components/user/orders/modules/order-receipt-dialog";
+import { OrderReceiptDialog } from "@/components/common/orders/order-receipt-dialog";
 import type { ApiOrder } from "@/types/order";
 import {
   formatDeliveryAddress,

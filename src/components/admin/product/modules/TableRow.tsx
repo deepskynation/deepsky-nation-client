@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { DeleteProductDialog } from "@/components/admin/product/modules/delete-product-dialog";
+import { ConfirmDeleteDialog } from "@/components/common/dialogs/confirm-delete-dialog";
 import { ProductDetailsDialog } from "@/components/admin/product/modules/product-details-dialog";
 import { ProductRowActionsMenu } from "@/components/admin/product/modules/product-row-actions-menu";
 import { ProductThumbnail } from "@/components/admin/product/modules/product-thumbnail";
-import { adminTableRowClass } from "@/components/admin/product/modules/admin-product-ui";
+import { tableRowClassName } from "@/lib/panel-styles";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { cn } from "@/lib/utils";
 import {
@@ -74,7 +74,7 @@ export default function TableRow({ product, className, onEdit }: TableRowProps) 
 
   return (
     <>
-      <tr className={cn(adminTableRowClass, className)}>
+      <tr className={cn(tableRowClassName, className)}>
         <td className="w-20 px-4 py-3.5">
           <ProductThumbnail product={product} size="md" />
         </td>
@@ -164,8 +164,20 @@ export default function TableRow({ product, className, onEdit }: TableRowProps) 
         onOpenChange={setDetailsOpen}
       />
 
-      <DeleteProductDialog
-        product={product}
+      <ConfirmDeleteDialog
+        title="Delete product"
+        description={
+          product ? (
+            <>
+              Permanently delete{" "}
+              <span className="font-medium text-neutral-900">{product.title}</span>{" "}
+              (<span className="font-mono text-xs">{product.product_code}</span>)? This
+              cannot be undone.
+            </>
+          ) : (
+            "This product will be permanently removed."
+          )
+        }
         open={deleteOpen}
         onOpenChange={handleDeleteOpenChange}
         onConfirm={handleDeleteConfirm}

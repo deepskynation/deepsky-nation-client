@@ -3,10 +3,10 @@
 import { useEffect } from "react";
 import { Loader2Icon } from "lucide-react";
 import {
-  adminAlertErrorClass,
-  adminSectionClass,
-  adminSectionTitleClass,
-} from "@/components/admin/product/modules/admin-product-ui";
+  alertErrorClassName,
+  sectionClassName,
+  sectionTitleClassName,
+} from "@/lib/panel-styles";
 import {
   Dialog,
   DialogContent,
@@ -100,15 +100,15 @@ export function AdminUserDetailDialog({
         ) : null}
 
         {detailError ? (
-          <p className={adminAlertErrorClass} role="alert">
+          <p className={alertErrorClassName} role="alert">
             {detailError}
           </p>
         ) : null}
 
         {user && !isLoading ? (
           <div className="space-y-6">
-            <section className={adminSectionClass}>
-              <h3 className={adminSectionTitleClass}>Account</h3>
+            <section className={sectionClassName}>
+              <h3 className={sectionTitleClassName}>Account</h3>
               <div className="mt-4 grid gap-4 sm:grid-cols-2">
                 <DetailField label="Email" value={user.email} />
                 <div className="space-y-1">
@@ -152,8 +152,8 @@ export function AdminUserDetailDialog({
             </section>
 
             {fullUser ? (
-              <section className={adminSectionClass}>
-                <h3 className={adminSectionTitleClass}>Profile</h3>
+              <section className={sectionClassName}>
+                <h3 className={sectionTitleClassName}>Profile</h3>
                 <div className="mt-4 grid gap-4 sm:grid-cols-2">
                   <DetailField label="Phone" value={fullUser.phone_number} />
                   <DetailField label="City" value={fullUser.city} />
@@ -166,8 +166,8 @@ export function AdminUserDetailDialog({
             ) : null}
 
             {fullUser && fullUser.recent_sessions.length > 0 ? (
-              <section className={adminSectionClass}>
-                <h3 className={adminSectionTitleClass}>Recent Sessions</h3>
+              <section className={sectionClassName}>
+                <h3 className={sectionTitleClassName}>Recent Sessions</h3>
                 <div className="mt-4 space-y-3">
                   {fullUser.recent_sessions.map((session) => (
                     <div
