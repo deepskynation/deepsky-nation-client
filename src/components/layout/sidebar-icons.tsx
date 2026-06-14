@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  ClipboardListIcon,
   HomeIcon,
   MailIcon,
   PackageIcon,
@@ -20,7 +19,6 @@ const sidebarIconMap: Record<SidebarIconName, LucideIcon> = {
   package: PackageIcon,
   "user-circle": UserCircleIcon,
   mail: MailIcon,
-  audit: ClipboardListIcon,
   "model-artist": PaletteIcon,
 };
 
