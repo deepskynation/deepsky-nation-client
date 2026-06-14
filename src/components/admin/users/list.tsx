@@ -18,17 +18,14 @@ import { DateRangeFilter } from "@/components/common/filters";
 import { TablePagination } from "@/components/common/pagination/table-pagination";
 import { Button } from "@/components/ui/button";
 import { useAppDispatch, useAppSelector } from "@/hooks";
-import {
-  ADMIN_USER_ROLE_FILTER_OPTIONS,
-  ADMIN_USER_STATUS_FILTER_OPTIONS,
-} from "@/lib/admin-user-status";
+import { ADMIN_USER_STATUS_FILTER_OPTIONS } from "@/lib/admin-user-status";
 import {
   dateRangeFromBounds,
   resolveDateRangeBounds,
   type DateRangeFilterValue,
 } from "@/lib/date-range-filter";
 import { cn } from "@/lib/utils";
-import type { AdminUserActivityStatus, AdminUserRole } from "@/types/admin-user";
+import type { AdminUserActivityStatus } from "@/types/admin-user";
 import { DEFAULT_PAGE_SIZE_OPTIONS } from "@/types/pagination";
 import { selectAuthInitialized, selectIsAuthenticated } from "@/store/slices/authSlice";
 import {
@@ -88,7 +85,6 @@ export function AdminUsersList() {
     pagination.total_pages > 0 && (status === "succeeded" || status === "loading");
   const totalCount = pagination.total ?? users.length;
   const statusFilter = listQuery.status ?? "";
-  const roleFilter = listQuery.role ?? "";
 
   const handlePageChange = (page: number) => {
     loadUsers({ page });
@@ -102,13 +98,6 @@ export function AdminUsersList() {
     loadUsers({
       page: 1,
       status: value ? (value as AdminUserActivityStatus) : undefined,
-    });
-  };
-
-  const handleRoleFilterChange = (value: string) => {
-    loadUsers({
-      page: 1,
-      role: value ? (value as AdminUserRole) : undefined,
     });
   };
 
@@ -185,23 +174,6 @@ export function AdminUsersList() {
                   className={fieldClassName}
                 >
                   {ADMIN_USER_STATUS_FILTER_OPTIONS.map((option) => (
-                    <option key={option.value || "all"} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="min-w-[10rem] space-y-1.5">
-                <label htmlFor="admin-users-role" className={labelClassName}>
-                  Role
-                </label>
-                <select
-                  id="admin-users-role"
-                  value={roleFilter}
-                  onChange={(event) => handleRoleFilterChange(event.target.value)}
-                  className={fieldClassName}
-                >
-                  {ADMIN_USER_ROLE_FILTER_OPTIONS.map((option) => (
                     <option key={option.value || "all"} value={option.value}>
                       {option.label}
                     </option>
