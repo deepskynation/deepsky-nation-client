@@ -6,6 +6,12 @@ export const ADMIN_USER_STATUS_FILTER_OPTIONS = [
   { value: "inactive", label: "Inactive" },
 ] as const;
 
+export const ADMIN_USER_ROLE_FILTER_OPTIONS = [
+  { value: "", label: "All Roles" },
+  { value: "admin", label: "Admin" },
+  { value: "user", label: "User" },
+] as const;
+
 export function formatAdminUserRole(role: AdminUserRole): {
   label: string;
   className: string;
