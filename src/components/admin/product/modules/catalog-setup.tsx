@@ -3,6 +3,7 @@
 import { useEffect, useId, useState } from "react";
 import { Loader2Icon, PencilIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { ConfirmDeleteDialog } from "@/components/common/dialogs/confirm-delete-dialog";
+import { useToast } from "@/components/common/feedback/toast-provider";
 import { Button } from "@/components/ui/button";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { cn } from "@/lib/utils";
@@ -47,7 +48,6 @@ import type { ApiProductCategory } from "@/types/catalog";
 import type { ApiProductColor } from "@/types/product";
 import {
   alertErrorClassName,
-  alertSuccessClassName,
   fieldClassName,
   hintClassName,
   segmentListClassName,
@@ -111,6 +111,7 @@ function CatalogItemList({
 
 function CategoriesPanel() {
   const dispatch = useAppDispatch();
+  const toast = useToast();
   const categories = useAppSelector(selectCategories);
   const listStatus = useAppSelector(selectCategoriesListStatus);
   const createStatus = useAppSelector(selectCategoryCreateStatus);
@@ -123,7 +124,6 @@ function CategoriesPanel() {
   const [name, setName] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<ApiProductCategory | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const isEditMode = editingId !== null;
   const isSubmitting = createStatus === "loading" || updateStatus === "loading";
@@ -133,7 +133,6 @@ function CategoriesPanel() {
   const startEdit = (category: ApiProductCategory) => {
     setEditingId(category.id);
     setName(category.category_name);
-    setSuccessMessage(null);
     dispatch(clearCategoryErrors());
     dispatch(resetCategoryCreate());
     dispatch(resetCategoryUpdate());
@@ -154,7 +153,6 @@ function CategoriesPanel() {
     }
 
     dispatch(clearCategoryErrors());
-    setSuccessMessage(null);
 
     if (isEditMode && editingId) {
       const result = await dispatch(
@@ -162,9 +160,18 @@ function CategoriesPanel() {
       );
 
       if (updateCategory.fulfilled.match(result)) {
-        setSuccessMessage("Category updated.");
+        toast.success("Category updated.");
         cancelEdit();
         dispatch(resetCategoryUpdate());
+        return;
+      }
+
+      if (updateCategory.rejected.match(result)) {
+        toast.error(
+          typeof result.payload === "string"
+            ? result.payload
+            : "Failed to update category.",
+        );
       }
       return;
     }
@@ -173,8 +180,17 @@ function CategoriesPanel() {
 
     if (createCategory.fulfilled.match(result)) {
       setName("");
-      setSuccessMessage("Category created.");
+      toast.success("Category created.");
       dispatch(resetCategoryCreate());
+      return;
+    }
+
+    if (createCategory.rejected.match(result)) {
+      toast.error(
+        typeof result.payload === "string"
+          ? result.payload
+          : "Failed to create category.",
+      );
     }
   };
 
@@ -191,7 +207,16 @@ function CategoriesPanel() {
         cancelEdit();
       }
       setDeleteTarget(null);
-      setSuccessMessage("Category deleted.");
+      toast.success("Category deleted.");
+      return;
+    }
+
+    if (deleteCategory.rejected.match(result)) {
+      toast.error(
+        typeof result.payload === "string"
+          ? result.payload
+          : "Failed to delete category.",
+      );
     }
   };
 
@@ -256,10 +281,6 @@ function CategoriesPanel() {
         <p className={alertErrorClassName} role="alert">
           {mutationError}
         </p>
-      )}
-
-      {successMessage && (
-        <p className={alertSuccessClassName}>{successMessage}</p>
       )}
 
       <div className="border-t border-neutral-200/80 pt-5">
@@ -335,6 +356,7 @@ function CategoriesPanel() {
 
 function ColorsPanel() {
   const dispatch = useAppDispatch();
+  const toast = useToast();
   const colors = useAppSelector(selectColors);
   const listStatus = useAppSelector(selectColorsListStatus);
   const createStatus = useAppSelector(selectColorCreateStatus);
@@ -347,7 +369,6 @@ function ColorsPanel() {
   const [colorName, setColorName] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<ApiProductColor | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const isEditMode = editingId !== null;
   const isSubmitting = createStatus === "loading" || updateStatus === "loading";
@@ -357,7 +378,6 @@ function ColorsPanel() {
   const startEdit = (color: ApiProductColor) => {
     setEditingId(color.id);
     setColorName(color.color_name);
-    setSuccessMessage(null);
     dispatch(clearColorErrors());
     dispatch(resetColorCreate());
     dispatch(resetColorUpdate());
@@ -378,7 +398,6 @@ function ColorsPanel() {
     }
 
     dispatch(clearColorErrors());
-    setSuccessMessage(null);
 
     if (isEditMode && editingId) {
       const result = await dispatch(
@@ -391,9 +410,16 @@ function ColorsPanel() {
       );
 
       if (updateColor.fulfilled.match(result)) {
-        setSuccessMessage("Color updated.");
+        toast.success("Color updated.");
         cancelEdit();
         dispatch(resetColorUpdate());
+        return;
+      }
+
+      if (updateColor.rejected.match(result)) {
+        toast.error(
+          typeof result.payload === "string" ? result.payload : "Failed to update color.",
+        );
       }
       return;
     }
@@ -406,8 +432,15 @@ function ColorsPanel() {
 
     if (createColor.fulfilled.match(result)) {
       setColorName("");
-      setSuccessMessage("Color created.");
+      toast.success("Color created.");
       dispatch(resetColorCreate());
+      return;
+    }
+
+    if (createColor.rejected.match(result)) {
+      toast.error(
+        typeof result.payload === "string" ? result.payload : "Failed to create color.",
+      );
     }
   };
 
@@ -424,7 +457,14 @@ function ColorsPanel() {
         cancelEdit();
       }
       setDeleteTarget(null);
-      setSuccessMessage("Color deleted.");
+      toast.success("Color deleted.");
+      return;
+    }
+
+    if (deleteColor.rejected.match(result)) {
+      toast.error(
+        typeof result.payload === "string" ? result.payload : "Failed to delete color.",
+      );
     }
   };
 
@@ -488,10 +528,6 @@ function ColorsPanel() {
         <p className={alertErrorClassName} role="alert">
           {mutationError}
         </p>
-      )}
-
-      {successMessage && (
-        <p className={alertSuccessClassName}>{successMessage}</p>
       )}
 
       <div className="border-t border-neutral-200/80 pt-5">

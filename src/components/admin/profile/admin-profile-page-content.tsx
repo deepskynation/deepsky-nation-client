@@ -4,9 +4,9 @@ import { Loader2Icon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/common/forms/form-field";
+import { useToast } from "@/components/common/feedback/toast-provider";
 import {
   alertErrorClassName,
-  alertSuccessClassName,
   fieldClassName,
   hintClassName,
   sectionClassName,
@@ -42,6 +42,7 @@ import {
 
 export function AdminProfilePageContent() {
   const dispatch = useAppDispatch();
+  const toast = useToast();
   const authReady = useAppSelector(selectAuthInitialized);
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const user = useAppSelector(selectAuthUser);
@@ -60,10 +61,8 @@ export function AdminProfilePageContent() {
     new_password: "",
     confirm_password: "",
   });
-  const [accountSuccess, setAccountSuccess] = useState<string | null>(null);
   const [accountLocalError, setAccountLocalError] = useState<string | null>(null);
   const [shippingFeeInput, setShippingFeeInput] = useState("50");
-  const [settingsSuccess, setSettingsSuccess] = useState<string | null>(null);
   const [settingsLocalError, setSettingsLocalError] = useState<string | null>(null);
 
   const originalAccount = useMemo(
@@ -100,14 +99,12 @@ export function AdminProfilePageContent() {
 
   const updateField = (field: keyof AdminAccountFormState, value: string) => {
     setForm((current) => ({ ...current, [field]: value }));
-    setAccountSuccess(null);
     setAccountLocalError(null);
     dispatch(clearAccountUpdateError());
   };
 
   const handleAccountSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    setAccountSuccess(null);
     setAccountLocalError(null);
     dispatch(clearAccountUpdateError());
 
@@ -119,19 +116,27 @@ export function AdminProfilePageContent() {
 
     const result = await dispatch(updateAccount(adminAccountFormToPayload(form)));
     if (updateAccount.fulfilled.match(result)) {
-      setAccountSuccess("Account updated successfully.");
+      toast.success("Account updated successfully.");
       setForm((current) => ({
         ...adminAccountFormFromUser(result.payload),
         current_password: "",
         new_password: "",
         confirm_password: "",
       }));
+      return;
+    }
+
+    if (updateAccount.rejected.match(result)) {
+      toast.error(
+        typeof result.payload === "string"
+          ? result.payload
+          : "Failed to update account.",
+      );
     }
   };
 
   const handleSettingsSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    setSettingsSuccess(null);
     setSettingsLocalError(null);
     dispatch(resetUpdateShopSettings());
 
@@ -145,7 +150,16 @@ export function AdminProfilePageContent() {
       updateShopSettings({ default_shipping_fee: parsedFee }),
     );
     if (updateShopSettings.fulfilled.match(result)) {
-      setSettingsSuccess("Default shipping fee updated.");
+      toast.success("Default shipping fee updated.");
+      return;
+    }
+
+    if (updateShopSettings.rejected.match(result)) {
+      toast.error(
+        typeof result.payload === "string"
+          ? result.payload
+          : "Failed to update shipping fee.",
+      );
     }
   };
 
@@ -259,11 +273,6 @@ export function AdminProfilePageContent() {
             {accountUpdateError}
           </p>
         ) : null}
-        {accountSuccess ? (
-          <p className={alertSuccessClassName} role="status">
-            {accountSuccess}
-          </p>
-        ) : null}
 
         <Button type="submit" disabled={isSavingAccount}>
           {isSavingAccount ? (
@@ -302,7 +311,6 @@ export function AdminProfilePageContent() {
                 value={shippingFeeInput}
                 onChange={(event) => {
                   setShippingFeeInput(event.target.value);
-                  setSettingsSuccess(null);
                   setSettingsLocalError(null);
                   dispatch(resetUpdateShopSettings());
                 }}
@@ -326,11 +334,6 @@ export function AdminProfilePageContent() {
         {updateShopSettingsError ? (
           <p className={alertErrorClassName} role="alert">
             {updateShopSettingsError}
-          </p>
-        ) : null}
-        {settingsSuccess ? (
-          <p className={alertSuccessClassName} role="status">
-            {settingsSuccess}
           </p>
         ) : null}
 

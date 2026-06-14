@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ConfirmDeleteDialog } from "@/components/common/dialogs/confirm-delete-dialog";
+import { useToast } from "@/components/common/feedback/toast-provider";
 import { ProductDetailsDialog } from "@/components/admin/product/modules/product-details-dialog";
 import { ProductRowActionsMenu } from "@/components/admin/product/modules/product-row-actions-menu";
 import { ProductThumbnail } from "@/components/admin/product/modules/product-thumbnail";
@@ -45,6 +46,7 @@ function visibilityStyles(visibility: ProductVisibility): string {
 
 export default function TableRow({ product, className, onEdit }: TableRowProps) {
   const dispatch = useAppDispatch();
+  const toast = useToast();
   const deleteStatus = useAppSelector(selectDeleteProductStatus);
   const deleteError = useAppSelector(selectDeleteProductError);
 
@@ -60,8 +62,18 @@ export default function TableRow({ product, className, onEdit }: TableRowProps) 
     const result = await dispatch(deleteAdminProduct(product.id));
 
     if (deleteAdminProduct.fulfilled.match(result)) {
+      toast.success(`"${product.title}" deleted.`);
       setDeleteOpen(false);
       dispatch(clearProductDetail());
+      return;
+    }
+
+    if (deleteAdminProduct.rejected.match(result)) {
+      toast.error(
+        typeof result.payload === "string"
+          ? result.payload
+          : "Failed to delete product.",
+      );
     }
   };
 

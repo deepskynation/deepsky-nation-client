@@ -4,11 +4,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { GripVerticalIcon, Loader2Icon, PlusIcon, Trash2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PanelSectionState } from "@/components/common/feedback/panel-section-state";
+import { useToast } from "@/components/common/feedback/toast-provider";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { cn } from "@/lib/utils";
 import {
   alertErrorClassName,
-  alertSuccessClassName,
   alertWarningClassName,
   fieldClassName,
   hintClassName,
@@ -143,6 +143,117 @@ const initialForm = {
   is_featured: false,
 };
 
+type ProductFormFieldErrors = {
+  category_id?: boolean;
+  title?: boolean;
+  price?: boolean;
+  placeholderImage?: boolean;
+  variantsGeneral?: boolean;
+  variantRows?: Record<
+    string,
+    { size?: boolean; color_id?: boolean; stock?: boolean; duplicate?: boolean }
+  >;
+};
+
+const invalidFieldClassName =
+  "border-red-500 ring-2 ring-red-200 focus:border-red-500 focus:ring-red-200";
+
+function validateProductForm(
+  form: typeof initialForm,
+  placeholderImage: string | null,
+  variants: VariantRow[],
+  duplicateVariantKeys: Set<string>,
+): { messages: string[]; fields: ProductFormFieldErrors } {
+  const messages: string[] = [];
+  const fields: ProductFormFieldErrors = {};
+
+  if (!form.category_id) {
+    messages.push("Select a category.");
+    fields.category_id = true;
+  }
+
+  if (!form.title.trim()) {
+    messages.push("Enter a product title.");
+    fields.title = true;
+  }
+
+  const parsedPrice = Number(form.price);
+  if (!Number.isFinite(parsedPrice) || parsedPrice <= 0) {
+    messages.push("Enter a price greater than 0.");
+    fields.price = true;
+  }
+
+  if (!placeholderImage) {
+    messages.push("Upload Placeholder 1.");
+    fields.placeholderImage = true;
+  }
+
+  const variantRows: NonNullable<ProductFormFieldErrors["variantRows"]> = {};
+  let hasVariantIssue = false;
+
+  if (variants.length < 1) {
+    messages.push("Add at least one variant.");
+    fields.variantsGeneral = true;
+  } else {
+    for (const row of variants) {
+      const rowErrors: NonNullable<ProductFormFieldErrors["variantRows"]>[string] = {};
+      const size = row.size.trim();
+      const colorId = row.color_id.trim();
+      const stock = Number(row.stock);
+
+      if (!size) {
+        rowErrors.size = true;
+        hasVariantIssue = true;
+      }
+      if (!colorId) {
+        rowErrors.color_id = true;
+        hasVariantIssue = true;
+      }
+      if (!Number.isInteger(stock) || stock < 0) {
+        rowErrors.stock = true;
+        hasVariantIssue = true;
+      }
+
+      const pairKey = size && colorId ? variantPairKey(size, colorId) : "";
+      if (pairKey && duplicateVariantKeys.has(pairKey)) {
+        rowErrors.duplicate = true;
+        hasVariantIssue = true;
+      }
+
+      if (Object.keys(rowErrors).length > 0) {
+        variantRows[row.key] = rowErrors;
+      }
+    }
+
+    if (hasVariantIssue) {
+      messages.push("Complete all variant rows with no duplicate size and color pairs.");
+      fields.variantRows = variantRows;
+    }
+  }
+
+  return { messages, fields };
+}
+
+function scrollToFirstInvalidField(fields: ProductFormFieldErrors) {
+  const targets: Array<{ active?: boolean; id: string }> = [
+    { active: fields.category_id, id: "product-category" },
+    { active: fields.title, id: "product-title" },
+    { active: fields.price, id: "product-price" },
+    { active: fields.placeholderImage, id: "product-placeholder-1" },
+    { active: fields.variantsGeneral || Boolean(fields.variantRows), id: "product-variants" },
+  ];
+
+  const firstTarget = targets.find((target) => target.active);
+  if (!firstTarget) {
+    return;
+  }
+
+  document.getElementById(firstTarget.id)?.scrollIntoView({
+    behavior: "smooth",
+    block: "center",
+  });
+}
+
 function hydrateFormFromProduct(product: ApiProduct) {
   const placeholder = imagesByRole(product.images, "placeholder")[0];
   const placeholder2 = imagesByRole(product.images, "placeholder")[0];
@@ -196,6 +307,7 @@ export function AddProductForm({
   onSaved,
 }: AddProductFormProps = {}) {
   const dispatch = useAppDispatch();
+  const toast = useToast();
   const authReady = useAppSelector(selectAuthInitialized);
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
 
@@ -216,7 +328,6 @@ export function AddProductForm({
   const [formHydrated, setFormHydrated] = useState(!isEditMode);
 
   const [form, setForm] = useState(initialForm);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [placeholderImage, setPlaceholderImage] = useState<string | null>(null);
   const [placeholder2Image, setPlaceholder2Image] = useState<string | null>(null);
   const [sizingImage, setSizingImage] = useState<string | null>(null);
@@ -229,6 +340,7 @@ export function AddProductForm({
   const [detailRows, setDetailRows] = useState<DetailRow[]>([newDetailRow()]);
   const [draggedVariantKey, setDraggedVariantKey] = useState<string | null>(null);
   const [dragOverVariantKey, setDragOverVariantKey] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<ProductFormFieldErrors>({});
 
   const isSubmitting = createStatus === "loading" || updateStatus === "loading";
   const isLoadingProduct =
@@ -268,7 +380,6 @@ export function AddProductForm({
     setGalleryImages(hydrated.galleryImages);
     setVariants(hydrated.variants);
     setDetailRows(hydrated.detailRows);
-    setSuccessMessage(null);
     setFormHydrated(true);
   }, [detailProduct, productId]);
 
@@ -280,34 +391,36 @@ export function AddProductForm({
   const parsedPrice = Number(form.price);
   const priceValid = Number.isFinite(parsedPrice) && parsedPrice > 0;
 
-  const variantsValid = useMemo(() => {
-    if (variants.length < 1) {
-      return false;
-    }
-    if (duplicateVariantKeys.size > 0) {
-      return false;
-    }
-    return variants.every((row) => {
-      const size = row.size.trim();
-      const colorId = row.color_id.trim();
-      const stock = Number(row.stock);
-      return (
-        size.length > 0 &&
-        colorId.length > 0 &&
-        Number.isInteger(stock) &&
-        stock >= 0
-      );
+  const clearBasicFieldError = (
+    key: Exclude<keyof ProductFormFieldErrors, "variantRows">,
+  ) => {
+    setFieldErrors((current) => {
+      if (!current[key]) {
+        return current;
+      }
+      const next = { ...current };
+      delete next[key];
+      return next;
     });
-  }, [variants, duplicateVariantKeys]);
+  };
 
-  const canSubmit =
-    form.category_id.length > 0 &&
-    form.title.trim().length > 0 &&
-    priceValid &&
-    Boolean(placeholderImage) &&
-    variantsValid &&
-    !isSubmitting &&
-    !isLoadingProduct;
+  const clearVariantFieldErrors = (variantKey: string) => {
+    setFieldErrors((current) => {
+      if (!current.variantRows?.[variantKey]) {
+        return current;
+      }
+      const nextVariantRows = { ...current.variantRows };
+      delete nextVariantRows[variantKey];
+      const next = { ...current };
+      if (Object.keys(nextVariantRows).length === 0) {
+        delete next.variantRows;
+        delete next.variantsGeneral;
+      } else {
+        next.variantRows = nextVariantRows;
+      }
+      return next;
+    });
+  };
 
   const resetForm = useCallback(() => {
     setForm(initialForm);
@@ -317,7 +430,7 @@ export function AddProductForm({
     setGalleryImages([null, null, null]);
     setVariants([newVariantRow()]);
     setDetailRows([newDetailRow()]);
-    setSuccessMessage(null);
+    setFieldErrors({});
     dispatch(resetCreateProduct());
     dispatch(resetUpdateProduct());
   }, [dispatch]);
@@ -334,7 +447,7 @@ export function AddProductForm({
     setGalleryImages(hydrated.galleryImages);
     setVariants(hydrated.variants);
     setDetailRows(hydrated.detailRows);
-    setSuccessMessage(null);
+    setFieldErrors({});
     dispatch(clearProductErrors());
   }, [detailProduct, dispatch, productId]);
 
@@ -346,12 +459,14 @@ export function AddProductForm({
   }, [productId, resetForm]);
 
   const updateVariant = (key: string, patch: Partial<VariantRow>) => {
+    clearVariantFieldErrors(key);
     setVariants((rows) =>
       rows.map((row) => (row.key === key ? { ...row, ...patch } : row)),
     );
   };
 
   const addVariantRow = () => {
+    clearBasicFieldError("variantsGeneral");
     setVariants((rows) => [...rows, newVariantRow()]);
   };
 
@@ -440,10 +555,29 @@ export function AddProductForm({
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (!canSubmit) {
+    if (isSubmitting || isLoadingProduct) {
       return;
     }
 
+    const validation = validateProductForm(
+      form,
+      placeholderImage,
+      variants,
+      duplicateVariantKeys,
+    );
+
+    if (validation.messages.length > 0) {
+      setFieldErrors(validation.fields);
+      toast.error(
+        validation.messages.length === 1
+          ? validation.messages[0]
+          : `Please complete the highlighted fields: ${validation.messages.join(" ")}`,
+      );
+      scrollToFirstInvalidField(validation.fields);
+      return;
+    }
+
+    setFieldErrors({});
     dispatch(clearProductErrors());
 
     if (isEditMode && productId) {
@@ -452,11 +586,20 @@ export function AddProductForm({
       );
 
       if (updateAdminProduct.fulfilled.match(result)) {
-        setSuccessMessage(
+        toast.success(
           `Product updated (${result.payload.product_code}). The product list has been refreshed.`,
         );
         dispatch(resetUpdateProduct());
         onSaved?.();
+        return;
+      }
+
+      if (updateAdminProduct.rejected.match(result)) {
+        toast.error(
+          typeof result.payload === "string"
+            ? result.payload
+            : "Failed to update product.",
+        );
       }
       return;
     }
@@ -464,7 +607,7 @@ export function AddProductForm({
     const result = await dispatch(createAdminProduct(buildPayload()));
 
     if (createAdminProduct.fulfilled.match(result)) {
-      setSuccessMessage(
+      toast.success(
         `Product created (${result.payload.product_code}). The product list has been refreshed.`,
       );
       setForm(initialForm);
@@ -474,7 +617,17 @@ export function AddProductForm({
       setGalleryImages([null, null, null]);
       setVariants([newVariantRow()]);
       setDetailRows([newDetailRow()]);
+      setFieldErrors({});
       dispatch(resetCreateProduct());
+      return;
+    }
+
+    if (createAdminProduct.rejected.match(result)) {
+      toast.error(
+        typeof result.payload === "string"
+          ? result.payload
+          : "Failed to create product.",
+      );
     }
   };
 
@@ -532,10 +685,11 @@ export function AddProductForm({
               <select
                 id="product-category"
                 value={form.category_id}
-                onChange={(e) =>
-                  setForm((prev) => ({ ...prev, category_id: e.target.value }))
-                }
-                className={fieldClassName}
+                onChange={(e) => {
+                  clearBasicFieldError("category_id");
+                  setForm((prev) => ({ ...prev, category_id: e.target.value }));
+                }}
+                className={cn(fieldClassName, fieldErrors.category_id && invalidFieldClassName)}
                 disabled={isSubmitting || catalogLoading}
                 required
               >
@@ -546,6 +700,9 @@ export function AddProductForm({
                   </option>
                 ))}
               </select>
+              {fieldErrors.category_id ? (
+                <p className="text-xs text-red-600">Category is required.</p>
+              ) : null}
               {categories.length === 0 && categoriesStatus === "succeeded" && (
                 <p className={alertWarningClassName}>
                   No Categories Yet. Add one under Catalog Setup.
@@ -561,12 +718,18 @@ export function AddProductForm({
                 id="product-title"
                 type="text"
                 value={form.title}
-                onChange={(e) => setForm((prev) => ({ ...prev, title: e.target.value }))}
+                onChange={(e) => {
+                  clearBasicFieldError("title");
+                  setForm((prev) => ({ ...prev, title: e.target.value }));
+                }}
                 maxLength={255}
-                className={fieldClassName}
+                className={cn(fieldClassName, fieldErrors.title && invalidFieldClassName)}
                 disabled={isSubmitting}
                 required
               />
+              {fieldErrors.title ? (
+                <p className="text-xs text-red-600">Title is required.</p>
+              ) : null}
             </div>
 
             <div className="space-y-1.5">
@@ -645,14 +808,19 @@ export function AddProductForm({
                   min={0.01}
                   step={0.01}
                   value={form.price}
-                  onChange={(e) => setForm((prev) => ({ ...prev, price: e.target.value }))}
-                  className={fieldClassName}
+                  onChange={(e) => {
+                    clearBasicFieldError("price");
+                    setForm((prev) => ({ ...prev, price: e.target.value }));
+                  }}
+                  className={cn(fieldClassName, fieldErrors.price && invalidFieldClassName)}
                   disabled={isSubmitting}
                   required
                 />
-                {form.price && !priceValid && (
+                {fieldErrors.price ? (
                   <p className="text-xs text-red-600">Enter a price greater than 0.</p>
-                )}
+                ) : form.price && !priceValid ? (
+                  <p className="text-xs text-red-600">Enter a price greater than 0.</p>
+                ) : null}
               </div>
 
               <div className="space-y-1.5">
@@ -699,7 +867,7 @@ export function AddProductForm({
             </label>
           </div>
 
-          <div className={sectionClassName}>
+          <div id="product-variants" className={sectionClassName}>
             <div className="flex items-center justify-between gap-2">
               <div>
                 <h2 className={sectionTitleClassName}>Variants</h2>
@@ -720,6 +888,10 @@ export function AddProductForm({
               </Button>
             </div>
 
+            {fieldErrors.variantsGeneral ? (
+              <p className="text-xs text-red-600">Add at least one complete variant row.</p>
+            ) : null}
+
             {colors.length === 0 && colorsStatus === "succeeded" && (
               <p className={alertWarningClassName}>
                 No Colors Yet. Add colors under Catalog Setup.
@@ -733,6 +905,8 @@ export function AddProductForm({
                     ? variantPairKey(row.size, row.color_id)
                     : "";
                 const isDuplicate = pairKey && duplicateVariantKeys.has(pairKey);
+                const rowFieldErrors = fieldErrors.variantRows?.[row.key];
+                const hasRowError = Boolean(rowFieldErrors);
 
                 return (
                   <div
@@ -759,7 +933,7 @@ export function AddProductForm({
                     }}
                     className={cn(
                       "grid gap-2 rounded-lg border border-neutral-200/90 bg-white p-3 shadow-sm sm:grid-cols-[auto_1fr_1fr_100px_auto]",
-                      isDuplicate && "border-red-200 bg-red-50/50",
+                      (isDuplicate || hasRowError) && "border-red-200 bg-red-50/50",
                       draggedVariantKey === row.key && "opacity-50",
                       dragOverVariantKey === row.key &&
                         "border-primary/40 ring-1 ring-primary/20",
@@ -800,7 +974,10 @@ export function AddProductForm({
                         }
                         placeholder="e.g. M"
                         maxLength={20}
-                        className={fieldClassName}
+                        className={cn(
+                          fieldClassName,
+                          rowFieldErrors?.size && invalidFieldClassName,
+                        )}
                         disabled={isSubmitting}
                       />
                     </div>
@@ -815,7 +992,10 @@ export function AddProductForm({
                         onChange={(e) =>
                           updateVariant(row.key, { color_id: e.target.value })
                         }
-                        className={fieldClassName}
+                        className={cn(
+                          fieldClassName,
+                          rowFieldErrors?.color_id && invalidFieldClassName,
+                        )}
                         disabled={isSubmitting || colors.length === 0}
                       >
                         <option value="">Select Color</option>
@@ -840,7 +1020,10 @@ export function AddProductForm({
                         onChange={(e) =>
                           updateVariant(row.key, { stock: e.target.value })
                         }
-                        className={fieldClassName}
+                        className={cn(
+                          fieldClassName,
+                          rowFieldErrors?.stock && invalidFieldClassName,
+                        )}
                         disabled={isSubmitting}
                       />
                     </div>
@@ -856,11 +1039,16 @@ export function AddProductForm({
                         <Trash2Icon className="size-4" />
                       </Button>
                     </div>
-                    {isDuplicate && (
+                    {(isDuplicate || rowFieldErrors?.duplicate) && (
                       <p className="text-xs text-destructive sm:col-span-5">
                         Duplicate size and color combination.
                       </p>
                     )}
+                    {hasRowError && !isDuplicate && !rowFieldErrors?.duplicate ? (
+                      <p className="text-xs text-destructive sm:col-span-5">
+                        Complete size, color, and stock for this row.
+                      </p>
+                    ) : null}
                   </div>
                 );
               })}
@@ -879,12 +1067,17 @@ export function AddProductForm({
           <div className="space-y-5 pt-1">
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <ProductImageSlot
+                id="product-placeholder-1"
                 variant="wide"
                 label="Placeholder 1"
                 hint="Front View"
                 required
                 value={placeholderImage}
-                onChange={setPlaceholderImage}
+                onChange={(value) => {
+                  clearBasicFieldError("placeholderImage");
+                  setPlaceholderImage(value);
+                }}
+                hasError={fieldErrors.placeholderImage}
                 disabled={isSubmitting}
               />
 
@@ -927,12 +1120,6 @@ export function AddProductForm({
               disabled={isSubmitting}
             />
           </div>
-
-          {!placeholderImage && (
-            <p className={alertWarningClassName}>
-              Upload Placeholder 1 to enable {isEditMode ? "save" : "create"}.
-            </p>
-          )}
         </div>
       </div>
 
@@ -942,9 +1129,6 @@ export function AddProductForm({
             <p className={alertErrorClassName} role="alert">
               {mutationError}
             </p>
-          )}
-          {successMessage && (
-            <p className={alertSuccessClassName}>{successMessage}</p>
           )}
         </div>
 
@@ -967,7 +1151,7 @@ export function AddProductForm({
           >
             {isEditMode ? "Revert changes" : "Reset"}
           </Button>
-          <Button type="submit" disabled={!canSubmit}>
+          <Button type="submit" disabled={isSubmitting || isLoadingProduct}>
             {isSubmitting ? (
               <>
                 <Loader2Icon className="size-4 animate-spin" />
