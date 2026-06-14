@@ -57,6 +57,7 @@ const initialListQuery: AdminProductsQuery = {
 const initialShopListQuery: ShopProductsQuery = {
   page: 1,
   page_size: 15,
+  include_gallery_images: true,
 };
 
 const initialState: ProductsState = {
@@ -352,7 +353,13 @@ export const fetchDashboardFeaturedProducts = createAsyncThunk<
 >(
   "products/fetchDashboardFeaturedProducts",
   async (query, { rejectWithValue }) => {
-    const mergedQuery = { page: 1, page_size: 6, featured: true, ...query };
+    const mergedQuery = {
+      page: 1,
+      page_size: 6,
+      featured: true,
+      include_gallery_images: true,
+      ...query,
+    };
 
     try {
       const response = await fetch(buildReleasedProductsUrl(mergedQuery));
@@ -370,6 +377,7 @@ export const fetchDashboardFeaturedProducts = createAsyncThunk<
         buildReleasedProductsUrl({
           page: mergedQuery.page,
           page_size: mergedQuery.page_size,
+          include_gallery_images: mergedQuery.include_gallery_images,
         }),
       );
 

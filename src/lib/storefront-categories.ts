@@ -11,6 +11,7 @@ export function buildStorefrontCatalogQuery(
   return {
     page,
     page_size: STOREFRONT_CATALOG_PAGE_SIZE,
+    include_gallery_images: true,
     ...(categoryId !== "all" ? { category_id: categoryId } : {}),
   };
 }
