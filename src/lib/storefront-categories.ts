@@ -7,7 +7,6 @@ export const STOREFRONT_CATALOG_PAGE_SIZE = 100;
 export const STOREFRONT_CATALOG_QUERY = {
   page: 1,
   page_size: STOREFRONT_CATALOG_PAGE_SIZE,
-  include_gallery_images: true,
 } as const;
 
 const UNCATEGORIZED_SECTION_ID = "uncategorized";
