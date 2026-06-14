@@ -5,7 +5,6 @@ export const sidebarIconNames = [
   "package",
   "user-circle",
   "mail",
-  "audit",
   "model-artist",
 ] as const;
 
@@ -80,12 +79,6 @@ export const adminSidebarConfig: SidebarConfig = {
           title: "Profile",
           icon: "user-circle",
           href: "/admin/profile",
-        },
-        {
-          id: "audit",
-          title: "Audit",
-          icon: "audit",
-          href: "/admin/audit",
         },
       ],
     },
