@@ -226,7 +226,7 @@ function validateProductForm(
     }
 
     if (hasVariantIssue) {
-      messages.push("Complete all variant rows with no duplicate size and color pairs.");
+      messages.push("Complete all variant rows with size, color, and stock.");
       fields.variantRows = variantRows;
     }
   }
