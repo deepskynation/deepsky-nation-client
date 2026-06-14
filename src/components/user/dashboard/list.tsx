@@ -19,7 +19,6 @@ import {
   selectIsAuthenticated,
 } from "@/store/slices/authSlice";
 import {
-  fetchCart,
   selectCartError,
   selectCartItemCount,
   selectCartStatus,
@@ -69,7 +68,6 @@ export function UserDashboardPageContent() {
       return;
     }
 
-    void dispatch(fetchCart());
     void dispatch(fetchMyOrdersPreview({ page_size: 5 }));
     void dispatch(fetchDashboardFeaturedProducts());
   }, [authInitialized, dispatch, isAuthenticated]);

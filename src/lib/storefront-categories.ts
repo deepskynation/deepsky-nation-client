@@ -1,13 +1,21 @@
-import { parseApiProductPrice, type ApiProduct } from "@/types/product";
+import { SHOP_PRODUCTS_PAGE_SIZE, type ProductSortOption } from "@/lib/shop-filters";
 import type { ApiProductCategory } from "@/types/catalog";
-import type { ProductSortOption } from "@/lib/shop-filters";
+import { parseApiProductPrice, type ApiProduct, type ShopProductsQuery } from "@/types/product";
 
-export const STOREFRONT_CATALOG_PAGE_SIZE = 100;
+export const STOREFRONT_CATALOG_PAGE_SIZE = SHOP_PRODUCTS_PAGE_SIZE;
 
-export const STOREFRONT_CATALOG_QUERY = {
-  page: 1,
-  page_size: STOREFRONT_CATALOG_PAGE_SIZE,
-} as const;
+export function buildStorefrontCatalogQuery(
+  page: number,
+  categoryId = "all",
+): ShopProductsQuery {
+  return {
+    page,
+    page_size: STOREFRONT_CATALOG_PAGE_SIZE,
+    ...(categoryId !== "all" ? { category_id: categoryId } : {}),
+  };
+}
+
+export const STOREFRONT_CATALOG_QUERY = buildStorefrontCatalogQuery(1);
 
 const UNCATEGORIZED_SECTION_ID = "uncategorized";
 
