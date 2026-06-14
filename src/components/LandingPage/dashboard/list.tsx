@@ -78,7 +78,6 @@ export default function DashboardList() {
         page: 1,
         page_size: LANDING_FEATURED_LIMIT,
         featured: true,
-        include_gallery_images: true,
       }),
     );
   }, [dispatch]);
