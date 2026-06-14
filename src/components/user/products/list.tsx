@@ -16,16 +16,14 @@ import { ProductsCategorySection } from "@/components/user/products/modules/prod
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import {
   productSortOptions,
-  SHOP_PRODUCTS_PAGE_SIZE,
   type ProductSortOption,
 } from "@/lib/shop-filters";
 import {
-  filterProductsByCategoryId,
+  buildStorefrontCatalogQuery,
   filterStorefrontProducts,
   getCategorySectionTitle,
   groupProductsByCategory,
   sortStorefrontProducts,
-  STOREFRONT_CATALOG_QUERY,
 } from "@/lib/storefront-categories";
 import { cn } from "@/lib/utils";
 import { fetchShopCategories, selectShopCategories } from "@/store/slices/categorySlice";
@@ -34,6 +32,7 @@ import {
   selectShopProducts,
   selectShopProductsListError,
   selectShopProductsListStatus,
+  selectShopProductsPagination,
 } from "@/store/slices/productSlice";
 
 export function ProductsList() {
@@ -42,6 +41,7 @@ export function ProductsList() {
   const products = useAppSelector(selectShopProducts);
   const listStatus = useAppSelector(selectShopProductsListStatus);
   const listError = useAppSelector(selectShopProductsListError);
+  const apiPagination = useAppSelector(selectShopProductsPagination);
   const categories = useAppSelector(selectShopCategories);
 
   const [searchQuery, setSearchQuery] = useState(() => searchParams.get("q") ?? "");
@@ -56,8 +56,11 @@ export function ProductsList() {
 
   useEffect(() => {
     void dispatch(fetchShopCategories());
-    void dispatch(fetchReleasedProducts(STOREFRONT_CATALOG_QUERY));
   }, [dispatch]);
+
+  useEffect(() => {
+    void dispatch(fetchReleasedProducts(buildStorefrontCatalogQuery(page, categoryId)));
+  }, [categoryId, dispatch, page]);
 
   useEffect(() => {
     const query = searchParams.get("q");
@@ -70,14 +73,9 @@ export function ProductsList() {
     setPage(1);
   }, [searchQuery, categoryId, sort]);
 
-  const categoryFilteredProducts = useMemo(
-    () => filterProductsByCategoryId(products, categoryId),
-    [categoryId, products],
-  );
-
   const filteredProducts = useMemo(
-    () => filterStorefrontProducts(categoryFilteredProducts, searchQuery),
-    [categoryFilteredProducts, searchQuery],
+    () => filterStorefrontProducts(products, searchQuery),
+    [products, searchQuery],
   );
 
   const sortedProducts = useMemo(
@@ -86,31 +84,20 @@ export function ProductsList() {
   );
 
   const isCategoryFiltered = categoryId !== "all";
+  const hasSearchQuery = searchQuery.trim().length > 0;
 
-  const totalPages = Math.max(
-    1,
-    Math.ceil(sortedProducts.length / SHOP_PRODUCTS_PAGE_SIZE),
-  );
+  const totalPages = Math.max(1, apiPagination?.totalPages ?? 1);
   const currentPage = Math.min(page, totalPages);
 
   useEffect(() => {
-    if (isCategoryFiltered && page > totalPages) {
+    if (page > totalPages) {
       setPage(totalPages);
     }
-  }, [isCategoryFiltered, page, totalPages]);
-
-  const paginatedProducts = useMemo(() => {
-    if (!isCategoryFiltered) {
-      return sortedProducts;
-    }
-
-    const start = (currentPage - 1) * SHOP_PRODUCTS_PAGE_SIZE;
-    return sortedProducts.slice(start, start + SHOP_PRODUCTS_PAGE_SIZE);
-  }, [currentPage, isCategoryFiltered, sortedProducts]);
+  }, [page, totalPages]);
 
   const sectionGroups = useMemo(() => {
     if (isCategoryFiltered) {
-      if (paginatedProducts.length === 0) {
+      if (sortedProducts.length === 0) {
         return [];
       }
 
@@ -120,13 +107,13 @@ export function ProductsList() {
       return [
         {
           section: { id: categoryId, title },
-          products: paginatedProducts,
+          products: sortedProducts,
         },
       ];
     }
 
     return groupProductsByCategory(sortedProducts, categories);
-  }, [categories, categoryId, isCategoryFiltered, paginatedProducts, sortedProducts]);
+  }, [categories, categoryId, isCategoryFiltered, sortedProducts]);
 
   const handlePageChange = (nextPage: number) => {
     setPage(nextPage);
@@ -150,8 +137,10 @@ export function ProductsList() {
 
   const isLoading = listStatus === "loading" && products.length === 0;
   const isPageLoading = listStatus === "loading";
-  const totalCount = sortedProducts.length;
+  const catalogTotal = apiPagination?.total ?? 0;
+  const totalCount = hasSearchQuery ? sortedProducts.length : catalogTotal;
   const hasVisibleProducts = sectionGroups.length > 0;
+  const showPagination = !hasSearchQuery && totalPages > 1;
 
   return (
     <div className="min-h-full bg-gradient-to-b from-neutral-100 via-white to-neutral-200/90 text-black">
@@ -167,7 +156,9 @@ export function ProductsList() {
               </h2>
               {listStatus === "succeeded" && totalCount > 0 && (
                 <p className="text-sm text-black/45">
-                  {totalCount} product{totalCount === 1 ? "" : "s"}
+                  {hasSearchQuery
+                    ? `${totalCount} match${totalCount === 1 ? "" : "es"} on this page`
+                    : `${totalCount} product${totalCount === 1 ? "" : "s"}`}
                 </p>
               )}
             </div>
@@ -236,11 +227,11 @@ export function ProductsList() {
                   title={section.title}
                   products={sectionProducts}
                   isPageLoading={isPageLoading}
-                  priorityCount={index === 0 && (!isCategoryFiltered || currentPage === 1) ? 5 : 0}
+                  priorityCount={index === 0 && currentPage === 1 ? 5 : 0}
                 />
               ))}
 
-              {isCategoryFiltered ? (
+              {showPagination ? (
                 <TabPagination
                   page={currentPage}
                   totalPages={totalPages}
