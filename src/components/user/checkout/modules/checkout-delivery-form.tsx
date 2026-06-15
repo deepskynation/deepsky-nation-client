@@ -21,6 +21,9 @@ type CheckoutDeliveryFormProps = {
   onUsingAlternateAddressChange: (usingAlternate: boolean) => void;
   saveToProfile?: boolean;
   onSaveToProfileChange?: (checked: boolean) => void;
+  savedProfileDeliveryAvailable?: boolean;
+  usingSavedProfileDelivery: boolean;
+  onUsingSavedProfileDeliveryChange: (useSaved: boolean) => void;
   paymentMethod: CheckoutPaymentMethod;
   paymentProofDataUrl: string | null;
   onPaymentMethodChange: (method: CheckoutPaymentMethod) => void;
@@ -149,6 +152,9 @@ export function CheckoutDeliveryForm({
   onUsingAlternateAddressChange,
   saveToProfile = false,
   onSaveToProfileChange,
+  savedProfileDeliveryAvailable = false,
+  usingSavedProfileDelivery,
+  onUsingSavedProfileDeliveryChange,
   paymentMethod,
   paymentProofDataUrl,
   onPaymentMethodChange,
@@ -176,6 +182,60 @@ export function CheckoutDeliveryForm({
             </Link>
           </p>
         </div>
+
+        {savedProfileDeliveryAvailable ? (
+          <fieldset className="space-y-3">
+            <legend className="sr-only">How to fill delivery details</legend>
+
+            <label
+              className={cn(
+                glassHighlightFlatClassName,
+                "flex cursor-pointer items-start gap-3 p-4 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-black/20",
+                !usingSavedProfileDelivery && "ring-1 ring-neutral-300/80",
+              )}
+            >
+              <input
+                type="radio"
+                name="checkout-primary-delivery"
+                checked={!usingSavedProfileDelivery}
+                onChange={() => onUsingSavedProfileDeliveryChange(false)}
+                className="mt-0.5 size-4 shrink-0 accent-black"
+              />
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-medium text-black">
+                  Enter delivery details manually
+                </span>
+                <span className="block text-xs text-black/55">
+                  Fill in your delivery information below.
+                </span>
+              </span>
+            </label>
+
+            <label
+              className={cn(
+                glassHighlightFlatClassName,
+                "flex cursor-pointer items-start gap-3 p-4 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-black/20",
+                usingSavedProfileDelivery && "ring-1 ring-neutral-300/80",
+              )}
+            >
+              <input
+                type="radio"
+                name="checkout-primary-delivery"
+                checked={usingSavedProfileDelivery}
+                onChange={() => onUsingSavedProfileDeliveryChange(true)}
+                className="mt-0.5 size-4 shrink-0 accent-black"
+              />
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm font-medium text-black">
+                  Use your saved profile delivery details
+                </span>
+                <span className="block text-xs text-black/55">
+                  Fill the form below from your saved profile.
+                </span>
+              </span>
+            </label>
+          </fieldset>
+        ) : null}
 
         <DeliveryAddressFields
           idPrefix="checkout-primary"
@@ -206,9 +266,10 @@ export function CheckoutDeliveryForm({
         )}
       >
         <input
-          type="checkbox"
+          type="radio"
+          name="checkout-alternate-delivery"
           checked={usingAlternateAddress}
-          onChange={(event) => onUsingAlternateAddressChange(event.target.checked)}
+          onChange={() => onUsingAlternateAddressChange(true)}
           className="mt-0.5 size-4 shrink-0 accent-black"
         />
         <span className="min-w-0 flex-1">
@@ -235,6 +296,14 @@ export function CheckoutDeliveryForm({
             form={alternateForm}
             onFieldChange={onAlternateFieldChange}
           />
+
+          <button
+            type="button"
+            onClick={() => onUsingAlternateAddressChange(false)}
+            className="text-sm text-black/55 underline-offset-2 hover:text-black hover:underline"
+          >
+            Use primary delivery address instead
+          </button>
         </section>
       ) : null}
 

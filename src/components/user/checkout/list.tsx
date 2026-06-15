@@ -9,6 +9,7 @@ import {
   checkoutDeliveryToProfilePayload,
   deliveryFormFromUser,
   emptyCheckoutDeliveryForm,
+  hasProfileDeliveryData,
   isCheckoutDeliveryFormEmpty,
   validateCheckoutDeliveryForm,
   type CheckoutDeliveryFormState,
@@ -97,7 +98,11 @@ export function CheckoutView({ params }: CheckoutViewProps) {
     emptyCheckoutDeliveryForm,
   );
   const [usingAlternateAddress, setUsingAlternateAddress] = useState(false);
+  const [usingSavedProfileDelivery, setUsingSavedProfileDelivery] = useState(false);
   const primaryFormRef = useRef<CheckoutDeliveryFormState>(
+    emptyCheckoutDeliveryForm,
+  );
+  const manualPrimaryFormRef = useRef<CheckoutDeliveryFormState>(
     emptyCheckoutDeliveryForm,
   );
   const alternateFormRef = useRef<CheckoutDeliveryFormState>(
@@ -126,6 +131,7 @@ export function CheckoutView({ params }: CheckoutViewProps) {
     if (!authUser) {
       profileDeliveryInitializedRef.current = false;
       setUsingAlternateAddress(false);
+      setUsingSavedProfileDelivery(false);
       return;
     }
 
@@ -135,12 +141,13 @@ export function CheckoutView({ params }: CheckoutViewProps) {
 
     profileDeliveryInitializedRef.current = true;
 
-    const prefill = deliveryFormFromUser(authUser);
-    setPrimaryForm(prefill);
-    primaryFormRef.current = prefill;
+    setPrimaryForm(emptyCheckoutDeliveryForm);
+    primaryFormRef.current = emptyCheckoutDeliveryForm;
+    manualPrimaryFormRef.current = emptyCheckoutDeliveryForm;
     setAlternateForm(emptyCheckoutDeliveryForm);
     alternateFormRef.current = emptyCheckoutDeliveryForm;
     setUsingAlternateAddress(false);
+    setUsingSavedProfileDelivery(false);
     setSaveToProfile(false);
   }, [authUser]);
 
@@ -232,6 +239,9 @@ export function CheckoutView({ params }: CheckoutViewProps) {
     setPrimaryForm((current) => {
       const next = { ...current, [field]: value };
       primaryFormRef.current = next;
+      if (!usingSavedProfileDelivery) {
+        manualPrimaryFormRef.current = next;
+      }
       return next;
     });
     setFormError(null);
@@ -260,6 +270,31 @@ export function CheckoutView({ params }: CheckoutViewProps) {
     setAlternateForm(alternateFormRef.current);
     setUsingAlternateAddress(true);
   };
+
+  const handleUsingSavedProfileDeliveryChange = (useSaved: boolean) => {
+    setFormError(null);
+
+    if (!useSaved) {
+      setPrimaryForm(manualPrimaryFormRef.current);
+      primaryFormRef.current = manualPrimaryFormRef.current;
+      setUsingSavedProfileDelivery(false);
+      return;
+    }
+
+    if (!authUser) {
+      return;
+    }
+
+    manualPrimaryFormRef.current = { ...primaryFormRef.current };
+    const saved = deliveryFormFromUser(authUser);
+    setPrimaryForm(saved);
+    primaryFormRef.current = saved;
+    setUsingSavedProfileDelivery(true);
+  };
+
+  const savedProfileDeliveryAvailable = Boolean(
+    authUser && hasProfileDeliveryData(authUser),
+  );
 
   const handlePlaceOrder = async () => {
     const deliveryPayload = usingAlternateAddress ? alternateForm : primaryForm;
@@ -396,6 +431,9 @@ export function CheckoutView({ params }: CheckoutViewProps) {
                 onUsingAlternateAddressChange={handleUsingAlternateAddressChange}
                 saveToProfile={saveToProfile}
                 onSaveToProfileChange={setSaveToProfile}
+                savedProfileDeliveryAvailable={savedProfileDeliveryAvailable}
+                usingSavedProfileDelivery={usingSavedProfileDelivery}
+                onUsingSavedProfileDeliveryChange={handleUsingSavedProfileDeliveryChange}
                 paymentMethod={paymentMethod}
                 paymentProofDataUrl={paymentProofDataUrl}
                 onPaymentMethodChange={(next) => {
