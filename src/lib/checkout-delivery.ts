@@ -1,4 +1,5 @@
 import type { User } from "@/types";
+import type { UpdateProfilePayload } from "@/types/auth";
 
 export type CheckoutDeliveryMode = "profile" | "custom";
 
@@ -21,6 +22,36 @@ export const emptyCheckoutDeliveryForm: CheckoutDeliveryFormState = {
   country: "",
   postal_code: "",
 };
+
+export const CHECKOUT_DELIVERY_SCHEDULE_NOTE =
+  "Estimated delivery: 3–7 business days after your order is confirmed.";
+
+export function isCheckoutDeliveryFormEmpty(
+  form: CheckoutDeliveryFormState,
+): boolean {
+  return (
+    !form.email.trim() &&
+    !form.phone_number.trim() &&
+    !form.home_address.trim() &&
+    !form.city.trim() &&
+    !form.region.trim() &&
+    !form.country.trim() &&
+    !form.postal_code.trim()
+  );
+}
+
+export function checkoutDeliveryToProfilePayload(
+  form: CheckoutDeliveryFormState,
+): UpdateProfilePayload {
+  return {
+    phone_number: form.phone_number.trim(),
+    home_address: form.home_address.trim(),
+    city: form.city.trim(),
+    region: form.region.trim(),
+    country: form.country.trim(),
+    postal_code: form.postal_code.trim(),
+  };
+}
 
 export function deliveryFormFromUser(user: User): CheckoutDeliveryFormState {
   return {
