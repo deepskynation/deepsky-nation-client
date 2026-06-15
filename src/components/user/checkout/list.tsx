@@ -405,7 +405,7 @@ export function CheckoutView({ params }: CheckoutViewProps) {
           </div>
 
           <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:gap-8">
-            <div className={cn(glassPanelFlatClassName, "p-5 sm:p-6")}>
+            <div className={cn(glassPanelFlatClassName, "bg-neutral-50 p-5 sm:p-6")}>
               <div className="mb-6 space-y-1">
                 <h2 className="text-lg font-semibold text-black">Delivery Information</h2>
                 <p className="text-sm text-black/55">

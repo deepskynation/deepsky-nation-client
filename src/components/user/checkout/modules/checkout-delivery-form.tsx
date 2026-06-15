@@ -8,8 +8,19 @@ import {
   type CheckoutDeliveryFormState,
 } from "@/lib/checkout-delivery";
 import type { CheckoutPaymentMethod } from "@/lib/checkout-payment";
-import { glassHighlightFlatClassName, glassInputFlatClassName } from "@/lib/glass-styles";
+import { glassHighlightFlatClassName } from "@/lib/glass-styles";
 import { cn } from "@/lib/utils";
+
+const checkoutDeliverySectionClassName =
+  "space-y-4 rounded-xl bg-neutral-100 p-4 sm:p-5";
+
+const checkoutDeliveryInputClassName =
+  "h-10 w-full rounded-lg border border-neutral-200 bg-white px-3 text-sm text-black outline-none transition-colors placeholder:text-black/35 focus:border-neutral-400 focus:ring-1 focus:ring-neutral-300/80";
+
+const checkoutDeliveryTextareaClassName = cn(
+  checkoutDeliveryInputClassName,
+  "min-h-[88px] resize-y py-2.5",
+);
 
 type CheckoutDeliveryFormProps = {
   primaryForm: CheckoutDeliveryFormState;
@@ -52,7 +63,7 @@ function DeliveryAddressFields({
           value={form.email}
           onChange={(event) => onFieldChange("email", event.target.value)}
           placeholder="Enter email address"
-          className={glassInputFlatClassName}
+          className={checkoutDeliveryInputClassName}
           required
         />
       </FormField>
@@ -65,7 +76,7 @@ function DeliveryAddressFields({
           value={form.phone_number}
           onChange={(event) => onFieldChange("phone_number", event.target.value)}
           placeholder="Enter phone number"
-          className={glassInputFlatClassName}
+          className={checkoutDeliveryInputClassName}
           required
         />
       </FormField>
@@ -78,7 +89,7 @@ function DeliveryAddressFields({
           value={form.home_address}
           onChange={(event) => onFieldChange("home_address", event.target.value)}
           placeholder="Street, building, unit"
-          className={cn(glassInputFlatClassName, "min-h-[88px] resize-y py-2.5")}
+          className={checkoutDeliveryTextareaClassName}
           required
         />
       </FormField>
@@ -92,7 +103,7 @@ function DeliveryAddressFields({
             value={form.city}
             onChange={(event) => onFieldChange("city", event.target.value)}
             placeholder="City"
-            className={glassInputFlatClassName}
+            className={checkoutDeliveryInputClassName}
             required
           />
         </FormField>
@@ -105,7 +116,7 @@ function DeliveryAddressFields({
             value={form.region}
             onChange={(event) => onFieldChange("region", event.target.value)}
             placeholder="Region or state"
-            className={glassInputFlatClassName}
+            className={checkoutDeliveryInputClassName}
             required
           />
         </FormField>
@@ -120,7 +131,7 @@ function DeliveryAddressFields({
             value={form.country}
             onChange={(event) => onFieldChange("country", event.target.value)}
             placeholder="Country"
-            className={glassInputFlatClassName}
+            className={checkoutDeliveryInputClassName}
             required
           />
         </FormField>
@@ -133,7 +144,7 @@ function DeliveryAddressFields({
             value={form.postal_code}
             onChange={(event) => onFieldChange("postal_code", event.target.value)}
             placeholder="Postal Code"
-            className={glassInputFlatClassName}
+            className={checkoutDeliveryInputClassName}
             required
           />
         </FormField>
@@ -172,7 +183,7 @@ export function CheckoutDeliveryForm({
     >
       <p className="text-xs text-black/50">{CHECKOUT_DELIVERY_SCHEDULE_NOTE}</p>
 
-      <section className="space-y-4">
+      <section className={checkoutDeliverySectionClassName}>
         <div className="space-y-1">
           <h3 className="text-sm font-medium text-black">Delivery details</h3>
           <p className="text-xs text-black/55">
@@ -283,7 +294,7 @@ export function CheckoutDeliveryForm({
       </label>
 
       {usingAlternateAddress ? (
-        <section className="space-y-4">
+        <section className={checkoutDeliverySectionClassName}>
           <div className="space-y-1">
             <h3 className="text-sm font-medium text-black">One-time shipping address</h3>
             <p className="text-xs text-black/55">
