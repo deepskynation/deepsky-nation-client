@@ -19,12 +19,13 @@ import { useAppDispatch, useAppSelector } from "@/hooks";
 import { buildLoginRedirectPath } from "@/lib/auth-redirect";
 import { getCartLineThumbnailSrc } from "@/lib/cart-image";
 import {
+  checkoutDeliveryToProfilePayload,
   deliveryFormFromUser,
   emptyCheckoutDeliveryForm,
-  isProfileDeliveryComplete,
+  hasProfileDeliveryData,
+  isCheckoutDeliveryFormEmpty,
   validateCheckoutDeliveryForm,
   type CheckoutDeliveryFormState,
-  type CheckoutDeliveryMode,
 } from "@/lib/checkout-delivery";
 import type { CheckoutPaymentMethod } from "@/lib/checkout-payment";
 import { glassPanelFlatClassName } from "@/lib/glass-styles";
@@ -35,6 +36,7 @@ import {
   selectAuthInitialized,
   selectAuthUser,
   selectIsAuthenticated,
+  updateProfile,
 } from "@/store/slices/authSlice";
 import {
   fetchCart,
@@ -91,17 +93,28 @@ export function CartCheckoutView() {
   const shippingFeeStatus = useAppSelector(selectShippingFeeStatus);
   const shippingFee = shippingFeeFromStore ?? FALLBACK_SHIPPING_FEE;
 
-  const [form, setForm] = useState<CheckoutDeliveryFormState>(
+  const [primaryForm, setPrimaryForm] = useState<CheckoutDeliveryFormState>(
     emptyCheckoutDeliveryForm,
   );
-  const [deliveryMode, setDeliveryMode] = useState<CheckoutDeliveryMode>("custom");
-  const manualFormRef = useRef<CheckoutDeliveryFormState>(
+  const [alternateForm, setAlternateForm] = useState<CheckoutDeliveryFormState>(
+    emptyCheckoutDeliveryForm,
+  );
+  const [usingAlternateAddress, setUsingAlternateAddress] = useState(false);
+  const [usingSavedProfileDelivery, setUsingSavedProfileDelivery] = useState(false);
+  const primaryFormRef = useRef<CheckoutDeliveryFormState>(
+    emptyCheckoutDeliveryForm,
+  );
+  const manualPrimaryFormRef = useRef<CheckoutDeliveryFormState>(
+    emptyCheckoutDeliveryForm,
+  );
+  const alternateFormRef = useRef<CheckoutDeliveryFormState>(
     emptyCheckoutDeliveryForm,
   );
   const profileDeliveryInitializedRef = useRef(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<CheckoutPaymentMethod>("cod");
   const [paymentProofDataUrl, setPaymentProofDataUrl] = useState<string | null>(null);
+  const [saveToProfile, setSaveToProfile] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [placedOrder, setPlacedOrder] = useState<ApiOrder | null>(null);
 
@@ -122,15 +135,14 @@ export function CartCheckoutView() {
 
     profileDeliveryInitializedRef.current = true;
 
-    if (isProfileDeliveryComplete(authUser)) {
-      setDeliveryMode("profile");
-      setForm(deliveryFormFromUser(authUser));
-      return;
-    }
-
-    if (authUser.email) {
-      setForm((current) => ({ ...current, email: authUser.email }));
-    }
+    setPrimaryForm(emptyCheckoutDeliveryForm);
+    primaryFormRef.current = emptyCheckoutDeliveryForm;
+    manualPrimaryFormRef.current = emptyCheckoutDeliveryForm;
+    setAlternateForm(emptyCheckoutDeliveryForm);
+    alternateFormRef.current = emptyCheckoutDeliveryForm;
+    setUsingAlternateAddress(false);
+    setUsingSavedProfileDelivery(false);
+    setSaveToProfile(false);
   }, [authUser]);
 
   const subtotal = useMemo(
@@ -170,43 +182,69 @@ export function CartCheckoutView() {
     return labels;
   }, [items]);
 
-  const updateField = (field: keyof CheckoutDeliveryFormState, value: string) => {
-    setForm((prev) => {
+  const updatePrimaryField = (field: keyof CheckoutDeliveryFormState, value: string) => {
+    setPrimaryForm((prev) => {
       const next = { ...prev, [field]: value };
-      if (deliveryMode === "custom") {
-        manualFormRef.current = next;
+      primaryFormRef.current = next;
+      if (!usingSavedProfileDelivery) {
+        manualPrimaryFormRef.current = next;
       }
       return next;
     });
     setFormError(null);
   };
 
-  const handleDeliveryModeChange = (mode: CheckoutDeliveryMode) => {
+  const updateAlternateField = (field: keyof CheckoutDeliveryFormState, value: string) => {
+    setAlternateForm((prev) => {
+      const next = { ...prev, [field]: value };
+      alternateFormRef.current = next;
+      return next;
+    });
+    setFormError(null);
+  };
+
+  const handleUsingAlternateAddressChange = (useAlternate: boolean) => {
     setFormError(null);
 
-    if (mode === "profile") {
-      if (!authUser || !isProfileDeliveryComplete(authUser)) {
-        return;
-      }
-      manualFormRef.current = form;
-      setForm(deliveryFormFromUser(authUser));
-      setDeliveryMode("profile");
+    if (!useAlternate) {
+      setUsingAlternateAddress(false);
       return;
     }
 
-    setForm(manualFormRef.current);
-    setDeliveryMode("custom");
+    if (isCheckoutDeliveryFormEmpty(alternateFormRef.current)) {
+      alternateFormRef.current = { ...primaryFormRef.current };
+    }
+    setAlternateForm(alternateFormRef.current);
+    setUsingAlternateAddress(true);
   };
 
-  const profileAddressAvailable = Boolean(
-    authUser && isProfileDeliveryComplete(authUser),
+  const handleUsingSavedProfileDeliveryChange = (useSaved: boolean) => {
+    setFormError(null);
+
+    if (!useSaved) {
+      setPrimaryForm(manualPrimaryFormRef.current);
+      primaryFormRef.current = manualPrimaryFormRef.current;
+      setUsingSavedProfileDelivery(false);
+      return;
+    }
+
+    if (!authUser) {
+      return;
+    }
+
+    manualPrimaryFormRef.current = { ...primaryFormRef.current };
+    const saved = deliveryFormFromUser(authUser);
+    setPrimaryForm(saved);
+    primaryFormRef.current = saved;
+    setUsingSavedProfileDelivery(true);
+  };
+
+  const savedProfileDeliveryAvailable = Boolean(
+    authUser && hasProfileDeliveryData(authUser),
   );
 
   const handlePlaceOrder = async () => {
-    const deliveryPayload =
-      deliveryMode === "profile" && authUser
-        ? deliveryFormFromUser(authUser)
-        : form;
+    const deliveryPayload = usingAlternateAddress ? alternateForm : primaryForm;
     const deliveryError = validateCheckoutDeliveryForm(deliveryPayload);
     if (deliveryError) {
       setFormError(deliveryError);
@@ -248,7 +286,7 @@ export function CartCheckoutView() {
       placeOrder({
         fromCart: true,
         cartItemIds: selectedIds,
-        deliverySource: deliveryMode === "profile" ? "profile" : "custom",
+        deliverySource: "custom",
         delivery: deliveryPayload,
         paymentMethod,
         receiptBase64: paymentProofDataUrl,
@@ -256,6 +294,17 @@ export function CartCheckoutView() {
     );
 
     if (placeOrder.fulfilled.match(result)) {
+      if (saveToProfile) {
+        const profileResult = await dispatch(
+          updateProfile(checkoutDeliveryToProfilePayload(primaryForm)),
+        );
+        if (!updateProfile.fulfilled.match(profileResult)) {
+          toast.error(
+            "Order placed, but we couldn't save your address to your profile.",
+          );
+        }
+      }
+
       toast.success(
         `${formatOrderNumber(result.payload.order_number)} placed successfully.`,
       );
@@ -352,12 +401,12 @@ export function CartCheckoutView() {
           ) : null}
 
           <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:gap-8">
-            <div className={cn(glassPanelFlatClassName, "p-5 sm:p-6")}>
+            <div className={cn(glassPanelFlatClassName, "bg-neutral-50 p-5 sm:p-6")}>
               <div className="mb-6 space-y-1">
                 <h2 className="text-lg font-semibold text-black">Delivery Information</h2>
                 <p className="text-sm text-black/55">
-                  Choose your saved profile address or enter a different delivery
-                  address for this order.
+                  Enter your delivery details below. Ship to a different address if
+                  needed for this order only.
                 </p>
               </div>
 
@@ -369,13 +418,18 @@ export function CartCheckoutView() {
               />
 
               <CheckoutDeliveryForm
-                form={form}
-                onFieldChange={updateField}
+                primaryForm={primaryForm}
+                onPrimaryFieldChange={updatePrimaryField}
+                alternateForm={alternateForm}
+                onAlternateFieldChange={updateAlternateField}
                 onSubmit={() => void handlePlaceOrder()}
-                showDeliveryModeChoice={Boolean(authUser)}
-                deliveryMode={deliveryMode}
-                onDeliveryModeChange={handleDeliveryModeChange}
-                profileAddressAvailable={profileAddressAvailable}
+                usingAlternateAddress={usingAlternateAddress}
+                onUsingAlternateAddressChange={handleUsingAlternateAddressChange}
+                saveToProfile={saveToProfile}
+                onSaveToProfileChange={setSaveToProfile}
+                savedProfileDeliveryAvailable={savedProfileDeliveryAvailable}
+                usingSavedProfileDelivery={usingSavedProfileDelivery}
+                onUsingSavedProfileDeliveryChange={handleUsingSavedProfileDeliveryChange}
                 paymentMethod={paymentMethod}
                 paymentProofDataUrl={paymentProofDataUrl}
                 onPaymentMethodChange={(next) => {
