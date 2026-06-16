@@ -3,6 +3,7 @@
 import {
   getColorOptionsForSize,
   getUniqueSizes,
+  isSizeInStock,
   type VariantColorOption,
 } from "@/lib/product-variants";
 import { cn } from "@/lib/utils";
@@ -27,6 +28,19 @@ function optionButtonClass(selected: boolean, disabled: boolean) {
   );
 }
 
+function SlantOutOfStockBadge() {
+  return (
+    <span
+      className="pointer-events-none absolute right-0 top-0 z-10 size-9 overflow-hidden rounded-tr-lg"
+      aria-hidden
+    >
+      <span className="absolute right-[-30px] top-[10px] block w-[72px] rotate-45 whitespace-nowrap bg-red-600 py-0.5 text-center text-[5px] font-bold uppercase leading-none tracking-tight text-white shadow-sm">
+        Out of stock
+      </span>
+    </span>
+  );
+}
+
 export function CheckoutVariantPicker({
   variants,
   selectedSize,
@@ -35,6 +49,8 @@ export function CheckoutVariantPicker({
   onColorChange,
 }: CheckoutVariantPickerProps) {
   const sizes = getUniqueSizes(variants);
+  const selectedSizeOutOfStock =
+    selectedSize !== null && !isSizeInStock(variants, selectedSize);
   const colorOptions: VariantColorOption[] = selectedSize
     ? getColorOptionsForSize(variants, selectedSize)
     : [];
@@ -53,23 +69,36 @@ export function CheckoutVariantPicker({
       </div>
 
       <div className="space-y-1.5">
-        <label htmlFor="checkout-size" className="text-xs font-medium text-black/45">
-          Size
-        </label>
+        <div className="flex items-center justify-between gap-2">
+          <label htmlFor="checkout-size" className="text-xs font-medium text-black/45">
+            Size
+          </label>
+          {selectedSizeOutOfStock ? (
+            <span
+              role="status"
+              aria-live="polite"
+              className="inline-flex items-center rounded-full bg-red-50 px-2 py-0.5 text-[10px] font-semibold text-red-600 ring-1 ring-inset ring-red-200"
+            >
+              Out of stock
+            </span>
+          ) : null}
+        </div>
         {sizes.length <= 6 ? (
           <div className="flex flex-wrap gap-2" role="group" aria-label="Size">
             {sizes.map((size) => {
-              const inStock = variants.some((v) => v.size === size && v.stock > 0);
+              const inStock = isSizeInStock(variants, size);
               return (
-                <button
-                  key={size}
-                  type="button"
-                  disabled={!inStock}
-                  onClick={() => onSizeChange(size)}
-                  className={optionButtonClass(selectedSize === size, !inStock)}
-                >
-                  {size}
-                </button>
+                <div key={size} className="relative overflow-hidden rounded-lg">
+                  <button
+                    type="button"
+                    disabled={!inStock}
+                    onClick={() => onSizeChange(size)}
+                    className={optionButtonClass(selectedSize === size, !inStock)}
+                  >
+                    {size}
+                  </button>
+                  {!inStock ? <SlantOutOfStockBadge /> : null}
+                </div>
               );
             })}
           </div>
@@ -84,7 +113,7 @@ export function CheckoutVariantPicker({
               Select size
             </option>
             {sizes.map((size) => {
-              const inStock = variants.some((v) => v.size === size && v.stock > 0);
+              const inStock = isSizeInStock(variants, size);
               return (
                 <option key={size} value={size} disabled={!inStock}>
                   {size}

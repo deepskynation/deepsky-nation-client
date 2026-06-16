@@ -22,6 +22,10 @@ export function getUniqueSizes(variants: ApiProductVariant[]): string[] {
   return sizes;
 }
 
+export function isSizeInStock(variants: ApiProductVariant[], size: string): boolean {
+  return variants.some((variant) => variant.size === size && variant.stock > 0);
+}
+
 export function getColorOptionsForSize(
   variants: ApiProductVariant[],
   size: string,
