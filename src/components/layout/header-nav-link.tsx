@@ -54,9 +54,9 @@ export function HeaderNavLink({
     onClick?.(event);
     if (event.defaultPrevented) return;
 
-    const isLandingPage = pathname === "/" || pathname === "/dashboard";
+    const isLandingPage = pathname === "/";
 
-    if (isLandingPage && (href === "/" || href === "/dashboard")) {
+    if (isLandingPage && href === "/") {
       event.preventDefault();
       scrollToHash("", onHashNavigate);
       return;

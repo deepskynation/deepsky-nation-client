@@ -127,7 +127,7 @@ export function OrderDetailView({ params }: OrderDetailViewProps) {
           <div className="mx-auto max-w-6xl px-6 py-8 lg:px-12 lg:py-10">
             <div className="mb-6">
               <Link
-                href="/user/orders"
+                href="/orders"
                 className="inline-flex text-sm text-black/55 transition-colors hover:text-black"
               >
                 ← Back To Orders
@@ -145,7 +145,7 @@ export function OrderDetailView({ params }: OrderDetailViewProps) {
                   detailError ??
                   "This order may not exist or does not belong to your account."
                 }
-                action={{ href: "/user/orders", label: "Back To Orders", variant: "button" }}
+                action={{ href: "/orders", label: "Back To Orders", variant: "button" }}
                 className="max-w-none"
               />
             ) : order ? (

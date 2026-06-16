@@ -18,7 +18,7 @@ export function LandingProductSearch({ className }: LandingProductSearchProps) {
     event.preventDefault();
     const trimmed = query.trim();
     const params = trimmed ? `?q=${encodeURIComponent(trimmed)}` : "";
-    router.push(`/user/products${params}`);
+    router.push(`/products${params}`);
     setOpen(false);
     setQuery("");
   };

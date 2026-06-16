@@ -53,7 +53,7 @@ export function DashboardRecentOrders({
         <div className="flex flex-1 flex-col justify-between gap-4">
           <p className="text-sm text-black/55">No orders yet.</p>
           <Link
-            href="/user/products"
+            href="/products"
             className="inline-flex h-10 items-center justify-center rounded-full border border-black/15 bg-white px-5 text-[11px] uppercase tracking-[0.18em] text-black transition hover:border-black hover:bg-black hover:text-white"
           >
             Start shopping
@@ -67,7 +67,7 @@ export function DashboardRecentOrders({
               return (
                 <li key={order.id}>
                   <Link
-                    href={`/user/orders/${order.id}`}
+                    href={`/orders/${order.id}`}
                     className="flex items-center justify-between gap-3 rounded-xl bg-black/[0.03] px-3 py-3 transition hover:bg-white hover:shadow-[0_1px_3px_rgba(0,0,0,0.06)]"
                   >
                     <div className="min-w-0">
@@ -97,7 +97,7 @@ export function DashboardRecentOrders({
             })}
           </ul>
           <Link
-            href="/user/orders"
+            href="/orders"
             className="mt-auto inline-flex h-10 items-center justify-center rounded-full border border-black/15 bg-white px-5 text-[11px] uppercase tracking-[0.18em] text-black transition hover:border-black hover:bg-black hover:text-white"
           >
             View all orders

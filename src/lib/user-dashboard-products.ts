@@ -81,7 +81,7 @@ function modelGallerySlideFromImage(
     productTitle: product.title,
     alt: `${product.title} — model`,
     imageSrc: toImagePreviewSrc(image.image_base64),
-    href: `/user/products/${product.id}`,
+    href: `/products/${product.id}`,
   };
 }
 

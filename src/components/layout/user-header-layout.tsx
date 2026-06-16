@@ -69,7 +69,7 @@ export function UserHeaderLayout({ children }: UserHeaderLayoutProps) {
         <div className="mx-auto max-w-7xl px-6 md:px-10 lg:px-12">
           <div className="hidden items-center gap-5 py-5 md:grid md:grid-cols-[1fr_auto_1fr]">
             <Link
-              href="/user/dashboard"
+              href="/dashboard"
               className="justify-self-start transition-opacity hover:opacity-70"
             >
               <Image
@@ -116,7 +116,7 @@ export function UserHeaderLayout({ children }: UserHeaderLayoutProps) {
               </button>
 
               <Link
-                href="/user/dashboard"
+                href="/dashboard"
                 className="justify-self-center transition-opacity hover:opacity-70"
               >
                 <Image

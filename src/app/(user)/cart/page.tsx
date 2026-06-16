@@ -116,7 +116,7 @@ export default function UserCartPage() {
   }
 
   if (!isAuthenticated) {
-    const loginHref = buildLoginRedirectPath("/user/cart");
+    const loginHref = buildLoginRedirectPath("/cart");
     return (
       <AuthRequiredPage
         title="Sign In To View Your Cart"
@@ -181,7 +181,7 @@ export default function UserCartPage() {
               <ShoppingCart className="size-10 text-black/25" strokeWidth={1.25} />
               <p className="text-sm text-black/55">Your cart is empty.</p>
               <Link
-                href="/user/products"
+                href="/products"
                 className="text-sm font-medium text-black underline-offset-2 hover:underline"
               >
                 Browse Products
@@ -255,7 +255,7 @@ export default function UserCartPage() {
                 selectedCount={selectedCount}
                 canCheckout={canCheckout}
                 isUpdating={isUpdating}
-                onCheckout={() => router.push("/user/checkout")}
+                onCheckout={() => router.push("/checkout")}
                 warning={summaryWarning}
                 className="lg:sticky lg:top-6"
               />

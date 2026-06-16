@@ -188,7 +188,7 @@ export function CheckoutDeliveryForm({
           <h3 className="text-sm font-medium text-black">Delivery details</h3>
           <p className="text-xs text-black/55">
             Enter your delivery information.{" "}
-            <Link href="/user/profile" className="underline hover:text-black">
+            <Link href="/profile" className="underline hover:text-black">
               Manage profile
             </Link>
           </p>

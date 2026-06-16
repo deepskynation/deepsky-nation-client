@@ -1,9 +1,9 @@
 import { OrderDetailView } from "@/components/user/orders/order-detail/list";
 
-export default function UserOrderDetailPage({
-  params,
-}: {
+type OrderDetailPageProps = {
   params: Promise<{ id: string }>;
-}) {
+};
+
+export default function OrderDetailPage({ params }: OrderDetailPageProps) {
   return <OrderDetailView params={params} />;
 }

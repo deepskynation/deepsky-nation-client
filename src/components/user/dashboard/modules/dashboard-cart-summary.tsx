@@ -49,7 +49,7 @@ export function DashboardCartSummary({
         <div className="flex flex-1 flex-col justify-between gap-4">
           <p className="text-sm text-black/55">Your cart is empty.</p>
           <Link
-            href="/user/products"
+            href="/products"
             className="inline-flex h-10 items-center justify-center rounded-full border border-black bg-black px-5 text-[11px] uppercase tracking-[0.18em] text-white transition hover:bg-white hover:text-black"
           >
             Browse Products
@@ -66,7 +66,7 @@ export function DashboardCartSummary({
             </p>
           </div>
           <Link
-            href="/user/cart"
+            href="/cart"
             className="inline-flex h-10 items-center justify-center rounded-full border border-black bg-black px-5 text-[11px] uppercase tracking-[0.18em] text-white transition hover:bg-white hover:text-black"
           >
             Continue To Checkout

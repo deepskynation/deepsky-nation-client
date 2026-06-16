@@ -50,7 +50,7 @@ export function DashboardFeaturedProducts({
             <p className="text-[11px] uppercase tracking-[0.35em] text-black/45">New Arrivals</p>
           </div>
           <Link
-            href="/user/products"
+            href="/products"
             className="text-[11px] uppercase tracking-[0.22em] text-black/55 transition-colors hover:text-black"
           >
             View all

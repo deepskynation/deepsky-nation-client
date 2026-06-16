@@ -61,5 +61,5 @@ export function clearAuthSession(): void {
 }
 
 export function getDashboardPathForRole(role: UserRole): string {
-  return role === "admin" ? "/admin/dashboard" : "/user/dashboard";
+  return role === "admin" ? "/admin/dashboard" : "/dashboard";
 }

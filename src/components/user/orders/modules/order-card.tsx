@@ -25,7 +25,7 @@ export function OrderCard({ order, className }: OrderCardProps) {
   const [receiptOpen, setReceiptOpen] = useState(false);
   const status = formatOrderStatus(order.status);
   const address = formatDeliveryAddress(order);
-  const detailHref = `/user/orders/${order.id}`;
+  const detailHref = `/orders/${order.id}`;
 
   const handleCopyAddress = async (event: React.MouseEvent) => {
     event.preventDefault();

@@ -27,7 +27,7 @@ export function UserSidebarLayout({ children }: UserSidebarLayoutProps) {
   }, [cartCount]);
 
   return (
-    <SidebarLayout config={config} brandHref="/user/dashboard">
+    <SidebarLayout config={config} brandHref="/dashboard">
       {children}
     </SidebarLayout>
   );
