@@ -1,8 +1,10 @@
 "use client";
 
+import { SlantOutOfStockBadge } from "@/components/common/product/slant-out-of-stock-badge";
 import {
   getColorOptionsForSize,
   getUniqueSizes,
+  isSizeInStock,
   type VariantColorOption,
 } from "@/lib/product-variants";
 import { cn } from "@/lib/utils";
@@ -16,16 +18,6 @@ type CheckoutVariantPickerProps = {
   onSizeChange: (size: string) => void;
   onColorChange: (colorId: string) => void;
 };
-
-function optionButtonClass(selected: boolean, disabled: boolean) {
-  return cn(
-    "rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
-    selected
-      ? "border-neutral-400 bg-neutral-200 text-neutral-900 ring-1 ring-neutral-300/80"
-      : "border-black/15 bg-white/60 text-black hover:bg-neutral-50",
-    disabled && "cursor-not-allowed opacity-40",
-  );
-}
 
 export function CheckoutVariantPicker({
   variants,
@@ -59,17 +51,25 @@ export function CheckoutVariantPicker({
         {sizes.length <= 6 ? (
           <div className="flex flex-wrap gap-2" role="group" aria-label="Size">
             {sizes.map((size) => {
-              const inStock = variants.some((v) => v.size === size && v.stock > 0);
+              const inStock = isSizeInStock(variants, size);
               return (
-                <button
-                  key={size}
-                  type="button"
-                  disabled={!inStock}
-                  onClick={() => onSizeChange(size)}
-                  className={optionButtonClass(selectedSize === size, !inStock)}
-                >
-                  {size}
-                </button>
+                <div key={size} className="relative overflow-hidden rounded-lg">
+                  <button
+                    type="button"
+                    disabled={!inStock}
+                    onClick={() => onSizeChange(size)}
+                    className={cn(
+                      "rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
+                      selectedSize === size
+                        ? "border-neutral-400 bg-neutral-200 text-neutral-900 ring-1 ring-neutral-300/80"
+                        : "border-black/15 bg-white/60 text-black hover:bg-neutral-50",
+                      !inStock && "cursor-not-allowed opacity-40",
+                    )}
+                  >
+                    {size}
+                  </button>
+                  {!inStock ? <SlantOutOfStockBadge /> : null}
+                </div>
               );
             })}
           </div>
@@ -84,7 +84,7 @@ export function CheckoutVariantPicker({
               Select size
             </option>
             {sizes.map((size) => {
-              const inStock = variants.some((v) => v.size === size && v.stock > 0);
+              const inStock = isSizeInStock(variants, size);
               return (
                 <option key={size} value={size} disabled={!inStock}>
                   {size}
@@ -109,8 +109,11 @@ export function CheckoutVariantPicker({
                 disabled={color.stock <= 0}
                 onClick={() => onColorChange(color.color_id)}
                 className={cn(
-                  optionButtonClass(selectedColorId === color.color_id, color.stock <= 0),
-                  "inline-flex items-center gap-2",
+                  "inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
+                  selectedColorId === color.color_id
+                    ? "border-neutral-400 bg-neutral-200 text-neutral-900 ring-1 ring-neutral-300/80"
+                    : "border-black/15 bg-white/60 text-black hover:bg-neutral-50",
+                  color.stock <= 0 && "cursor-not-allowed opacity-40",
                 )}
               >
                 {color.hex_code && (
