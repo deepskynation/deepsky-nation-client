@@ -1,5 +1,6 @@
 "use client";
 
+import { SlantOutOfStockBadge } from "@/components/common/product/slant-out-of-stock-badge";
 import {
   getColorOptionsForSize,
   getUniqueSizes,
@@ -18,29 +19,6 @@ type CheckoutVariantPickerProps = {
   onColorChange: (colorId: string) => void;
 };
 
-function optionButtonClass(selected: boolean, disabled: boolean) {
-  return cn(
-    "rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
-    selected
-      ? "border-neutral-400 bg-neutral-200 text-neutral-900 ring-1 ring-neutral-300/80"
-      : "border-black/15 bg-white/60 text-black hover:bg-neutral-50",
-    disabled && "cursor-not-allowed opacity-40",
-  );
-}
-
-function SlantOutOfStockBadge() {
-  return (
-    <span
-      className="pointer-events-none absolute right-0 top-0 z-10 size-9 overflow-hidden rounded-tr-lg"
-      aria-hidden
-    >
-      <span className="absolute right-[-30px] top-[10px] block w-[72px] rotate-45 whitespace-nowrap bg-red-600 py-0.5 text-center text-[5px] font-bold uppercase leading-none tracking-tight text-white shadow-sm">
-        Out of stock
-      </span>
-    </span>
-  );
-}
-
 export function CheckoutVariantPicker({
   variants,
   selectedSize,
@@ -49,8 +27,6 @@ export function CheckoutVariantPicker({
   onColorChange,
 }: CheckoutVariantPickerProps) {
   const sizes = getUniqueSizes(variants);
-  const selectedSizeOutOfStock =
-    selectedSize !== null && !isSizeInStock(variants, selectedSize);
   const colorOptions: VariantColorOption[] = selectedSize
     ? getColorOptionsForSize(variants, selectedSize)
     : [];
@@ -69,20 +45,9 @@ export function CheckoutVariantPicker({
       </div>
 
       <div className="space-y-1.5">
-        <div className="flex items-center justify-between gap-2">
-          <label htmlFor="checkout-size" className="text-xs font-medium text-black/45">
-            Size
-          </label>
-          {selectedSizeOutOfStock ? (
-            <span
-              role="status"
-              aria-live="polite"
-              className="inline-flex items-center rounded-full bg-red-50 px-2 py-0.5 text-[10px] font-semibold text-red-600 ring-1 ring-inset ring-red-200"
-            >
-              Out of stock
-            </span>
-          ) : null}
-        </div>
+        <label htmlFor="checkout-size" className="text-xs font-medium text-black/45">
+          Size
+        </label>
         {sizes.length <= 6 ? (
           <div className="flex flex-wrap gap-2" role="group" aria-label="Size">
             {sizes.map((size) => {
@@ -93,7 +58,13 @@ export function CheckoutVariantPicker({
                     type="button"
                     disabled={!inStock}
                     onClick={() => onSizeChange(size)}
-                    className={optionButtonClass(selectedSize === size, !inStock)}
+                    className={cn(
+                      "rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
+                      selectedSize === size
+                        ? "border-neutral-400 bg-neutral-200 text-neutral-900 ring-1 ring-neutral-300/80"
+                        : "border-black/15 bg-white/60 text-black hover:bg-neutral-50",
+                      !inStock && "cursor-not-allowed opacity-40",
+                    )}
                   >
                     {size}
                   </button>
@@ -138,8 +109,11 @@ export function CheckoutVariantPicker({
                 disabled={color.stock <= 0}
                 onClick={() => onColorChange(color.color_id)}
                 className={cn(
-                  optionButtonClass(selectedColorId === color.color_id, color.stock <= 0),
-                  "inline-flex items-center gap-2",
+                  "inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
+                  selectedColorId === color.color_id
+                    ? "border-neutral-400 bg-neutral-200 text-neutral-900 ring-1 ring-neutral-300/80"
+                    : "border-black/15 bg-white/60 text-black hover:bg-neutral-50",
+                  color.stock <= 0 && "cursor-not-allowed opacity-40",
                 )}
               >
                 {color.hex_code && (
