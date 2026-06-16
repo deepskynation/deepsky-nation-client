@@ -1,9 +1,0 @@
-Hi {{CUSTOMER_NAME}},
-
-Your order {{ORDER_NUMBER}} has been cancelled.
-
-Cancelled on: {{CANCELLED_AT}}
-
-If you did not request this cancellation or have questions, contact us.
-
-View your orders: {{ORDERS_LINK}}
