@@ -16,23 +16,23 @@ type DashboardWelcomeHeaderProps = {
 
 const QUICK_ACTIONS = [
   {
-    href: "/user/products",
+    href: "/products",
     label: "Products",
     icon: ShoppingBagIcon,
   },
   {
-    href: "/user/cart",
+    href: "/cart",
     label: "Cart",
     icon: ShoppingCartIcon,
     showCartBadge: true,
   },
   {
-    href: "/user/orders",
+    href: "/orders",
     label: "Orders",
     icon: PackageIcon,
   },
   {
-    href: "/user/profile",
+    href: "/profile",
     label: "Profile",
     icon: UserCircleIcon,
   },

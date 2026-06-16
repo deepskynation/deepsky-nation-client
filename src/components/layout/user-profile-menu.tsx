@@ -25,7 +25,7 @@ const fallbackUser: User = {
 };
 
 function getProfilePath(role: User["role"]) {
-  return role === "admin" ? "/admin/profile" : "/user/profile";
+  return role === "admin" ? "/admin/profile" : "/profile";
 }
 
 function getInitials(name: string) {

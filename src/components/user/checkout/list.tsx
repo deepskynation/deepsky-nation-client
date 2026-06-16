@@ -180,7 +180,7 @@ export function CheckoutView({ params }: CheckoutViewProps) {
 
   useEffect(() => {
     if (missingCheckoutParams) {
-      router.replace(`/user/products/${productId}`);
+      router.replace(`/products/${productId}`);
     }
   }, [missingCheckoutParams, productId, router]);
 
@@ -194,7 +194,7 @@ export function CheckoutView({ params }: CheckoutViewProps) {
         variant="flat"
         title="Product Not Found"
         description={detailError ?? "This item may have been removed or the link is invalid."}
-        action={{ href: "/user/products", label: "Back To Products" }}
+        action={{ href: "/products", label: "Back To Products" }}
       />
     );
   }
@@ -203,9 +203,9 @@ export function CheckoutView({ params }: CheckoutViewProps) {
     return <CenteredLoading message="Returning to product…" />;
   }
 
-  const checkoutReturnPath = `/user/checkout/${productId}?${searchParams.toString()}`;
+  const checkoutReturnPath = `/checkout/${productId}?${searchParams.toString()}`;
   const loginHref = buildLoginRedirectPath(checkoutReturnPath);
-  const productHref = `/user/products/${productId}`;
+  const productHref = `/products/${productId}`;
 
   if (!authInitialized) {
     return <CenteredLoading message="Checking your session…" />;
@@ -373,7 +373,7 @@ export function CheckoutView({ params }: CheckoutViewProps) {
     if (!open) {
       setOrderPlaced(false);
       setPlacedOrder(null);
-      router.push("/user/products");
+      router.push("/products");
     }
   };
 
@@ -385,7 +385,7 @@ export function CheckoutView({ params }: CheckoutViewProps) {
             <div className="space-y-1" />
             <ol className="flex items-center gap-2 text-xs font-medium text-black/45">
               <li>
-                <Link href="/user/products" className="hover:text-black">
+                <Link href="/products" className="hover:text-black">
                   Products
                 </Link>
               </li>

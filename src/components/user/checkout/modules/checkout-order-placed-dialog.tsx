@@ -118,13 +118,13 @@ export function CheckoutOrderPlacedDialog({
 
           <div className="flex flex-col gap-2 border-t border-black/8 pt-4">
             <Link
-              href="/user/orders"
+              href="/orders"
               className="flex h-11 w-full cursor-pointer items-center justify-center rounded-md bg-black text-sm font-medium text-white transition-colors hover:bg-black/90"
             >
               View my orders
             </Link>
             <Link
-              href="/user/products"
+              href="/products"
               className="flex h-11 w-full cursor-pointer items-center justify-center rounded-md border border-black/15 bg-white text-sm font-medium text-black transition-colors hover:bg-neutral-50"
             >
               Continue Shopping

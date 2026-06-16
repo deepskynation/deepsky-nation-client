@@ -46,7 +46,7 @@ export function OrdersTableRow({
     }
   };
 
-  const detailHref = `/user/orders/${order.id}`;
+  const detailHref = `/orders/${order.id}`;
 
   return (
     <>

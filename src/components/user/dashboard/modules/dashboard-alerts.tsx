@@ -33,7 +33,7 @@ function buildAlerts(user: User | null, profileIncomplete: boolean, orders: ApiO
       tone: "warning",
       title: "Complete Your Delivery Profile",
       description: "Add your phone and address for faster checkout next time.",
-      href: "/user/profile",
+      href: "/profile",
       actionLabel: "Update Profile",
       icon: UserCircleIcon,
     });
@@ -46,7 +46,7 @@ function buildAlerts(user: User | null, profileIncomplete: boolean, orders: ApiO
       tone: "info",
       title: "Order Awaiting Review",
       description: `${formatOrderNumber(pendingOrder.order_number)} is pending admin approval.`,
-      href: `/user/orders/${pendingOrder.id}`,
+      href: `/orders/${pendingOrder.id}`,
       actionLabel: "View Order",
       icon: PackageIcon,
     });
@@ -61,7 +61,7 @@ function buildAlerts(user: User | null, profileIncomplete: boolean, orders: ApiO
       description:
         rejectedOrder.rejection_reason?.trim() ||
         `${formatOrderNumber(rejectedOrder.order_number)} was not approved.`,
-      href: `/user/orders/${rejectedOrder.id}`,
+      href: `/orders/${rejectedOrder.id}`,
       actionLabel: "View Details",
       icon: AlertTriangleIcon,
     });
@@ -74,7 +74,7 @@ function buildAlerts(user: User | null, profileIncomplete: boolean, orders: ApiO
       tone: "success",
       title: "Order On The Way",
       description: `${formatOrderNumber(shippedOrder.order_number)} has been shipped.`,
-      href: `/user/orders/${shippedOrder.id}`,
+      href: `/orders/${shippedOrder.id}`,
       actionLabel: "Track Order",
       icon: TruckIcon,
     });

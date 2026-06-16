@@ -255,7 +255,7 @@ export function OrderDetailContent({
                           ) : null}
                           {productId && product ? (
                             <Link
-                              href={`/user/products/${productId}`}
+                              href={`/products/${productId}`}
                               className="text-xs text-black/50 underline-offset-2 hover:text-black hover:underline"
                             >
                               Buy again

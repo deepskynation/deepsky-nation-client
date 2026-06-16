@@ -92,7 +92,7 @@ export function CartOrderSummary({
       </button>
 
       <Link
-        href="/user/products"
+        href="/products"
         className="mt-4 block text-center text-sm text-black/45 underline-offset-2 transition-colors hover:text-black hover:underline"
       >
         Continue Shopping

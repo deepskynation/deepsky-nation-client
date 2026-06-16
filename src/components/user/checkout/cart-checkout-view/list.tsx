@@ -160,7 +160,7 @@ export function CartCheckoutView() {
       selectedIds.length === 0 &&
       (cart?.items.length ?? 0) > 0
     ) {
-      router.replace("/user/cart");
+      router.replace("/cart");
     }
   }, [
     authInitialized,
@@ -326,7 +326,7 @@ export function CartCheckoutView() {
   }
 
   if (!isAuthenticated) {
-    const loginHref = buildLoginRedirectPath("/user/checkout");
+    const loginHref = buildLoginRedirectPath("/checkout");
     return (
       <AuthRequiredPage
         title="Sign In To Checkout"
@@ -348,7 +348,7 @@ export function CartCheckoutView() {
           <div className="mx-auto max-w-lg px-6 py-16 text-center">
             <p className="text-sm text-black/55">Your cart is empty.</p>
             <Link
-              href="/user/products"
+              href="/products"
               className="mt-4 inline-block text-sm font-medium text-black underline-offset-2 hover:underline"
             >
               Browse Products
@@ -383,7 +383,7 @@ export function CartCheckoutView() {
             </div>
             <ol className="flex items-center gap-2 text-xs font-medium text-black/45">
               <li>
-                <Link href="/user/cart" className="hover:text-black">
+                <Link href="/cart" className="hover:text-black">
                   Cart
                 </Link>
               </li>
@@ -455,7 +455,7 @@ export function CartCheckoutView() {
               {hasUnavailable ? (
                 <p className="text-sm text-amber-800">
                   Remove unavailable items in your{" "}
-                  <Link href="/user/cart" className="underline">
+                  <Link href="/cart" className="underline">
                     cart
                   </Link>{" "}
                   before placing your order.
@@ -491,7 +491,7 @@ export function CartCheckoutView() {
                   {checkoutButtonLabel}
                 </button>
                 <Link
-                  href="/user/cart"
+                  href="/cart"
                   className="text-center text-sm text-black/50 underline-offset-2 hover:text-black hover:underline"
                 >
                   Back To Cart
@@ -508,7 +508,7 @@ export function CartCheckoutView() {
           if (!open) {
             setOrderPlaced(false);
             setPlacedOrder(null);
-            router.push("/user/orders");
+            router.push("/orders");
           }
         }}
         order={placedOrder}

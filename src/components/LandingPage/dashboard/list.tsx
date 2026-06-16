@@ -54,12 +54,12 @@ export default function DashboardList() {
 
   const navItems = dashboardHeaderMenuItems;
 
-  const isLandingPage = pathname === "/" || pathname === "/dashboard";
+  const isLandingPage = pathname === "/";
 
   const isActive = (href?: string) => {
     if (!href || !isLandingPage) return false;
 
-    if (href === "/" || href === "/dashboard") {
+    if (href === "/") {
       return activeHash === "";
     }
 
@@ -216,7 +216,7 @@ export default function DashboardList() {
               <Link
                 href="/#products"
                 onClick={(event) => {
-                  if (pathname === "/" || pathname === "/dashboard") {
+                  if (pathname === "/") {
                     event.preventDefault();
                     document
                       .getElementById("products")

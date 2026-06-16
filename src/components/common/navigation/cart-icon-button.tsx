@@ -15,7 +15,7 @@ export type CartIconButtonProps = {
 
 export function CartIconButton({
   count = 0,
-  href = "/user/cart",
+  href = "/cart",
   label = "Cart",
   className,
   iconClassName = "size-5",

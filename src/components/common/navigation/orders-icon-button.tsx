@@ -12,7 +12,7 @@ export type OrdersIconButtonProps = {
 };
 
 export function OrdersIconButton({
-  href = "/user/orders",
+  href = "/orders",
   label = "Orders",
   className,
   iconClassName = "size-5",

@@ -11,6 +11,15 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   // Allow LAN IP access in dev (Next.js blocks cross-origin /_next/* by default).
   allowedDevOrigins,
+  async redirects() {
+    return [
+      {
+        source: "/user/:path*",
+        destination: "/:path*",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

@@ -47,7 +47,7 @@ export function ProductsCategorySection({
               product={product}
               priority={index < priorityCount}
               variant={cardVariant}
-              href={`/user/products/${product.id}`}
+              href={`/products/${product.id}`}
             />
           </AnimateInView>
         ))}

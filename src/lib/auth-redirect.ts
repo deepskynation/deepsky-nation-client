@@ -15,7 +15,15 @@ export function buildLoginRedirectPath(returnPath: string): string {
   return `/login?redirect=${encodeURIComponent(safe)}`;
 }
 
-/** Post-login destination; only honors redirects that match the user's role prefix. */
+const NON_SHOP_REDIRECT_PREFIXES = ["/admin", "/login", "/verify-email"] as const;
+
+function isShopRedirectPath(path: string): boolean {
+  return !NON_SHOP_REDIRECT_PREFIXES.some(
+    (prefix) => path === prefix || path.startsWith(`${prefix}/`),
+  );
+}
+
+/** Post-login destination; only honors redirects that match the user's role area. */
 export function getPostLoginPath(
   role: UserRole,
   redirect?: string | null,
@@ -29,7 +37,7 @@ export function getPostLoginPath(
     return safe;
   }
 
-  if (role === "user" && safe.startsWith("/user")) {
+  if (role === "user" && isShopRedirectPath(safe)) {
     return safe;
   }
 

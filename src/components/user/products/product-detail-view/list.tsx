@@ -94,7 +94,7 @@ function buildCheckoutHref(
   if (variantId) {
     search.set("variantId", variantId);
   }
-  return `/user/checkout/${productId}?${search.toString()}`;
+  return `/checkout/${productId}?${search.toString()}`;
 }
 
 export function ProductDetailView({ params }: ProductDetailViewProps) {
@@ -172,7 +172,7 @@ export function ProductDetailView({ params }: ProductDetailViewProps) {
         variant="flat"
         title="Product Not Found"
         description={detailError ?? "This item may have been removed or the link is invalid."}
-        action={{ href: "/user/products", label: "Back To Products" }}
+        action={{ href: "/products", label: "Back To Products" }}
       />
     );
   }
@@ -257,7 +257,7 @@ export function ProductDetailView({ params }: ProductDetailViewProps) {
       return;
     }
 
-    if (!requireAuth(`/user/products/${productId}`)) {
+    if (!requireAuth(`/products/${productId}`)) {
       return;
     }
 
@@ -310,7 +310,7 @@ export function ProductDetailView({ params }: ProductDetailViewProps) {
         <div className="mx-auto max-w-6xl px-6 py-8 lg:px-12 lg:py-10">
           <ol className="mb-8 flex items-center gap-2 text-xs font-medium text-black/45">
             <li>
-              <Link href="/user/products" className="hover:text-black">
+              <Link href="/products" className="hover:text-black">
                 Products
               </Link>
             </li>
@@ -509,7 +509,7 @@ export function ProductDetailView({ params }: ProductDetailViewProps) {
               </div>
 
               <Link
-                href="/user/products"
+                href="/products"
                 className="mt-6 inline-flex text-sm text-black/55 transition-colors hover:text-black"
               >
                 ← Back To Products

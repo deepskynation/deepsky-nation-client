@@ -91,7 +91,7 @@ export function ProductDetailYouMayAlsoLike({
               <ProductCard
                 product={product}
                 priority={index < 2}
-                href={`/user/products/${product.id}`}
+                href={`/products/${product.id}`}
               />
             </AnimateInView>
           ))}

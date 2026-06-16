@@ -71,7 +71,7 @@ export function CheckoutOrderReview({
   placeOrderDisabled,
   onAddToCart,
   addToCartDisabled,
-  backHref = "/user/products",
+  backHref = "/products",
 }: CheckoutOrderReviewProps) {
   return (
     <div className="space-y-4">
