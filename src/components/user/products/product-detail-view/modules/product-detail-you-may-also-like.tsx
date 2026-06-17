@@ -87,7 +87,7 @@ export function ProductDetailYouMayAlsoLike({
       ) : (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:gap-4">
           {relatedProducts.map((product, index) => (
-            <AnimateInView key={product.id} delay={index * 60}>
+            <AnimateInView key={product.id} className="h-full" delay={index * 60}>
               <ProductCard
                 product={product}
                 priority={index < 2}

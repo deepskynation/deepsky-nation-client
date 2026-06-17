@@ -330,6 +330,10 @@ export const fetchReleasedProducts = createAsyncThunk<
   const state = getState().products;
   const mergedQuery = { ...state.shopListQuery, ...query };
 
+  if (!mergedQuery.category_id) {
+    delete mergedQuery.category_id;
+  }
+
   try {
     const response = await fetch(buildReleasedProductsUrl(mergedQuery));
 

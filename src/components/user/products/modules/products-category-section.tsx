@@ -42,7 +42,7 @@ export function ProductsCategorySection({
         )}
       >
         {products.map((product, index) => (
-          <AnimateInView key={product.id} delay={index * 60}>
+          <AnimateInView key={product.id} className="h-full" delay={index * 60}>
             <ProductCard
               product={product}
               priority={index < priorityCount}

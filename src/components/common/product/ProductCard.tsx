@@ -118,32 +118,44 @@ export function ProductCard({
   const cardClassName = cn(
     glassCardClassName,
     glassCardHoverClassName,
-    "group block w-full motion-safe:hover:-translate-y-1",
+    "group flex h-full w-full flex-col motion-safe:hover:-translate-y-1",
     href && "cursor-pointer",
+  );
+
+  const descriptionClassName = cn(
+    "text-xs leading-relaxed text-black/55",
+    isLanding
+      ? "line-clamp-2 min-h-[2.5rem]"
+      : "line-clamp-2 min-h-[2.5rem] sm:line-clamp-3 sm:min-h-[3.75rem]",
   );
 
   const content = (
     <>
-      <div className={cn(glassMediaFrameClassName, "relative aspect-[4/5] overflow-hidden")}>
+      <div
+        className={cn(
+          glassMediaFrameClassName,
+          "relative aspect-[4/5] shrink-0 overflow-hidden",
+        )}
+      >
         <ProductCardMedia product={product} priority={priority} />
       </div>
 
-      <div className="mt-3 space-y-1.5 px-1 pb-1 sm:px-2">
-        <h3 className="text-sm font-semibold text-black sm:text-base">{product.title}</h3>
-        <p
-          className={cn(
-            "text-xs leading-relaxed text-black/55",
-            isLanding ? "line-clamp-2" : "line-clamp-2 sm:line-clamp-3",
-          )}
-        >
-          {description}
+      <div className="mt-3 flex flex-1 flex-col px-1 sm:px-2">
+        <h3 className="line-clamp-2 text-sm font-semibold text-black sm:text-base">
+          {product.title}
+        </h3>
+
+        <div className="mt-1.5 flex flex-1 flex-col">
+          <p className={descriptionClassName}>{description}</p>
           {!isLanding && href ? (
-            <span className="font-medium text-black/70"> See more</span>
+            <span className="mt-0.5 text-xs font-medium leading-none text-black/70">
+              See more
+            </span>
           ) : null}
-        </p>
+        </div>
       </div>
 
-      <div className="mt-2 px-1 pb-2 sm:mt-3 sm:px-2">
+      <div className="mt-auto px-1 pb-2 pt-2 sm:px-2">
         <span className={glassPriceClassName}>PHP {price.toFixed(2)}</span>
       </div>
     </>
