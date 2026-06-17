@@ -18,6 +18,15 @@ export const contactUsContent = {
   },
 };
 
+export const customerServiceContent = {
+  label: "Support",
+  title: "Customer Service",
+  description:
+    "For inquiries, concerns, refund requests, and other support matters, reach us through our official channels below.",
+  refundNote:
+    "Refund requests are reviewed manually by our team. This site does not process refunds automatically.",
+};
+
 export const footerContent = {
   brand: "Deepsky",
   copyright: `© ${new Date().getFullYear()} Deepsky. All rights reserved.`,

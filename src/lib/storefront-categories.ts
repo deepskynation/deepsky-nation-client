@@ -8,12 +8,19 @@ export function buildStorefrontCatalogQuery(
   page: number,
   categoryId = "all",
 ): ShopProductsQuery {
-  return {
+  const query: ShopProductsQuery = {
     page,
     page_size: STOREFRONT_CATALOG_PAGE_SIZE,
     include_gallery_images: true,
-    ...(categoryId !== "all" ? { category_id: categoryId } : {}),
   };
+
+  if (categoryId !== "all") {
+    query.category_id = categoryId;
+  } else {
+    query.category_id = undefined;
+  }
+
+  return query;
 }
 
 export const STOREFRONT_CATALOG_QUERY = buildStorefrontCatalogQuery(1);

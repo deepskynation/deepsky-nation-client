@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronDownIcon, LogOutIcon, UserIcon } from "lucide-react";
+import { ChevronDownIcon, HeadphonesIcon, LogOutIcon, UserIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -157,6 +157,21 @@ export function UserProfileMenu({
             <UserIcon className="size-4 shrink-0" strokeWidth={1.75} />
             Profile
           </Link>
+
+          {user.role !== "admin" ? (
+            <Link
+              href="/customer-service"
+              role="menuitem"
+              onClick={() => setOpen(false)}
+              className={cn(
+                "flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-neutral-700 transition-colors",
+                sidebarHoverClassName,
+              )}
+            >
+              <HeadphonesIcon className="size-4 shrink-0" strokeWidth={1.75} />
+              Customer Service
+            </Link>
+          ) : null}
 
           <button
             type="button"
