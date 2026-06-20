@@ -6,7 +6,6 @@ import {
   glassCardClassName,
   glassCardHoverClassName,
   glassMediaFrameClassName,
-  glassPriceClassName,
 } from "@/lib/glass-styles";
 import { getProductCarouselSrcs } from "@/lib/product-image";
 import { cn } from "@/lib/utils";
@@ -112,21 +111,15 @@ export function ProductCard({
   variant = "shop",
 }: ProductCardProps) {
   const price = parseApiProductPrice(product.price);
-  const description = product.description?.trim() || "Deepsky collection.";
-  const isLanding = variant === "landing";
+
+  const productCardTextClassName =
+    "text-xs font-normal leading-snug text-black/90 sm:text-sm";
 
   const cardClassName = cn(
     glassCardClassName,
     glassCardHoverClassName,
     "group flex h-full w-full flex-col motion-safe:hover:-translate-y-1",
     href && "cursor-pointer",
-  );
-
-  const descriptionClassName = cn(
-    "text-xs leading-relaxed text-black/55",
-    isLanding
-      ? "line-clamp-2 min-h-[2.5rem]"
-      : "line-clamp-2 min-h-[2.5rem] sm:line-clamp-3 sm:min-h-[3.75rem]",
   );
 
   const content = (
@@ -140,23 +133,19 @@ export function ProductCard({
         <ProductCardMedia product={product} priority={priority} />
       </div>
 
-      <div className="mt-3 flex flex-1 flex-col px-1 sm:px-2">
-        <h3 className="line-clamp-2 text-sm font-semibold text-black sm:text-base">
+      <div className="mt-3 flex flex-1 flex-col px-1 pb-2 sm:px-2">
+        <h4
+          className={cn(
+            productCardTextClassName,
+            "text-[11px] sm:text-xs line-clamp-2 uppercase tracking-wide",
+          )}
+        >
           {product.title}
-        </h3>
-
-        <div className="mt-1.5 flex flex-1 flex-col">
-          <p className={descriptionClassName}>{description}</p>
-          {!isLanding && href ? (
-            <span className="mt-0.5 text-xs font-medium leading-none text-black/70">
-              See more
-            </span>
-          ) : null}
-        </div>
-      </div>
-
-      <div className="mt-auto px-1 pb-2 pt-2 sm:px-2">
-        <span className={glassPriceClassName}>PHP {price.toFixed(2)}</span>
+        </h4>
+        <p className={cn(productCardTextClassName, "mt-1.5 tabular-nums")}>
+          <span className="text-[1.2em] leading-none">₱</span>
+          {price.toFixed(2)} PHP
+        </p>
       </div>
     </>
   );

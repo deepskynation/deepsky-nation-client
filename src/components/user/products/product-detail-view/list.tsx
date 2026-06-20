@@ -26,6 +26,7 @@ import {
   getColorOptionsForSize,
   getVariantUnitPrice,
 } from "@/lib/product-variants";
+import { getStorefrontCatalogHref } from "@/lib/storefront-categories";
 import {
   glassMediaFlatClassName,
   glassPanelFlatClassName,
@@ -40,6 +41,7 @@ import {
   selectProductDetailError,
   selectProductDetailStatus,
 } from "@/store/slices/productSlice";
+import { selectIsAuthenticated } from "@/store/slices/authSlice";
 import { EmailSubscribeSection } from "@/components/common/marketing/email-subscribe-section";
 import { ProductDetailYouMayAlsoLike } from "@/components/user/products/product-detail-view/modules/product-detail-you-may-also-like";
 import type { ApiProductImage } from "@/types/product";
@@ -105,6 +107,8 @@ export function ProductDetailView({ params }: ProductDetailViewProps) {
   const product = useAppSelector(selectProductDetail);
   const detailStatus = useAppSelector(selectProductDetailStatus);
   const detailError = useAppSelector(selectProductDetailError);
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const catalogHref = getStorefrontCatalogHref(isAuthenticated);
   const { requireAuth } = usePurchaseAuth();
 
   const [quantity, setQuantity] = useState(1);
@@ -172,7 +176,7 @@ export function ProductDetailView({ params }: ProductDetailViewProps) {
         variant="flat"
         title="Product Not Found"
         description={detailError ?? "This item may have been removed or the link is invalid."}
-        action={{ href: "/products", label: "Back To Products" }}
+        action={{ href: catalogHref, label: "Back To Shop" }}
       />
     );
   }
@@ -310,7 +314,7 @@ export function ProductDetailView({ params }: ProductDetailViewProps) {
         <div className="mx-auto max-w-6xl px-6 py-8 lg:px-12 lg:py-10">
           <ol className="mb-8 flex items-center gap-2 text-xs font-medium text-black/45">
             <li>
-              <Link href="/products" className="hover:text-black">
+              <Link href={catalogHref} className="hover:text-black">
                 Products
               </Link>
             </li>
@@ -509,7 +513,7 @@ export function ProductDetailView({ params }: ProductDetailViewProps) {
               </div>
 
               <Link
-                href="/products"
+                href={catalogHref}
                 className="mt-6 inline-flex text-sm text-black/55 transition-colors hover:text-black"
               >
                 ← Back To Products

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { DashboardGlassSection } from "@/components/LandingPage/dashboard/modules/dashboard-glass-section";
 import { PageStateGate } from "@/components/common/feedback/page-state-gate";
 import { DashboardAlerts } from "@/components/user/dashboard/modules/dashboard-alerts";
@@ -31,14 +32,19 @@ import {
   selectMyOrdersPreviewStatus,
 } from "@/store/slices/orderSlice";
 import {
-  fetchDashboardFeaturedProducts,
-  selectDashboardFeaturedProducts,
-  selectDashboardFeaturedProductsError,
-  selectDashboardFeaturedProductsStatus,
+  fetchReleasedProducts,
+  selectShopProducts,
+  selectShopProductsListError,
+  selectShopProductsListStatus,
 } from "@/store/slices/productSlice";
-
+import { STOREFRONT_CATALOG_FETCH_PAGE_SIZE, buildCategoryPageHrefFromParam } from "@/lib/storefront-categories";
+import { selectShopCategories } from "@/store/slices/categorySlice";
+import { EmailSubscribeSection } from "@/components/common/marketing/email-subscribe-section";
 export function UserDashboardPageContent() {
   const dispatch = useAppDispatch();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams.get("q") ?? "";
   const authInitialized = useAppSelector(selectAuthInitialized);
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const authUser = useAppSelector(selectAuthUser);
@@ -52,9 +58,10 @@ export function UserDashboardPageContent() {
   const previewOrdersStatus = useAppSelector(selectMyOrdersPreviewStatus);
   const previewOrdersError = useAppSelector(selectMyOrdersPreviewError);
 
-  const featuredProducts = useAppSelector(selectDashboardFeaturedProducts);
-  const featuredProductsStatus = useAppSelector(selectDashboardFeaturedProductsStatus);
-  const featuredProductsError = useAppSelector(selectDashboardFeaturedProductsError);
+  const shopProducts = useAppSelector(selectShopProducts);
+  const shopProductsStatus = useAppSelector(selectShopProductsListStatus);
+  const shopProductsError = useAppSelector(selectShopProductsListError);
+  const categories = useAppSelector(selectShopCategories);
 
   const profileIncomplete = useMemo(() => {
     if (!authUser) {
@@ -64,12 +71,30 @@ export function UserDashboardPageContent() {
   }, [authUser]);
 
   useEffect(() => {
+    const legacyCategoryId = searchParams.get("category");
+    if (!legacyCategoryId) {
+      return;
+    }
+
+    const href = buildCategoryPageHrefFromParam("/dashboard", categories, legacyCategoryId);
+    if (href) {
+      router.replace(href);
+    }
+  }, [categories, router, searchParams]);
+
+  useEffect(() => {
     if (!authInitialized || !isAuthenticated) {
       return;
     }
 
     void dispatch(fetchMyOrdersPreview({ page_size: 5 }));
-    void dispatch(fetchDashboardFeaturedProducts());
+    void dispatch(
+      fetchReleasedProducts({
+        page: 1,
+        page_size: STOREFRONT_CATALOG_FETCH_PAGE_SIZE,
+        include_gallery_images: true,
+      }),
+    );
   }, [authInitialized, dispatch, isAuthenticated]);
 
   return (
@@ -88,12 +113,13 @@ export function UserDashboardPageContent() {
         <DashboardGlassSection variant="light" className="min-h-full">
           <div className="mx-auto max-w-7xl space-y-10 px-6 py-8 lg:px-12 lg:py-10">
             <DashboardFeaturedProducts
-              products={featuredProducts}
-              status={featuredProductsStatus}
-              error={featuredProductsError}
+              products={shopProducts}
+              status={shopProductsStatus}
+              error={shopProductsError}
+              searchQuery={searchQuery}
             />
 
-            <div className="grid gap-4 lg:grid-cols-2">
+            {/* <div className="grid gap-4 lg:grid-cols-2">
               <DashboardCartSummary
                 itemCount={cartItemCount}
                 subtotal={cartSubtotal}
@@ -105,14 +131,16 @@ export function UserDashboardPageContent() {
                 status={previewOrdersStatus}
                 error={previewOrdersError}
               />
-            </div>
-
+            </div> */}
+{/* 
             <DashboardAlerts
               user={authUser}
               profileIncomplete={profileIncomplete}
               orders={previewOrders}
-            />
+            /> */}
+            <EmailSubscribeSection className="mt-12" />
           </div>
+          
         </DashboardGlassSection>
       </div>
     </PageStateGate>

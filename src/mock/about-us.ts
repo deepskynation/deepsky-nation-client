@@ -1,6 +1,6 @@
 export const aboutUsContent = {
-  label: "Our Story",
-  title: "Born Under the Stars",
+  label: "Deepsky",
+  title: "How it Started",
   paragraphs: [
     "Deepsky is a streetwear label built around cosmic curiosity and bold self-expression. Every piece is designed to feel personal, wearable, and unmistakably ours.",
     "We create apparel that turns everyday style into a statement — inspired by the unknown, made for the streets.",

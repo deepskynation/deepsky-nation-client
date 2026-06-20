@@ -124,7 +124,7 @@ export function CheckoutOrderPlacedDialog({
               View my orders
             </Link>
             <Link
-              href="/products"
+              href="/dashboard"
               className="flex h-11 w-full cursor-pointer items-center justify-center rounded-md border border-black/15 bg-white text-sm font-medium text-black transition-colors hover:bg-neutral-50"
             >
               Continue Shopping

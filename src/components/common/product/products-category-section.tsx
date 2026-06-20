@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { AnimateInView } from "@/components/common/animation/animate-in-view";
 import { ProductCard } from "@/components/common/product/ProductCard";
 import { cn } from "@/lib/utils";
@@ -8,6 +9,8 @@ import type { ApiProduct } from "@/types/product";
 type ProductsCategorySectionProps = {
   title: string;
   products: ApiProduct[];
+  totalCount?: number;
+  viewAllHref?: string;
   isPageLoading?: boolean;
   priorityCount?: number;
   cardVariant?: "shop" | "landing";
@@ -16,6 +19,8 @@ type ProductsCategorySectionProps = {
 export function ProductsCategorySection({
   title,
   products,
+  totalCount,
+  viewAllHref,
   isPageLoading = false,
   priorityCount = 0,
   cardVariant = "shop",
@@ -52,6 +57,19 @@ export function ProductsCategorySection({
           </AnimateInView>
         ))}
       </div>
+
+      {viewAllHref && (totalCount ?? products.length) > products.length ? (
+        <AnimateInView>
+          <div className="flex justify-center pt-1">
+            <Link
+              href={viewAllHref}
+              className="inline-flex h-10 items-center justify-center rounded-full border border-black/15 bg-black px-5 text-[11px] uppercase tracking-[0.18em] text-white transition hover:border-black hover:bg-white hover:text-black"
+            >
+              View all ({totalCount ?? products.length})
+            </Link>
+          </div>
+        </AnimateInView>
+      ) : null}
     </section>
   );
 }

@@ -53,7 +53,7 @@ export function DashboardRecentOrders({
         <div className="flex flex-1 flex-col justify-between gap-4">
           <p className="text-sm text-black/55">No orders yet.</p>
           <Link
-            href="/products"
+            href="/dashboard"
             className="inline-flex h-10 items-center justify-center rounded-full border border-black/15 bg-white px-5 text-[11px] uppercase tracking-[0.18em] text-black transition hover:border-black hover:bg-black hover:text-white"
           >
             Start shopping

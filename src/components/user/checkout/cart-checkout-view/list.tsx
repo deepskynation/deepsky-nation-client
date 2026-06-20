@@ -348,7 +348,7 @@ export function CartCheckoutView() {
           <div className="mx-auto max-w-lg px-6 py-16 text-center">
             <p className="text-sm text-black/55">Your cart is empty.</p>
             <Link
-              href="/products"
+              href="/dashboard"
               className="mt-4 inline-block text-sm font-medium text-black underline-offset-2 hover:underline"
             >
               Browse Products

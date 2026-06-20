@@ -194,7 +194,7 @@ export function CheckoutView({ params }: CheckoutViewProps) {
         variant="flat"
         title="Product Not Found"
         description={detailError ?? "This item may have been removed or the link is invalid."}
-        action={{ href: "/products", label: "Back To Products" }}
+        action={{ href: "/dashboard", label: "Back To Shop" }}
       />
     );
   }
@@ -373,7 +373,7 @@ export function CheckoutView({ params }: CheckoutViewProps) {
     if (!open) {
       setOrderPlaced(false);
       setPlacedOrder(null);
-      router.push("/products");
+      router.push("/dashboard");
     }
   };
 
@@ -385,7 +385,7 @@ export function CheckoutView({ params }: CheckoutViewProps) {
             <div className="space-y-1" />
             <ol className="flex items-center gap-2 text-xs font-medium text-black/45">
               <li>
-                <Link href="/products" className="hover:text-black">
+                <Link href="/dashboard" className="hover:text-black">
                   Products
                 </Link>
               </li>

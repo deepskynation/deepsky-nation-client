@@ -181,7 +181,7 @@ export default function UserCartPage() {
               <ShoppingCart className="size-10 text-black/25" strokeWidth={1.25} />
               <p className="text-sm text-black/55">Your cart is empty.</p>
               <Link
-                href="/products"
+                href="/dashboard"
                 className="text-sm font-medium text-black underline-offset-2 hover:underline"
               >
                 Browse Products
