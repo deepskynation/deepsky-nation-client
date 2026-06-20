@@ -134,11 +134,17 @@ export function ProductCard({
       </div>
 
       <div className="mt-3 flex flex-1 flex-col px-1 pb-2 sm:px-2">
-        <h3 className={cn(productCardTextClassName, "line-clamp-2 uppercase tracking-wide")}>
+        <h4
+          className={cn(
+            productCardTextClassName,
+            "text-[11px] sm:text-xs line-clamp-2 uppercase tracking-wide",
+          )}
+        >
           {product.title}
-        </h3>
-        <p className={cn(productCardTextClassName, "mt-1 tabular-nums")}>
-          ₱{price.toFixed(2)} PHP
+        </h4>
+        <p className={cn(productCardTextClassName, "mt-1.5 tabular-nums")}>
+          <span className="text-[1.2em] leading-none">₱</span>
+          {price.toFixed(2)} PHP
         </p>
       </div>
     </>
