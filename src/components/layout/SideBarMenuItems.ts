@@ -100,12 +100,6 @@ export const userSidebarConfig: SidebarConfig = {
           href: "/dashboard",
         },
         {
-          id: "products",
-          title: "Products",
-          icon: "shopping-bag",
-          href: "/products",
-        },
-        {
           id: "cart",
           title: "Cart",
           icon: "shopping-cart",

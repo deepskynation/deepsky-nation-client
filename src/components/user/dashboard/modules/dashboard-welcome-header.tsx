@@ -16,7 +16,7 @@ type DashboardWelcomeHeaderProps = {
 
 const QUICK_ACTIONS = [
   {
-    href: "/products",
+    href: "/dashboard",
     label: "Products",
     icon: ShoppingBagIcon,
   },

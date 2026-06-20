@@ -1,7 +1,6 @@
 import {
   UserCircleIcon,
   HomeIcon,
-  ShoppingBagIcon,
   ContactIcon,
   RulerIcon,
   PackageIcon,
@@ -27,24 +26,26 @@ export const dashboardHeaderMenuItems: MenuItemTypes[] = [
     icon: HomeIcon,
     href: "/",
   },
+
   {
-    id: "products",
-    title: "Products",
-    icon: ShoppingBagIcon,
-    href: "/#products",
+    id: "size-chart",
+    title: "Size Chart",
+    icon: RulerIcon,
+    href: "/size-chart",
   },
+
   {
     id: "about-us",
     title: "About Us",
     icon: UserCircleIcon,
-    href: "/#about-us",
+    href: "/about-us",
   },
-  {
-    id: "contact-us",
-    title: "Contact Us",
-    icon: ContactIcon,
-    href: "/#contact-us",
-  },
+  // {
+  //   id: "contact-us",
+  //   title: "Contact Us",
+  //   icon: ContactIcon,
+  //   href: "/#contact-us",
+  // },
 ];
 
 export const userHeaderMenuItems: MenuItemTypes[] = [
@@ -53,12 +54,6 @@ export const userHeaderMenuItems: MenuItemTypes[] = [
     title: "Home",
     icon: HomeIcon,
     href: "/dashboard",
-  },
-  {
-    id: "products",
-    title: "Products",
-    icon: ShoppingBagIcon,
-    href: "/products",
   },
   {
     id: "orders",

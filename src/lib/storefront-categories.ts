@@ -4,6 +4,131 @@ import { parseApiProductPrice, type ApiProduct, type ShopProductsQuery } from "@
 
 export const STOREFRONT_CATALOG_PAGE_SIZE = SHOP_PRODUCTS_PAGE_SIZE;
 
+/** Products shown per category on landing / dashboard before "View all". */
+export const CATEGORY_SECTION_PREVIEW_LIMIT = SHOP_PRODUCTS_PAGE_SIZE;
+
+/** Fetch enough released products for the full storefront grid. */
+export const STOREFRONT_CATALOG_FETCH_PAGE_SIZE = 100;
+
+const UNCATEGORIZED_SECTION_ID = "uncategorized";
+
+export type CategoryProductSlice = {
+  visible: ApiProduct[];
+  total: number;
+  hasMore: boolean;
+};
+
+export function sliceCategoryProducts(
+  products: ApiProduct[],
+  limit = CATEGORY_SECTION_PREVIEW_LIMIT,
+): CategoryProductSlice {
+  return {
+    visible: products.slice(0, limit),
+    total: products.length,
+    hasMore: products.length > limit,
+  };
+}
+
+export function encodeCategorySlug(categoryName: string): string {
+  return encodeURIComponent(categoryName.trim());
+}
+
+export function decodeCategorySlug(slug: string): string {
+  try {
+    return decodeURIComponent(slug);
+  } catch {
+    return slug;
+  }
+}
+
+export function isCategoryUuid(value: string): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+    value,
+  );
+}
+
+export function findCategoryByRouteParam(
+  categories: ApiProductCategory[],
+  param: string,
+): ApiProductCategory | undefined {
+  if (isCategoryUuid(param)) {
+    return categories.find((category) => category.id === param);
+  }
+
+  const decoded = decodeCategorySlug(param);
+  return categories.find(
+    (category) =>
+      category.category_name === decoded ||
+      category.category_name.toLowerCase() === decoded.toLowerCase(),
+  );
+}
+
+export function resolveCategoryIdFromRouteParam(
+  categories: ApiProductCategory[],
+  param: string,
+): string | null {
+  const decoded = decodeCategorySlug(param);
+  if (
+    param === UNCATEGORIZED_SECTION_ID ||
+    decoded.toLowerCase() === "uncategorized"
+  ) {
+    return UNCATEGORIZED_SECTION_ID;
+  }
+
+  const category = findCategoryByRouteParam(categories, param);
+  return category?.id ?? (isCategoryUuid(param) ? param : null);
+}
+
+export function buildCategoryPageHref(basePath: string, categoryName: string): string {
+  const slug = encodeCategorySlug(categoryName);
+  const normalized = basePath.replace(/\/$/, "") || "/";
+
+  if (normalized === "/") {
+    return `/categories/${slug}`;
+  }
+
+  return `${normalized}/categories/${slug}`;
+}
+
+export function buildCategoryPageHrefFromParam(
+  basePath: string,
+  categories: ApiProductCategory[],
+  categoryParam: string,
+): string | null {
+  const decoded = decodeCategorySlug(categoryParam);
+  if (
+    categoryParam === UNCATEGORIZED_SECTION_ID ||
+    decoded.toLowerCase() === "uncategorized"
+  ) {
+    return buildCategoryPageHref(basePath, "Uncategorized");
+  }
+
+  const category = findCategoryByRouteParam(categories, categoryParam);
+  if (!category) {
+    return null;
+  }
+
+  return buildCategoryPageHref(basePath, category.category_name);
+}
+
+/** Logo / Home link for storefront chrome (user header, product detail). */
+export function getStorefrontHomeHref(isAuthenticated: boolean): string {
+  return isAuthenticated ? "/dashboard" : "/";
+}
+
+/** Products catalog link after browsing from landing vs signed-in dashboard. */
+export function getStorefrontCatalogHref(isAuthenticated: boolean): string {
+  return isAuthenticated ? "/dashboard" : "/#products";
+}
+
+/** @deprecated Use {@link buildCategoryPageHref} with category name. */
+export function buildCategoryViewAllHref(
+  basePath: string,
+  categoryName: string,
+): string {
+  return buildCategoryPageHref(basePath, categoryName);
+}
+
 export function buildStorefrontCatalogQuery(
   page: number,
   categoryId = "all",
@@ -24,8 +149,6 @@ export function buildStorefrontCatalogQuery(
 }
 
 export const STOREFRONT_CATALOG_QUERY = buildStorefrontCatalogQuery(1);
-
-const UNCATEGORIZED_SECTION_ID = "uncategorized";
 
 export type ProductCategorySection = {
   id: string;

@@ -8,16 +8,37 @@ import { useEffect, useState } from "react";
 import { userHeaderMenuItems } from "@/components/layout/HeaderMenuItems";
 import { CartIconButton } from "@/components/common/navigation/cart-icon-button";
 import { OrdersIconButton } from "@/components/common/navigation/orders-icon-button";
+import {
+  HeaderProductSearch,
+  ProductSearchIconButton,
+  useProductSearch,
+  userHeaderProductSearchIconClassName,
+  userHeaderProductSearchMobileTriggerClassName,
+  userHeaderProductSearchTriggerClassName,
+} from "@/components/common/navigation/product-search";
 import { HeaderNavLink } from "@/components/layout/header-nav-link";
 import { UserProfileMenu } from "@/components/layout/user-profile-menu";
 import { useAppSelector } from "@/hooks";
 import { selectCartItemCount } from "@/store/slices/cartSlice";
+import { selectIsAuthenticated } from "@/store/slices/authSlice";
+import { getStorefrontHomeHref } from "@/lib/storefront-categories";
 import { glassHeaderClassName } from "@/lib/glass-styles";
 import { cn } from "@/lib/utils";
 
-function HeaderDesktopActions({ cartCount }: { cartCount: number }) {
+function HeaderDesktopActions({
+  cartCount,
+  onSearchOpen,
+}: {
+  cartCount: number;
+  onSearchOpen: () => void;
+}) {
   return (
     <div className="flex shrink-0 items-center justify-end gap-2">
+      <ProductSearchIconButton
+        onOpen={onSearchOpen}
+        className={userHeaderProductSearchTriggerClassName}
+        iconClassName={userHeaderProductSearchIconClassName}
+      />
       <OrdersIconButton />
       <CartIconButton count={cartCount} />
       <UserProfileMenu compact />
@@ -25,9 +46,20 @@ function HeaderDesktopActions({ cartCount }: { cartCount: number }) {
   );
 }
 
-function HeaderMobileActions({ cartCount }: { cartCount: number }) {
+function HeaderMobileActions({
+  cartCount,
+  onSearchOpen,
+}: {
+  cartCount: number;
+  onSearchOpen: () => void;
+}) {
   return (
     <div className="flex shrink-0 items-center justify-end gap-1">
+      <ProductSearchIconButton
+        onOpen={onSearchOpen}
+        className={userHeaderProductSearchMobileTriggerClassName}
+        iconClassName={userHeaderProductSearchIconClassName}
+      />
       <CartIconButton count={cartCount} />
       <UserProfileMenu compact />
     </div>
@@ -41,7 +73,14 @@ type UserHeaderLayoutProps = {
 export function UserHeaderLayout({ children }: UserHeaderLayoutProps) {
   const pathname = usePathname();
   const cartCount = useAppSelector(selectCartItemCount);
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const homeHref = getStorefrontHomeHref(isAuthenticated);
+  const searchBasePath = isAuthenticated ? "/dashboard" : "/";
+  const navItems = userHeaderMenuItems.map((item) =>
+    item.id === "dashboard" ? { ...item, href: homeHref } : item,
+  );
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { open: searchOpen, openSearch, closeSearch } = useProductSearch(pathname);
 
   const isActive = (href?: string) => {
     if (!href) return false;
@@ -67,23 +106,14 @@ export function UserHeaderLayout({ children }: UserHeaderLayoutProps) {
     <div className="min-h-screen bg-gradient-to-b from-neutral-100 via-white to-neutral-200/90 text-black">
       <header className={cn(glassHeaderClassName, "relative z-50")}>
         <div className="mx-auto max-w-7xl px-6 md:px-10 lg:px-12">
-          <div className="hidden items-center gap-5 py-5 md:grid md:grid-cols-[1fr_auto_1fr]">
-            <Link
-              href="/dashboard"
-              className="justify-self-start transition-opacity hover:opacity-70"
-            >
-              <Image
-                src="/deepsky-logo.png"
-                alt="Deepsky"
-                width={140}
-                height={28}
-                className="h-6 w-auto md:h-7"
-                priority
-              />
-            </Link>
-
-            <nav className="flex items-center justify-center gap-x-9">
-              {userHeaderMenuItems
+          <HeaderProductSearch
+            open={searchOpen}
+            onClose={closeSearch}
+            basePath={searchBasePath}
+          >
+          <div className="hidden items-center py-5 md:grid md:grid-cols-[1fr_auto_1fr] md:gap-5">
+            <nav className="flex items-center justify-start gap-x-9">
+              {navItems
                 .filter((item) => !item.hideInDesktopNav)
                 .map((item) => (
                   <HeaderNavLink
@@ -96,7 +126,21 @@ export function UserHeaderLayout({ children }: UserHeaderLayoutProps) {
                 ))}
             </nav>
 
-            <HeaderDesktopActions cartCount={cartCount} />
+            <Link
+              href={homeHref}
+              className="justify-self-center transition-opacity hover:opacity-70"
+            >
+              <Image
+                src="/deepsky-logo.png"
+                alt="Deepsky"
+                width={140}
+                height={28}
+                className="h-6 w-auto md:h-7"
+                priority
+              />
+            </Link>
+
+            <HeaderDesktopActions cartCount={cartCount} onSearchOpen={openSearch} />
           </div>
 
           <div className="relative md:hidden">
@@ -116,7 +160,7 @@ export function UserHeaderLayout({ children }: UserHeaderLayoutProps) {
               </button>
 
               <Link
-                href="/dashboard"
+                href={homeHref}
                 className="justify-self-center transition-opacity hover:opacity-70"
               >
                 <Image
@@ -128,7 +172,10 @@ export function UserHeaderLayout({ children }: UserHeaderLayoutProps) {
                   priority
                 />
               </Link>
-              <HeaderMobileActions cartCount={cartCount} />
+              <HeaderMobileActions
+                cartCount={cartCount}
+                onSearchOpen={openSearch}
+              />
             </div>
 
             {mobileMenuOpen ? (
@@ -145,7 +192,7 @@ export function UserHeaderLayout({ children }: UserHeaderLayoutProps) {
                     "flex flex-col gap-4",
                   )}
                 >
-                  {userHeaderMenuItems.map((item) => (
+                  {navItems.map((item) => (
                     <HeaderNavLink
                       key={item.id}
                       item={item}
@@ -160,6 +207,7 @@ export function UserHeaderLayout({ children }: UserHeaderLayoutProps) {
               </>
             ) : null}
           </div>
+          </HeaderProductSearch>
         </div>
       </header>
 
