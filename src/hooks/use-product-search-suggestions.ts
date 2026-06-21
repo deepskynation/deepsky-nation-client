@@ -22,6 +22,7 @@ export function useProductSearchSuggestions(query: string) {
     }
 
     setStatus("loading");
+    setResults([]);
     const controller = new AbortController();
 
     const timer = window.setTimeout(() => {

@@ -2,27 +2,21 @@
 
 import Link from "next/link";
 import { ChevronDownIcon, HeadphonesIcon, LogOutIcon, UserIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import {
   sidebarBorderClassName,
   sidebarHoverClassName,
 } from "@/components/layout/sidebar-styles";
 import { useAppDispatch, useAppSelector } from "@/hooks";
+import { buildLoginRedirectPath } from "@/lib/auth-redirect";
 import {
-  getAuthBootstrapUser,
   logout,
   selectAuthUser,
+  selectIsAuthenticated,
 } from "@/store/slices/authSlice";
 import { cn } from "@/lib/utils";
 import type { User } from "@/types";
-
-const fallbackUser: User = {
-  id: "guest",
-  name: "Guest",
-  email: "",
-  role: "user",
-};
 
 function getProfilePath(role: User["role"]) {
   return role === "admin" ? "/admin/profile" : "/profile";
@@ -47,15 +41,12 @@ export function UserProfileMenu({
   compact = false,
 }: UserProfileMenuProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const dispatch = useAppDispatch();
   const authUser = useAppSelector(selectAuthUser);
-  const [user, setUser] = useState<User>(fallbackUser);
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    setUser(authUser ?? getAuthBootstrapUser() ?? fallbackUser);
-  }, [authUser]);
 
   useEffect(() => {
     if (!open) return;
@@ -85,6 +76,23 @@ export function UserProfileMenu({
     router.push("/login");
   };
 
+  if (!isAuthenticated || !authUser) {
+    return (
+      <Link
+        href={buildLoginRedirectPath(pathname)}
+        aria-label="Sign in"
+        className={cn(
+          "inline-flex size-8 shrink-0 items-center justify-center rounded-lg text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900",
+          compact && "size-7",
+          className,
+        )}
+      >
+        <UserIcon className="size-5" strokeWidth={1.75} />
+      </Link>
+    );
+  }
+
+  const user: User = authUser;
   const profilePath = getProfilePath(user.role);
   const initials = getInitials(user.name);
 

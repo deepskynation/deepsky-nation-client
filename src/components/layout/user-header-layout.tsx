@@ -17,6 +17,7 @@ import {
   userHeaderProductSearchTriggerClassName,
 } from "@/components/common/navigation/product-search";
 import { HeaderNavLink } from "@/components/layout/header-nav-link";
+import { LandingProfileLink } from "@/components/LandingPage/dashboard/modules/landing-profile-link";
 import { UserProfileMenu } from "@/components/layout/user-profile-menu";
 import { useAppSelector } from "@/hooks";
 import { selectCartItemCount } from "@/store/slices/cartSlice";
@@ -28,9 +29,11 @@ import { cn } from "@/lib/utils";
 function HeaderDesktopActions({
   cartCount,
   onSearchOpen,
+  isAuthenticated,
 }: {
   cartCount: number;
   onSearchOpen: () => void;
+  isAuthenticated: boolean;
 }) {
   return (
     <div className="flex shrink-0 items-center justify-end gap-2">
@@ -39,9 +42,21 @@ function HeaderDesktopActions({
         className={userHeaderProductSearchTriggerClassName}
         iconClassName={userHeaderProductSearchIconClassName}
       />
-      <OrdersIconButton />
-      <CartIconButton count={cartCount} />
-      <UserProfileMenu compact />
+      {isAuthenticated ? (
+        <>
+          <OrdersIconButton />
+          <CartIconButton count={cartCount} />
+          <UserProfileMenu compact />
+        </>
+      ) : (
+        <LandingProfileLink
+          className={cn(
+            userHeaderProductSearchTriggerClassName,
+            "size-7 hover:opacity-100",
+          )}
+          iconClassName={userHeaderProductSearchIconClassName}
+        />
+      )}
     </div>
   );
 }
@@ -49,9 +64,11 @@ function HeaderDesktopActions({
 function HeaderMobileActions({
   cartCount,
   onSearchOpen,
+  isAuthenticated,
 }: {
   cartCount: number;
   onSearchOpen: () => void;
+  isAuthenticated: boolean;
 }) {
   return (
     <div className="flex shrink-0 items-center justify-end gap-1">
@@ -60,8 +77,20 @@ function HeaderMobileActions({
         className={userHeaderProductSearchMobileTriggerClassName}
         iconClassName={userHeaderProductSearchIconClassName}
       />
-      <CartIconButton count={cartCount} />
-      <UserProfileMenu compact />
+      {isAuthenticated ? (
+        <>
+          <CartIconButton count={cartCount} />
+          <UserProfileMenu compact />
+        </>
+      ) : (
+        <LandingProfileLink
+          className={cn(
+            userHeaderProductSearchMobileTriggerClassName,
+            "size-9 hover:opacity-100",
+          )}
+          iconClassName={userHeaderProductSearchIconClassName}
+        />
+      )}
     </div>
   );
 }
@@ -155,6 +184,7 @@ export function UserHeaderLayout({ children }: UserHeaderLayoutProps) {
               <HeaderDesktopActions
                 cartCount={cartCount}
                 onSearchOpen={openSearch}
+                isAuthenticated={isAuthenticated}
               />
             </div>
 
@@ -190,6 +220,7 @@ export function UserHeaderLayout({ children }: UserHeaderLayoutProps) {
                 <HeaderMobileActions
                   cartCount={cartCount}
                   onSearchOpen={openSearch}
+                  isAuthenticated={isAuthenticated}
                 />
               </div>
 

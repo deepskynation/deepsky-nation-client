@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   FormEvent,
@@ -13,14 +12,14 @@ import {
 import { createPortal } from "react-dom";
 import { ArrowRight, Search, XIcon } from "lucide-react";
 import { useProductSearchSuggestions } from "@/hooks/use-product-search-suggestions";
-import { useAppSelector } from "@/hooks";
+import { useAppDispatch, useAppSelector } from "@/hooks";
 import {
-  buildProductSuggestionHref,
+  buildProductPageHref,
   clearProductSearchQueryParam,
-  resolveSearchSubmitHref,
+  resolveSearchSubmitHrefAsync,
 } from "@/lib/product-search";
 import { getProductThumbnailSrc } from "@/lib/product-image";
-import { selectShopCategories } from "@/store/slices/categorySlice";
+import { fetchShopCategories, selectShopCategories } from "@/store/slices/categorySlice";
 import { cn } from "@/lib/utils";
 import type { ApiProduct } from "@/types/product";
 
@@ -71,23 +70,27 @@ export function ProductSearchIconButton({
 
 type ProductSearchSuggestionRowProps = {
   product: ApiProduct;
-  basePath: string;
   onSelect: () => void;
 };
 
 function ProductSearchSuggestionRow({
   product,
-  basePath,
   onSelect,
 }: ProductSearchSuggestionRowProps) {
+  const router = useRouter();
   const thumbnailSrc = getProductThumbnailSrc(product);
+
+  const handleSelect = () => {
+    onSelect();
+    router.push(buildProductPageHref(product));
+  };
 
   return (
     <li>
-      <Link
-        href={buildProductSuggestionHref(basePath, product)}
-        onClick={onSelect}
-        className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-black/[0.03]"
+      <button
+        type="button"
+        onClick={handleSelect}
+        className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-black/[0.03]"
       >
         <div className="size-10 shrink-0 overflow-hidden bg-neutral-100">
           {thumbnailSrc ? (
@@ -105,34 +108,28 @@ function ProductSearchSuggestionRow({
         <span className="min-w-0 flex-1 text-[11px] leading-snug font-normal uppercase tracking-wide text-black">
           {product.title}
         </span>
-      </Link>
+      </button>
     </li>
   );
 }
 
 type ProductSearchResultsPanelProps = {
-  query: string;
-  basePath: string;
+  trimmed: string;
   dropdownId: string;
+  results: ApiProduct[];
+  isLoading: boolean;
   onNavigate: () => void;
+  onSearchSubmit: () => void;
 };
 
 function ProductSearchResultsPanel({
-  query,
-  basePath,
+  trimmed,
   dropdownId,
+  results,
+  isLoading,
   onNavigate,
+  onSearchSubmit,
 }: ProductSearchResultsPanelProps) {
-  const router = useRouter();
-  const categories = useAppSelector(selectShopCategories);
-  const trimmed = query.trim();
-  const { results, isLoading } = useProductSearchSuggestions(trimmed);
-
-  const goToSearchPage = () => {
-    router.push(resolveSearchSubmitHref(basePath, trimmed, results, categories));
-    onNavigate();
-  };
-
   if (!trimmed) {
     return null;
   }
@@ -157,7 +154,6 @@ function ProductSearchResultsPanel({
             <ProductSearchSuggestionRow
               key={product.id}
               product={product}
-              basePath={basePath}
               onSelect={onNavigate}
             />
           ))}
@@ -166,7 +162,7 @@ function ProductSearchResultsPanel({
 
       <button
         type="button"
-        onClick={goToSearchPage}
+        onClick={onSearchSubmit}
         className="flex w-full items-center justify-between border-t border-black/10 px-4 py-3.5 text-left text-sm text-black/45 transition-colors hover:bg-black/[0.03]"
       >
         <span>Search for &ldquo;{trimmed}&rdquo;</span>
@@ -188,6 +184,7 @@ export function ProductSearchBar({
   className,
 }: ProductSearchBarProps) {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -196,7 +193,12 @@ export function ProductSearchBar({
   const [query, setQuery] = useState(initialQuery);
   const categories = useAppSelector(selectShopCategories);
   const trimmedQuery = query.trim();
-  const { results: suggestionResults } = useProductSearchSuggestions(trimmedQuery);
+  const { results: suggestionResults, isLoading: suggestionsLoading } =
+    useProductSearchSuggestions(trimmedQuery);
+
+  useEffect(() => {
+    void dispatch(fetchShopCategories());
+  }, [dispatch]);
 
   useEffect(() => {
     setQuery(initialQuery);
@@ -232,6 +234,21 @@ export function ProductSearchBar({
     }
   };
 
+  const navigateToCategorySearch = async () => {
+    const trimmed = query.trim();
+    if (!trimmed) {
+      return;
+    }
+    const href = await resolveSearchSubmitHrefAsync(
+      basePath,
+      trimmed,
+      suggestionResults,
+      categories,
+    );
+    router.push(href);
+    onClose();
+  };
+
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const trimmed = query.trim();
@@ -240,10 +257,7 @@ export function ProductSearchBar({
       onClose();
       return;
     }
-    router.push(
-      resolveSearchSubmitHref(basePath, trimmed, suggestionResults, categories),
-    );
-    onClose();
+    navigateToCategorySearch();
   };
 
   return (
@@ -287,10 +301,12 @@ export function ProductSearchBar({
           {trimmedQuery ? (
             <div className="border border-t-0 border-black bg-white">
               <ProductSearchResultsPanel
-                query={query}
-                basePath={basePath}
+                trimmed={trimmedQuery}
                 dropdownId={dropdownId}
+                results={suggestionResults}
+                isLoading={suggestionsLoading}
                 onNavigate={onClose}
+                onSearchSubmit={navigateToCategorySearch}
               />
             </div>
           ) : null}

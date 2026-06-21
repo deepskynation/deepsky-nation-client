@@ -28,15 +28,30 @@ export function buildProductCategoryHref(
   return buildCategoryPageHref(basePath, name);
 }
 
-/** Category page for a preview row; falls back to product detail when uncategorized. */
-export function buildProductSuggestionHref(
+/** Product detail page for a search preview row. */
+export function buildProductPageHref(product: ApiProduct): string {
+  return `/products/${product.id}`;
+}
+
+/** Buy-now checkout for a product. */
+export function buildProductCheckoutHref(product: ApiProduct): string {
+  const search = new URLSearchParams({ quantity: "1" });
+  const firstInStock =
+    product.variants.find((variant) => variant.stock > 0) ?? product.variants[0];
+
+  if (firstInStock?.id) {
+    search.set("variantId", firstInStock.id);
+  }
+
+  return `/checkout/${product.id}?${search.toString()}`;
+}
+
+/** Category page for a product row (Enter / “Search for …”). */
+export function buildProductCategoryHrefFromProduct(
   basePath: string,
   product: ApiProduct,
-): string {
-  return (
-    buildProductCategoryHref(basePath, product.category_name) ??
-    `/products/${product.id}`
-  );
+): string | null {
+  return buildProductCategoryHref(basePath, product.category_name);
 }
 
 function findCategoryBySearchQuery(
@@ -54,7 +69,10 @@ function findCategoryBySearchQuery(
   });
 }
 
-/** Enter / “Search for …” — first result’s category, else name match, else catalog search. */
+/** Storefront category pages live at `/categories/...` regardless of auth context. */
+const CATEGORY_PAGE_BASE_PATH = "/";
+
+/** Enter / “Search for …” — category of the top preview result, else name match, else catalog search. */
 export function resolveSearchSubmitHref(
   basePath: string,
   query: string,
@@ -66,19 +84,49 @@ export function resolveSearchSubmitHref(
     return basePath.replace(/\/$/, "") || "/";
   }
 
-  const fromFirstResult = results[0]
-    ? buildProductCategoryHref(basePath, results[0].category_name)
-    : null;
-  if (fromFirstResult) {
-    return fromFirstResult;
+  if (results[0]) {
+    const fromFirstResult = buildProductCategoryHrefFromProduct(
+      CATEGORY_PAGE_BASE_PATH,
+      results[0],
+    );
+    if (fromFirstResult) {
+      return fromFirstResult;
+    }
   }
 
   const matchedCategory = findCategoryBySearchQuery(categories, trimmed);
   if (matchedCategory) {
-    return buildCategoryPageHref(basePath, matchedCategory.category_name);
+    return buildCategoryPageHref(
+      CATEGORY_PAGE_BASE_PATH,
+      matchedCategory.category_name,
+    );
   }
 
   return buildProductSearchPageHref(basePath, trimmed);
+}
+
+/** Resolves submit href, fetching preview rows when Enter is pressed before debounced suggestions load. */
+export async function resolveSearchSubmitHrefAsync(
+  basePath: string,
+  query: string,
+  cachedResults: ApiProduct[],
+  categories: ApiProductCategory[] = [],
+): Promise<string> {
+  const trimmed = query.trim();
+  if (!trimmed) {
+    return basePath.replace(/\/$/, "") || "/";
+  }
+
+  let results = cachedResults;
+  if (results.length === 0) {
+    try {
+      results = await fetchProductSearchPreview(trimmed);
+    } catch {
+      results = [];
+    }
+  }
+
+  return resolveSearchSubmitHref(basePath, trimmed, results, categories);
 }
 
 /** Removes `q` from the current URL while preserving other query params. */
