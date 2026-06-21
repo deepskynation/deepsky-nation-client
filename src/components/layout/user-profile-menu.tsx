@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ChevronDownIcon, HeadphonesIcon, LogOutIcon, UserIcon } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import {
   sidebarBorderClassName,
@@ -41,7 +41,6 @@ export function UserProfileMenu({
   compact = false,
 }: UserProfileMenuProps) {
   const router = useRouter();
-  const pathname = usePathname();
   const dispatch = useAppDispatch();
   const authUser = useAppSelector(selectAuthUser);
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
@@ -79,7 +78,7 @@ export function UserProfileMenu({
   if (!isAuthenticated || !authUser) {
     return (
       <Link
-        href={buildLoginRedirectPath(pathname)}
+        href={buildLoginRedirectPath("/dashboard")}
         aria-label="Sign in"
         className={cn(
           "inline-flex size-8 shrink-0 items-center justify-center rounded-lg text-neutral-600 transition-colors hover:bg-neutral-100 hover:text-neutral-900",

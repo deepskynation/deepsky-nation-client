@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { UserIcon } from "lucide-react";
-import { usePathname } from "next/navigation";
 import { useAppSelector } from "@/hooks";
 import { getDashboardPathForRole } from "@/lib/auth-session";
 import { buildLoginRedirectPath } from "@/lib/auth-redirect";
@@ -22,13 +21,12 @@ export function LandingProfileLink({
   className,
   iconClassName = "size-6",
 }: LandingProfileLinkProps) {
-  const pathname = usePathname();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const authUser = useAppSelector(selectAuthUser) ?? getAuthBootstrapUser();
   const href =
     isAuthenticated && authUser
       ? getDashboardPathForRole(authUser.role)
-      : buildLoginRedirectPath(pathname);
+      : buildLoginRedirectPath("/dashboard");
 
   return (
     <Link
