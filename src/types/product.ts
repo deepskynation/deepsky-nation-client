@@ -79,6 +79,8 @@ export type ShopProductsQuery = {
   page?: number;
   page_size?: number;
   category_id?: string;
+  /** Matches title, code, description, or category name. */
+  search?: string;
   featured?: boolean;
   include_model_images?: boolean;
   include_gallery_images?: boolean;

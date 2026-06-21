@@ -309,6 +309,10 @@ function buildReleasedProductsUrl(query: ShopProductsQuery): string {
   if (query.category_id) {
     params.set("category_id", query.category_id);
   }
+  const search = query.search?.trim();
+  if (search) {
+    params.set("search", search);
+  }
   if (query.featured === true) {
     params.set("featured", "true");
   }
@@ -332,6 +336,9 @@ export const fetchReleasedProducts = createAsyncThunk<
 
   if (!mergedQuery.category_id) {
     delete mergedQuery.category_id;
+  }
+  if (!mergedQuery.search?.trim()) {
+    delete mergedQuery.search;
   }
 
   try {

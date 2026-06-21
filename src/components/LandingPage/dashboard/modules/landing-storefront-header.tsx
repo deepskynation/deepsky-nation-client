@@ -13,12 +13,14 @@ import {
   useProductSearch,
 } from "@/components/common/navigation/product-search";
 import { LandingProfileLink } from "@/components/LandingPage/dashboard/modules/landing-profile-link";
-import { glassHeaderClassName } from "@/lib/glass-styles";
 import { cn } from "@/lib/utils";
 
 type LandingStorefrontHeaderProps = {
   searchQuery?: string;
 };
+
+/** Solid white bar above hero — matches Offhigh storefront header. */
+const landingHeaderBarClassName = "border-b border-black/10 bg-white shadow-none";
 
 export function LandingStorefrontHeader({
   searchQuery = "",
@@ -91,7 +93,13 @@ export function LandingStorefrontHeader({
   }, [isLandingHome]);
 
   return (
-    <header className={cn(glassHeaderClassName, "relative z-50")}>
+    <header
+      className={cn(
+        "sticky z-50",
+        landingHeaderBarClassName,
+        searchOpen && "pointer-events-none",
+      )}
+    >
       <div className="mx-auto max-w-7xl px-6 md:px-10 lg:px-12">
         <HeaderProductSearch
           open={searchOpen}

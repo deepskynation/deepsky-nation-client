@@ -5,3 +5,4 @@ export const useAppDispatch = useDispatch.withTypes<AppDispatch>();
 export const useAppSelector = useSelector.withTypes<RootState>();
 export const useAppStore = useStore.withTypes<AppStore>();
 export { usePurchaseAuth } from "@/hooks/use-purchase-auth";
+export { useProductSearchSuggestions } from "@/hooks/use-product-search-suggestions";

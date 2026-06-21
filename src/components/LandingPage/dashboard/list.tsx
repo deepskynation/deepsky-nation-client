@@ -42,14 +42,16 @@ export default function DashboardList() {
 
   useEffect(() => {
     void dispatch(fetchShopCategories());
+    const trimmedSearch = searchQuery.trim();
     void dispatch(
       fetchReleasedProducts({
         page: 1,
         page_size: STOREFRONT_CATALOG_FETCH_PAGE_SIZE,
-        include_gallery_images: true,
+        search: trimmedSearch || undefined,
+        include_gallery_images: !trimmedSearch,
       }),
     );
-  }, [dispatch]);
+  }, [dispatch, searchQuery]);
 
   useEffect(() => {
     const hash = window.location.hash.slice(1);
