@@ -9,6 +9,10 @@ export const glassCardHoverClassName =
 export const glassHeaderClassName =
   "sticky top-0 z-50 border-b border-white/40 bg-white/65 shadow-sm backdrop-blur-xl supports-backdrop-filter:bg-white/55";
 
+/** Solid white storefront header — used when search overlay is open (Offhigh-style). */
+export const storefrontHeaderBarClassName =
+  "border-b border-black/10 bg-white shadow-none";
+
 export const glassHeroBgClassName =
   "relative overflow-hidden bg-gradient-to-br from-neutral-100 via-white to-neutral-200/90";
 

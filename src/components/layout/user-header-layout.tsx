@@ -23,7 +23,7 @@ import { useAppSelector } from "@/hooks";
 import { selectCartItemCount } from "@/store/slices/cartSlice";
 import { selectIsAuthenticated } from "@/store/slices/authSlice";
 import { getStorefrontHomeHref } from "@/lib/storefront-categories";
-import { glassHeaderClassName } from "@/lib/glass-styles";
+import { glassHeaderClassName, storefrontHeaderBarClassName } from "@/lib/glass-styles";
 import { cn } from "@/lib/utils";
 
 function HeaderDesktopActions({
@@ -141,7 +141,7 @@ export function UserHeaderLayout({ children }: UserHeaderLayoutProps) {
       <header
         className={cn(
           "sticky top-0 z-50",
-          glassHeaderClassName,
+          searchOpen ? storefrontHeaderBarClassName : glassHeaderClassName,
           searchOpen && "pointer-events-none",
         )}
       >
