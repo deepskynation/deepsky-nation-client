@@ -116,6 +116,7 @@ export function ProductCard({
   variant = "shop",
 }: ProductCardProps) {
   const onSale = isProductOnSale(product);
+  const isSoldOut = product.total_stock <= 0;
   const listPrice = getProductListPrice(product);
   const displayPrice = onSale ? getProductBasePrice(product) : listPrice;
 
@@ -137,7 +138,11 @@ export function ProductCard({
           "relative aspect-[4/5] shrink-0 overflow-hidden",
         )}
       >
-        {onSale ? (
+        {isSoldOut ? (
+          <span className="absolute top-2 left-2 z-10 rounded-full bg-black px-2.5 py-0.5 text-[10px] font-medium text-white">
+            Sold out
+          </span>
+        ) : onSale ? (
           <span className="absolute top-2 left-2 z-10 rounded-md bg-red-600 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">
             Sale
           </span>
