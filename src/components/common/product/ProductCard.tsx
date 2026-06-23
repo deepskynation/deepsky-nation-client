@@ -9,7 +9,12 @@ import {
 } from "@/lib/glass-styles";
 import { getProductCarouselSrcs } from "@/lib/product-image";
 import { cn } from "@/lib/utils";
-import { parseApiProductPrice, type ApiProduct } from "@/types/product";
+import { type ApiProduct } from "@/types/product";
+import {
+  getProductBasePrice,
+  getProductListPrice,
+  isProductOnSale,
+} from "@/lib/product-variants";
 
 const CAROUSEL_INTERVAL_MS = 1000;
 
@@ -110,7 +115,9 @@ export function ProductCard({
   href,
   variant = "shop",
 }: ProductCardProps) {
-  const price = parseApiProductPrice(product.price);
+  const onSale = isProductOnSale(product);
+  const listPrice = getProductListPrice(product);
+  const displayPrice = onSale ? getProductBasePrice(product) : listPrice;
 
   const productCardTextClassName =
     "text-xs font-normal leading-snug text-black/90 sm:text-sm";
@@ -130,6 +137,11 @@ export function ProductCard({
           "relative aspect-[4/5] shrink-0 overflow-hidden",
         )}
       >
+        {onSale ? (
+          <span className="absolute top-2 left-2 z-10 rounded-md bg-red-600 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">
+            Sale
+          </span>
+        ) : null}
         <ProductCardMedia product={product} priority={priority} />
       </div>
 
@@ -142,10 +154,23 @@ export function ProductCard({
         >
           {product.title}
         </h4>
-        <p className={cn(productCardTextClassName, "mt-1.5 tabular-nums")}>
-          <span className="text-[1.2em] leading-none">₱</span>
-          {price.toFixed(2)} PHP
-        </p>
+        {onSale ? (
+          <div className="mt-1.5 flex flex-col gap-0.5 tabular-nums">
+            <p className={cn(productCardTextClassName, "text-[11px] text-black/50 line-through sm:text-xs")}>
+              <span className="text-[1.1em] leading-none">₱</span>
+              {listPrice.toFixed(2)} PHP
+            </p>
+            <p className={cn(productCardTextClassName, "text-xs font-semibold text-black sm:text-sm")}>
+              <span className="text-[1.2em] leading-none">₱</span>
+              {displayPrice.toFixed(2)} PHP
+            </p>
+          </div>
+        ) : (
+          <p className={cn(productCardTextClassName, "mt-1.5 tabular-nums")}>
+            <span className="text-[1.2em] leading-none">₱</span>
+            {displayPrice.toFixed(2)} PHP
+          </p>
+        )}
       </div>
     </>
   );

@@ -24,7 +24,9 @@ import {
   findVariant,
   formatVariantLabel,
   getColorOptionsForSize,
+  getProductListPrice,
   getVariantUnitPrice,
+  isProductOnSale,
 } from "@/lib/product-variants";
 import { getStorefrontCatalogHref } from "@/lib/storefront-categories";
 import {
@@ -188,7 +190,9 @@ export function ProductDetailView({ params }: ProductDetailViewProps) {
     selectedSize,
     selectedColorId,
   );
-  const unitPrice = getVariantUnitPrice(selectedVariant, product.price);
+  const unitPrice = getVariantUnitPrice(selectedVariant, product);
+  const onSale = isProductOnSale(product) && !selectedVariant?.price;
+  const listPrice = getProductListPrice(product);
   const maxQuantity = hasVariants
     ? Math.max(selectedVariant?.stock ?? 0, 0)
     : Math.max(product.total_stock, 0);
@@ -410,13 +414,32 @@ export function ProductDetailView({ params }: ProductDetailViewProps) {
                 <h1 className="font-serif text-2xl font-normal text-black sm:text-3xl">
                   {product.title}
                 </h1>
-                <p className="text-lg font-semibold tabular-nums text-black">
-                  PHP{" "}
-                  {unitPrice.toLocaleString(undefined, {
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 2,
-                  })}
-                </p>
+                {onSale ? (
+                  <div className="flex flex-col gap-0.5 tabular-nums">
+                    <p className="text-sm text-black/50 line-through">
+                      PHP{" "}
+                      {listPrice.toLocaleString(undefined, {
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 2,
+                      })}
+                    </p>
+                    <p className="text-lg font-semibold text-black">
+                      PHP{" "}
+                      {unitPrice.toLocaleString(undefined, {
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 2,
+                      })}
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-lg font-semibold tabular-nums text-black">
+                    PHP{" "}
+                    {unitPrice.toLocaleString(undefined, {
+                      minimumFractionDigits: 0,
+                      maximumFractionDigits: 2,
+                    })}
+                  </p>
+                )}
               </div>
 
               {product.description ? (

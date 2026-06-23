@@ -27,6 +27,7 @@ import {
   sectionTitleClassName,
 } from "@/lib/panel-styles";
 import { parseApiProductPrice } from "@/types/product";
+import { isProductOnSale } from "@/lib/product-variants";
 
 const ROLE_SECTIONS: { role: ProductImageRole; title: string }[] = [
   { role: "placeholder", title: "Placeholder 1" },
@@ -162,7 +163,18 @@ export function ProductDetailsDialog({
               </div>
               <div>
                 <dt className="text-xs font-medium text-muted-foreground">Price</dt>
-                <dd className="font-medium tabular-nums">{formatPrice(display.price)}</dd>
+                <dd className="font-medium tabular-nums">
+                  {isProductOnSale(display) && display.sale_price ? (
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-sm font-normal text-neutral-400 line-through">
+                        {formatPrice(display.price)}
+                      </span>
+                      <span>{formatPrice(display.sale_price)}</span>
+                    </div>
+                  ) : (
+                    formatPrice(display.price)
+                  )}
+                </dd>
               </div>
               <div>
                 <dt className="text-xs font-medium text-muted-foreground">Visibility</dt>

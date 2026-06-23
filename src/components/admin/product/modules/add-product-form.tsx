@@ -139,6 +139,7 @@ const initialForm = {
   title: "",
   description: "",
   price: "",
+  sale_price: "",
   visibility: "private" as ProductVisibility,
   is_featured: false,
 };
@@ -147,6 +148,7 @@ type ProductFormFieldErrors = {
   category_id?: boolean;
   title?: boolean;
   price?: boolean;
+  sale_price?: boolean;
   placeholderImage?: boolean;
   variantsGeneral?: boolean;
   variantRows?: Record<
@@ -181,6 +183,18 @@ function validateProductForm(
   if (!Number.isFinite(parsedPrice) || parsedPrice <= 0) {
     messages.push("Enter a price greater than 0.");
     fields.price = true;
+  }
+
+  const salePriceText = form.sale_price.trim();
+  if (salePriceText) {
+    const parsedSalePrice = Number(salePriceText);
+    if (!Number.isFinite(parsedSalePrice) || parsedSalePrice <= 0) {
+      messages.push("Enter a sale price greater than 0.");
+      fields.sale_price = true;
+    } else if (Number.isFinite(parsedPrice) && parsedSalePrice >= parsedPrice) {
+      messages.push("Sale price must be less than the regular price.");
+      fields.sale_price = true;
+    }
   }
 
   if (!placeholderImage) {
@@ -239,6 +253,7 @@ function scrollToFirstInvalidField(fields: ProductFormFieldErrors) {
     { active: fields.category_id, id: "product-category" },
     { active: fields.title, id: "product-title" },
     { active: fields.price, id: "product-price" },
+    { active: fields.sale_price, id: "product-sale-price" },
     { active: fields.placeholderImage, id: "product-placeholder-1" },
     { active: fields.variantsGeneral || Boolean(fields.variantRows), id: "product-variants" },
   ];
@@ -267,6 +282,9 @@ function hydrateFormFromProduct(product: ApiProduct) {
       title: product.title,
       description: product.description ?? "",
       price: String(parseApiProductPrice(product.price)),
+      sale_price: product.sale_price
+        ? String(parseApiProductPrice(product.sale_price))
+        : "",
       visibility: product.visibility,
       is_featured: Boolean(product.is_featured),
     },
@@ -390,6 +408,14 @@ export function AddProductForm({
 
   const parsedPrice = Number(form.price);
   const priceValid = Number.isFinite(parsedPrice) && parsedPrice > 0;
+  const parsedSalePrice = Number(form.sale_price);
+  const salePriceValid =
+    !form.sale_price.trim() ||
+    (Number.isFinite(parsedSalePrice) &&
+      parsedSalePrice > 0 &&
+      priceValid &&
+      parsedSalePrice < parsedPrice);
+  const hasActiveSale = form.sale_price.trim().length > 0;
 
   const clearBasicFieldError = (
     key: Exclude<keyof ProductFormFieldErrors, "variantRows">,
@@ -518,12 +544,16 @@ export function AddProductForm({
       stock: Number(row.stock),
     }));
 
+    const salePriceText = form.sale_price.trim();
+    const parsedSalePriceValue = salePriceText ? Number(salePriceText) : null;
+
     return {
       category_id: form.category_id,
       title: form.title.trim(),
       description: form.description.trim() || null,
       details: buildDetailsPayload(detailRows),
       price: parsedPrice,
+      sale_price: parsedSalePriceValue,
       visibility: form.visibility,
       is_featured: form.is_featured,
       images,
@@ -546,6 +576,7 @@ export function AddProductForm({
       description: createPayload.description,
       details: createPayload.details,
       price: createPayload.price,
+      sale_price: createPayload.sale_price ?? null,
       visibility: createPayload.visibility,
       is_featured: createPayload.is_featured,
       images: createPayload.images,
@@ -823,6 +854,59 @@ export function AddProductForm({
                 ) : null}
               </div>
 
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between gap-2">
+                  <label htmlFor="product-sale-price" className={labelClassName}>
+                    Sale price
+                  </label>
+                  {hasActiveSale ? (
+                    <button
+                      type="button"
+                      className="text-xs font-medium text-red-600 hover:text-red-700"
+                      disabled={isSubmitting}
+                      onClick={() => {
+                        clearBasicFieldError("sale_price");
+                        setForm((prev) => ({ ...prev, sale_price: "" }));
+                      }}
+                    >
+                      Remove sale
+                    </button>
+                  ) : null}
+                </div>
+                <input
+                  id="product-sale-price"
+                  type="number"
+                  min={0.01}
+                  step={0.01}
+                  value={form.sale_price}
+                  onChange={(e) => {
+                    clearBasicFieldError("sale_price");
+                    setForm((prev) => ({ ...prev, sale_price: e.target.value }));
+                  }}
+                  className={cn(
+                    fieldClassName,
+                    fieldErrors.sale_price && invalidFieldClassName,
+                  )}
+                  disabled={isSubmitting}
+                  placeholder="Optional"
+                />
+                {fieldErrors.sale_price ? (
+                  <p className="text-xs text-red-600">
+                    Sale price must be greater than 0 and less than the regular price.
+                  </p>
+                ) : form.sale_price && !salePriceValid ? (
+                  <p className="text-xs text-red-600">
+                    Sale price must be greater than 0 and less than the regular price.
+                  </p>
+                ) : (
+                  <p className={hintClassName}>
+                    Leave empty for no sale. Setting a sale price puts the product on sale.
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <label htmlFor="product-visibility" className={labelClassName}>
                   Visibility

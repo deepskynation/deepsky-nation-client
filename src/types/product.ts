@@ -45,6 +45,8 @@ export type ApiProduct = {
   description: string | null;
   details: string[] | Record<string, unknown> | null;
   price: string;
+  sale_price: string | null;
+  sale: boolean;
   visibility: ProductVisibility;
   is_featured?: boolean;
   images: ApiProductImage[];
@@ -119,6 +121,7 @@ export type CreateProductPayload = {
   description?: string | null;
   details?: string[] | Record<string, unknown> | null;
   price: number;
+  sale_price?: number | null;
   visibility?: ProductVisibility;
   is_featured?: boolean;
   images: ProductImageInput[];
@@ -132,6 +135,7 @@ export type UpdateProductPayload = {
   description?: string | null;
   details?: string[] | Record<string, unknown> | null;
   price?: number;
+  sale_price?: number | null;
   visibility?: ProductVisibility;
   is_featured?: boolean;
   images?: ProductImageInput[];

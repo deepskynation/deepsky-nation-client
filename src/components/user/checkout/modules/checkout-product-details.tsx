@@ -8,7 +8,7 @@ import {
   imagesByRole,
   PRODUCT_IMAGE_SECTIONS,
 } from "@/lib/product-image";
-import { formatVariantLabel } from "@/lib/product-variants";
+import { formatVariantLabel, getProductListPrice, isProductOnSale } from "@/lib/product-variants";
 import { toImagePreviewSrc } from "@/lib/read-image-base64";
 import type { ApiProduct, ApiProductImage, ApiProductVariant } from "@/types/product";
 
@@ -68,11 +68,32 @@ export function CheckoutProductDetails({
           <div>
             <dt className="text-xs font-medium text-black/45">Price</dt>
             <dd className="mt-0.5 font-medium tabular-nums text-black">
-              PHP{" "}
-              {unitPrice.toLocaleString(undefined, {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 2,
-              })}
+              {isProductOnSale(product) && !selectedVariant?.price ? (
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-sm text-black/50 line-through">
+                    PHP{" "}
+                    {getProductListPrice(product).toLocaleString(undefined, {
+                      minimumFractionDigits: 0,
+                      maximumFractionDigits: 2,
+                    })}
+                  </span>
+                  <span>
+                    PHP{" "}
+                    {unitPrice.toLocaleString(undefined, {
+                      minimumFractionDigits: 0,
+                      maximumFractionDigits: 2,
+                    })}
+                  </span>
+                </div>
+              ) : (
+                <>
+                  PHP{" "}
+                  {unitPrice.toLocaleString(undefined, {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 2,
+                  })}
+                </>
+              )}
             </dd>
           </div>
           <div>
