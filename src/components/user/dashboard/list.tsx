@@ -88,14 +88,16 @@ export function UserDashboardPageContent() {
     }
 
     void dispatch(fetchMyOrdersPreview({ page_size: 5 }));
+    const trimmedSearch = searchQuery.trim();
     void dispatch(
       fetchReleasedProducts({
         page: 1,
         page_size: STOREFRONT_CATALOG_FETCH_PAGE_SIZE,
-        include_gallery_images: true,
+        search: trimmedSearch || undefined,
+        include_gallery_images: !trimmedSearch,
       }),
     );
-  }, [authInitialized, dispatch, isAuthenticated]);
+  }, [authInitialized, dispatch, isAuthenticated, searchQuery]);
 
   return (
     <PageStateGate

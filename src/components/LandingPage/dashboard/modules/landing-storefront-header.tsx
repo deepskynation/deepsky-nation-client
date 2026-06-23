@@ -7,23 +7,104 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { dashboardHeaderMenuItems } from "@/components/layout/HeaderMenuItems";
 import { HeaderNavLink } from "@/components/layout/header-nav-link";
+import { CartIconButton } from "@/components/common/navigation/cart-icon-button";
+import { OrdersIconButton } from "@/components/common/navigation/orders-icon-button";
 import {
   HeaderProductSearch,
   ProductSearchIconButton,
   useProductSearch,
 } from "@/components/common/navigation/product-search";
 import { LandingProfileLink } from "@/components/LandingPage/dashboard/modules/landing-profile-link";
-import { glassHeaderClassName } from "@/lib/glass-styles";
+import { UserProfileMenu } from "@/components/layout/user-profile-menu";
+import { useAppSelector } from "@/hooks";
+import { selectCartItemCount } from "@/store/slices/cartSlice";
+import { selectIsAuthenticated } from "@/store/slices/authSlice";
+import { getStorefrontHomeHref } from "@/lib/storefront-categories";
+import { storefrontHeaderBarClassName } from "@/lib/glass-styles";
 import { cn } from "@/lib/utils";
 
 type LandingStorefrontHeaderProps = {
   searchQuery?: string;
 };
 
+/** Solid white bar above hero — matches Offhigh storefront header. */
+const landingHeaderBarClassName = storefrontHeaderBarClassName;
+
+const landingHeaderActionButtonClassName =
+  "size-10 rounded-lg text-black hover:bg-neutral-100 hover:text-neutral-900 hover:opacity-100";
+
+function LandingHeaderDesktopActions({
+  cartCount,
+  onSearchOpen,
+  isAuthenticated,
+}: {
+  cartCount: number;
+  onSearchOpen: () => void;
+  isAuthenticated: boolean;
+}) {
+  return (
+    <div className="flex items-center justify-end gap-1">
+      <ProductSearchIconButton onOpen={onSearchOpen} />
+      {isAuthenticated ? (
+        <>
+          <OrdersIconButton className={landingHeaderActionButtonClassName} />
+          <CartIconButton
+            count={cartCount}
+            className={landingHeaderActionButtonClassName}
+          />
+          <UserProfileMenu
+            compact
+            className={landingHeaderActionButtonClassName}
+          />
+        </>
+      ) : (
+        <LandingProfileLink />
+      )}
+    </div>
+  );
+}
+
+function LandingHeaderMobileActions({
+  cartCount,
+  onSearchOpen,
+  isAuthenticated,
+}: {
+  cartCount: number;
+  onSearchOpen: () => void;
+  isAuthenticated: boolean;
+}) {
+  return (
+    <div className="flex items-center justify-end gap-1">
+      <ProductSearchIconButton onOpen={onSearchOpen} />
+      {isAuthenticated ? (
+        <>
+          <CartIconButton
+            count={cartCount}
+            className={landingHeaderActionButtonClassName}
+          />
+          <UserProfileMenu
+            compact
+            className={landingHeaderActionButtonClassName}
+          />
+        </>
+      ) : (
+        <LandingProfileLink />
+      )}
+    </div>
+  );
+}
+
 export function LandingStorefrontHeader({
   searchQuery = "",
 }: LandingStorefrontHeaderProps) {
   const pathname = usePathname();
+  const cartCount = useAppSelector(selectCartItemCount);
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const homeHref = getStorefrontHomeHref(isAuthenticated);
+  const searchBasePath = isAuthenticated ? "/dashboard" : "/";
+  const navItems = dashboardHeaderMenuItems.map((item) =>
+    item.id === "dashboard" ? { ...item, href: homeHref } : item,
+  );
   const [activeHash, setActiveHash] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { open: searchOpen, openSearch, closeSearch } = useProductSearch(
@@ -91,17 +172,23 @@ export function LandingStorefrontHeader({
   }, [isLandingHome]);
 
   return (
-    <header className={cn(glassHeaderClassName, "relative z-50")}>
+    <header
+      className={cn(
+        "sticky z-50",
+        landingHeaderBarClassName,
+        searchOpen && "pointer-events-none",
+      )}
+    >
       <div className="mx-auto max-w-7xl px-6 md:px-10 lg:px-12">
         <HeaderProductSearch
           open={searchOpen}
           onClose={closeSearch}
-          basePath="/"
+          basePath={searchBasePath}
           initialQuery={searchQuery}
         >
           <div className="hidden items-center py-5 md:grid md:grid-cols-[1fr_auto_1fr] md:gap-5">
             <nav className="flex items-center justify-start gap-x-9">
-              {dashboardHeaderMenuItems.map((item) => (
+              {navItems.map((item) => (
                 <HeaderNavLink
                   key={item.id}
                   item={item}
@@ -114,7 +201,7 @@ export function LandingStorefrontHeader({
             </nav>
 
             <Link
-              href="/"
+              href={homeHref}
               className="justify-self-center transition-opacity hover:opacity-70"
             >
               <Image
@@ -127,10 +214,11 @@ export function LandingStorefrontHeader({
               />
             </Link>
 
-            <div className="flex items-center justify-end gap-1">
-              <ProductSearchIconButton onOpen={openSearch} />
-              <LandingProfileLink />
-            </div>
+            <LandingHeaderDesktopActions
+              cartCount={cartCount}
+              onSearchOpen={openSearch}
+              isAuthenticated={isAuthenticated}
+            />
           </div>
 
           <div className="relative md:hidden">
@@ -149,7 +237,10 @@ export function LandingStorefrontHeader({
                 )}
               </button>
 
-              <Link href="/" className="justify-self-center transition-opacity hover:opacity-70">
+              <Link
+                href={homeHref}
+                className="justify-self-center transition-opacity hover:opacity-70"
+              >
                 <Image
                   src="/deepsky-logo.png"
                   alt="Deepsky"
@@ -160,10 +251,11 @@ export function LandingStorefrontHeader({
                 />
               </Link>
 
-              <div className="flex items-center justify-end gap-1">
-                <ProductSearchIconButton onOpen={openSearch} />
-                <LandingProfileLink />
-              </div>
+              <LandingHeaderMobileActions
+                cartCount={cartCount}
+                onSearchOpen={openSearch}
+                isAuthenticated={isAuthenticated}
+              />
             </div>
 
             {mobileMenuOpen ? (
@@ -180,7 +272,7 @@ export function LandingStorefrontHeader({
                     "flex flex-col gap-4",
                   )}
                 >
-                  {dashboardHeaderMenuItems.map((item) => (
+                  {navItems.map((item) => (
                     <HeaderNavLink
                       key={item.id}
                       item={item}

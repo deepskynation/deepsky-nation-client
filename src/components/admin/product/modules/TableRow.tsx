@@ -18,6 +18,7 @@ import {
 } from "@/store/slices/productSlice";
 import type { ApiProduct, ProductVisibility } from "@/types/product";
 import { parseApiProductPrice } from "@/types/product";
+import { isProductOnSale } from "@/lib/product-variants";
 
 export type TableRowProps = {
   product: ApiProduct;
@@ -54,6 +55,8 @@ export default function TableRow({ product, className, onEdit }: TableRowProps) 
   const [deleteOpen, setDeleteOpen] = useState(false);
 
   const priceLabel = formatPrice(product.price);
+  const salePriceLabel = product.sale_price ? formatPrice(product.sale_price) : null;
+  const onSale = isProductOnSale(product);
   const dateAddedLabel = formatDate(product.created_at);
   const isDeleting = deleteStatus === "loading";
 
@@ -111,7 +114,16 @@ export default function TableRow({ product, className, onEdit }: TableRowProps) 
         </td>
 
         <td className="px-4 py-3.5 text-right text-sm font-medium whitespace-nowrap text-neutral-900 tabular-nums">
-          {priceLabel}
+          {onSale && salePriceLabel ? (
+            <div className="flex flex-col items-end gap-0.5">
+              <span className="text-xs font-normal text-neutral-400 line-through">
+                {priceLabel}
+              </span>
+              <span>{salePriceLabel}</span>
+            </div>
+          ) : (
+            priceLabel
+          )}
         </td>
 
         <td className="px-4 py-3.5 text-right whitespace-nowrap">

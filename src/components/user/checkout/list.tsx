@@ -224,7 +224,7 @@ export function CheckoutView({ params }: CheckoutViewProps) {
 
   const quantity = quantityFromUrl!;
   const thumbnailSrc = getProductThumbnailSrc(product);
-  const unitPrice = getVariantUnitPrice(selectedVariant ?? undefined, product.price);
+  const unitPrice = getVariantUnitPrice(selectedVariant ?? undefined, product);
   const maxQuantity = hasVariants
     ? Math.max(selectedVariant?.stock ?? 0, 0)
     : Math.max(product.total_stock, 0);

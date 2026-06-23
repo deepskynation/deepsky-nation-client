@@ -45,6 +45,8 @@ export type ApiProduct = {
   description: string | null;
   details: string[] | Record<string, unknown> | null;
   price: string;
+  sale_price: string | null;
+  sale: boolean;
   visibility: ProductVisibility;
   is_featured?: boolean;
   images: ApiProductImage[];
@@ -79,6 +81,8 @@ export type ShopProductsQuery = {
   page?: number;
   page_size?: number;
   category_id?: string;
+  /** Matches title, code, description, or category name. */
+  search?: string;
   featured?: boolean;
   include_model_images?: boolean;
   include_gallery_images?: boolean;
@@ -117,6 +121,7 @@ export type CreateProductPayload = {
   description?: string | null;
   details?: string[] | Record<string, unknown> | null;
   price: number;
+  sale_price?: number | null;
   visibility?: ProductVisibility;
   is_featured?: boolean;
   images: ProductImageInput[];
@@ -130,6 +135,7 @@ export type UpdateProductPayload = {
   description?: string | null;
   details?: string[] | Record<string, unknown> | null;
   price?: number;
+  sale_price?: number | null;
   visibility?: ProductVisibility;
   is_featured?: boolean;
   images?: ProductImageInput[];

@@ -1,4 +1,4 @@
-import type { ApiProductVariant } from "@/types/product";
+import type { ApiProduct, ApiProductVariant } from "@/types/product";
 import { parseApiProductPrice } from "@/types/product";
 
 export type VariantColorOption = {
@@ -67,14 +67,38 @@ export function findVariant(
   );
 }
 
+export function isProductOnSale(
+  product: Pick<ApiProduct, "sale_price" | "sale">,
+): boolean {
+  if (product.sale) {
+    return true;
+  }
+  return product.sale_price != null && product.sale_price !== "";
+}
+
+export function getProductBasePrice(
+  product: Pick<ApiProduct, "price" | "sale_price" | "sale">,
+): number {
+  if (isProductOnSale(product)) {
+    return parseApiProductPrice(product.sale_price!);
+  }
+  return parseApiProductPrice(product.price);
+}
+
+export function getProductListPrice(
+  product: Pick<ApiProduct, "price">,
+): number {
+  return parseApiProductPrice(product.price);
+}
+
 export function getVariantUnitPrice(
   variant: ApiProductVariant | undefined,
-  productPrice: string,
+  product: Pick<ApiProduct, "price" | "sale_price" | "sale">,
 ): number {
   if (variant?.price) {
     return parseApiProductPrice(variant.price);
   }
-  return parseApiProductPrice(productPrice);
+  return getProductBasePrice(product);
 }
 
 export function formatVariantLabel(variant: ApiProductVariant): string {

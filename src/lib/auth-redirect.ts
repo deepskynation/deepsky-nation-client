@@ -29,7 +29,7 @@ export function getPostLoginPath(
   redirect?: string | null,
 ): string {
   const safe = safeRedirectPath(redirect);
-  if (!safe) {
+  if (!safe || safe === "/") {
     return getDashboardPathForRole(role);
   }
 
