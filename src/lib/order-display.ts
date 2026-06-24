@@ -24,7 +24,7 @@ const STATUS_META: Record<
     className: "bg-neutral-100 text-neutral-600 ring-neutral-200/80",
   },
   shipped: {
-    label: "Complete",
+    label: "Completed (Shipped)",
     className: "bg-emerald-50 text-emerald-700 ring-emerald-100",
   },
   cancelled: {
@@ -32,6 +32,9 @@ const STATUS_META: Record<
     className: "bg-neutral-100 text-neutral-600 ring-neutral-200/80",
   },
 };
+
+export const USER_ORDER_APPROVED_DELIVERY_NOTE =
+  "Estimated delivery: 3–7 business days after your order is approved.";
 
 export function formatOrderNumber(orderNumber: string): string {
   const trimmed = orderNumber.trim();

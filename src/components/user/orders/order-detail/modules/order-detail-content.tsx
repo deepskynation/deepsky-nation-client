@@ -20,6 +20,7 @@ import {
   formatOrderNumber,
   formatOrderStatus,
   formatPaymentMethod,
+  USER_ORDER_APPROVED_DELIVERY_NOTE,
   type OrderReceiptItemLabel,
 } from "@/lib/order-display";
 import { formatVariantLabel } from "@/lib/product-variants";
@@ -141,7 +142,7 @@ export function OrderDetailContent({
           <div className="flex w-full flex-row flex-wrap items-center justify-end gap-2 sm:w-auto">
             <span
               className={cn(
-                "inline-flex items-center rounded-full px-3 py-1.5 text-sm font-medium ring-1 ring-inset",
+                "inline-flex shrink-0 items-center whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium ring-1 ring-inset",
                 status.className,
               )}
             >
@@ -165,7 +166,9 @@ export function OrderDetailContent({
           </p>
         ) : null}
 
-        {completedAtLabel ? (
+        {order.status === "approved" ? (
+          <p className="text-sm text-black/60">{USER_ORDER_APPROVED_DELIVERY_NOTE}</p>
+        ) : completedAtLabel ? (
           <p className="text-sm text-black/60">
             Completed on{" "}
             <span className="font-medium text-black">{completedAtLabel}</span>
