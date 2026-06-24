@@ -3,8 +3,7 @@ export const CHART_COLORS = {
   orders: "#525252",
   pending: "#d97706",
   approved: "#2563eb",
-  shipped: "#7c3aed",
-  delivered: "#059669",
+  shipped: "#059669",
   rejected: "#dc2626",
   cancelled: "#a3a3a3",
 } as const;

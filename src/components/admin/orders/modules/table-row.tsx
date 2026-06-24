@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { formatAdminCustomerLabel } from "@/lib/admin-order-status";
 import {
   formatOrderDate,
-  formatOrderDeliveredAt,
+  formatOrderCompletedAt,
   formatOrderItemCount,
   formatOrderNumber,
   formatOrderStatus,
@@ -29,7 +29,7 @@ export function AdminOrdersTableRow({ order }: AdminOrdersTableRowProps) {
   const [paymentProofOpen, setPaymentProofOpen] = useState(false);
 
   const statusMeta = formatOrderStatus(order.status);
-  const deliveredAtLabel = formatOrderDeliveredAt(order.delivered_at);
+  const completedAtLabel = formatOrderCompletedAt(order.shipped_at);
 
   return (
     <>
@@ -72,8 +72,8 @@ export function AdminOrdersTableRow({ order }: AdminOrdersTableRowProps) {
           {formatOrderDate(order.created_at)}
         </td>
         <td className="px-4 py-3 whitespace-nowrap text-neutral-600">
-          {deliveredAtLabel ? (
-            <span>{deliveredAtLabel}</span>
+          {completedAtLabel ? (
+            <span>{completedAtLabel}</span>
           ) : (
             <span className="text-muted-foreground">—</span>
           )}

@@ -5,7 +5,6 @@ export type ApiOrderStatus =
   | "approved"
   | "rejected"
   | "shipped"
-  | "delivered"
   | "cancelled";
 
 const STATUS_META: Record<
@@ -25,10 +24,6 @@ const STATUS_META: Record<
     className: "bg-neutral-100 text-neutral-600 ring-neutral-200/80",
   },
   shipped: {
-    label: "Shipped",
-    className: "bg-violet-50 text-violet-700 ring-violet-100",
-  },
-  delivered: {
     label: "Complete",
     className: "bg-emerald-50 text-emerald-700 ring-emerald-100",
   },
@@ -76,8 +71,10 @@ export function formatOrderDateTime(iso: string): string {
   }).format(date);
 }
 
-/** Formatted delivered timestamp, or null when not yet delivered. */
-export function formatOrderDeliveredAt(iso: string | null | undefined): string | null {
+/** Formatted completion timestamp (when shipped), or null when not yet complete. */
+export function formatOrderCompletedAt(
+  iso: string | null | undefined,
+): string | null {
   if (!iso?.trim()) {
     return null;
   }

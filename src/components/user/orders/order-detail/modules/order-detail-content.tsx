@@ -16,7 +16,7 @@ import {
   formatDeliverySource,
   formatMoney,
   formatOrderDateTime,
-  formatOrderDeliveredAt,
+  formatOrderCompletedAt,
   formatOrderNumber,
   formatOrderStatus,
   formatPaymentMethod,
@@ -98,7 +98,7 @@ export function OrderDetailContent({
   const [imagePreviewAlt, setImagePreviewAlt] = useState("Product Image Preview");
 
   const status = formatOrderStatus(order.status);
-  const deliveredAtLabel = formatOrderDeliveredAt(order.delivered_at);
+  const completedAtLabel = formatOrderCompletedAt(order.shipped_at);
   const fullAddress = [
     order.delivery_address_line,
     order.delivery_city,
@@ -165,10 +165,10 @@ export function OrderDetailContent({
           </p>
         ) : null}
 
-        {deliveredAtLabel ? (
+        {completedAtLabel ? (
           <p className="text-sm text-black/60">
-            Delivered on{" "}
-            <span className="font-medium text-black">{deliveredAtLabel}</span>
+            Completed on{" "}
+            <span className="font-medium text-black">{completedAtLabel}</span>
           </p>
         ) : order.expected_delivery_date ? (
           <p className="text-sm text-black/60">

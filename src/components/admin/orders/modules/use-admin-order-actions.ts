@@ -15,7 +15,6 @@ const ACTION_SUCCESS_MESSAGES: Record<AdminUpdateOrderAction, string> = {
   approve: "Order approved. The customer will be notified by email.",
   reject: "Order rejected.",
   ship: "Order marked as shipped.",
-  deliver: "Order marked as delivered.",
 };
 
 export function useAdminOrderActions() {

@@ -40,7 +40,7 @@ const primaryCards = [
   {
     key: "total_sales" as const,
     label: "Total Sales",
-    description: "Revenue from approved, shipped, and delivered orders",
+    description: "Revenue from shipped orders",
     icon: DollarSignIcon,
     accent: "text-emerald-700",
     format: (value: string) => formatMoney(value),

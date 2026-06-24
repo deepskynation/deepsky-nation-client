@@ -25,7 +25,7 @@ import {
   formatDeliveryAddress,
   formatMoney,
   formatOrderDateTime,
-  formatOrderDeliveredAt,
+  formatOrderCompletedAt,
   formatOrderNumber,
   formatOrderStatus,
   formatPaymentMethod,
@@ -76,7 +76,7 @@ export function AdminOrderDetailDialog({
 
   const order = detailOrder ?? previewOrder;
   const isLoading = detailStatus === "loading" && !detailOrder;
-  const deliveredAtLabel = order ? formatOrderDeliveredAt(order.delivered_at) : null;
+  const completedAtLabel = order ? formatOrderCompletedAt(order.shipped_at) : null;
 
   const refreshDetail = () => {
     if (orderId) {
@@ -237,9 +237,9 @@ export function AdminOrderDetailDialog({
 
             <section className={sectionClassName}>
               <h3 className={sectionTitleClassName}>Delivery</h3>
-              {deliveredAtLabel ? (
+              {completedAtLabel ? (
                 <p className="mb-3 text-sm font-medium text-emerald-800">
-                  Delivered on {deliveredAtLabel}
+                  Completed on {completedAtLabel}
                 </p>
               ) : null}
               <p className="text-sm text-neutral-800">

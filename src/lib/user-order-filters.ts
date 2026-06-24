@@ -9,8 +9,7 @@ export const USER_ORDER_STATUS_FILTER_OPTIONS: {
   { value: "pending", label: "Pending" },
   { value: "approved", label: "Approved" },
   { value: "rejected", label: "Rejected" },
-  { value: "shipped", label: "Shipped" },
-  { value: "delivered", label: "Complete" },
+  { value: "shipped", label: "Complete" },
   { value: "cancelled", label: "Cancelled" },
 ];
 
