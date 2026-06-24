@@ -4,7 +4,6 @@ import {
   CheckIcon,
   ClockIcon,
   PackageCheckIcon,
-  TruckIcon,
   XIcon,
 } from "lucide-react";
 import {
@@ -19,8 +18,7 @@ const TAB_ICONS = {
   pending: ClockIcon,
   approved: CheckIcon,
   rejected: XIcon,
-  shipped: TruckIcon,
-  delivered: PackageCheckIcon,
+  shipped: PackageCheckIcon,
 } as const satisfies Partial<Record<OrderStatus, typeof ClockIcon>>;
 
 function statusTabIcon(status: OrderStatus) {

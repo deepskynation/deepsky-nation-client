@@ -39,7 +39,6 @@ export type OrderTrendPoint = {
   pending: number;
   approved: number;
   shipped: number;
-  delivered: number;
   rejected: number;
   cancelled: number;
 };

@@ -72,10 +72,10 @@ function buildAlerts(user: User | null, profileIncomplete: boolean, orders: ApiO
     alerts.push({
       id: `shipped-${shippedOrder.id}`,
       tone: "success",
-      title: "Order On The Way",
-      description: `${formatOrderNumber(shippedOrder.order_number)} has been shipped.`,
+      title: "Order Complete",
+      description: `${formatOrderNumber(shippedOrder.order_number)} has been completed.`,
       href: `/orders/${shippedOrder.id}`,
-      actionLabel: "Track Order",
+      actionLabel: "View Order",
       icon: TruckIcon,
     });
   }

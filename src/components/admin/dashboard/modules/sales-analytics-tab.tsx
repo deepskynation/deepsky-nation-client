@@ -76,7 +76,6 @@ export function SalesAnalyticsTab({
         pending: point.pending,
         approved: point.approved,
         shipped: point.shipped,
-        delivered: point.delivered,
         rejected: point.rejected,
         cancelled: point.cancelled,
       })),
@@ -134,7 +133,7 @@ export function SalesAnalyticsTab({
           <div className="grid gap-6 lg:grid-cols-2">
             <ChartCard
               title="Revenue Trend"
-              description={`${activeGranularity.charAt(0).toUpperCase()}${activeGranularity.slice(1)} revenue from completed orders`}
+              description={`${activeGranularity.charAt(0).toUpperCase()}${activeGranularity.slice(1)} revenue from shipped orders`}
             >
               <RevenueTrendChart data={revenueChartData} />
             </ChartCard>

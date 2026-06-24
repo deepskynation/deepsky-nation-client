@@ -9,7 +9,6 @@ import {
   ADMIN_APPROVAL_LABELS,
   ADMIN_DELIVERY_LABELS,
   canAdminApproveOrReject,
-  canAdminMarkDelivered,
   canAdminMarkShipped,
   getAdminApprovalState,
   getAdminDeliveryState,
@@ -40,7 +39,6 @@ export function AdminOrderStatusActions({
   const terminal = isAdminOrderTerminal(order.status);
   const canReview = canAdminApproveOrReject(order.status);
   const canShip = canAdminMarkShipped(order.status);
-  const canDeliver = canAdminMarkDelivered(order.status);
   const isUpdating = isUpdatingProp || isSubmitting;
 
   const handleAction = async (
@@ -102,42 +100,27 @@ export function AdminOrderStatusActions({
           <p className="text-[0.65rem] font-semibold tracking-wide text-neutral-500 uppercase">
             Delivery
           </p>
-          {canShip || canDeliver ? (
+          {canShip ? (
             <div className="flex flex-wrap gap-1.5">
-              {canShip ? (
-                <Button
-                  type="button"
-                  size="xs"
-                  variant="outline"
-                  disabled={isUpdating}
-                  onClick={() => void handleAction("ship")}
-                >
-                  Mark shipped
-                </Button>
-              ) : null}
-              {canDeliver ? (
-                <Button
-                  type="button"
-                  size="xs"
-                  variant="outline"
-                  disabled={isUpdating}
-                  onClick={() => void handleAction("deliver")}
-                >
-                  Mark delivered
-                </Button>
-              ) : null}
+              <Button
+                type="button"
+                size="xs"
+                variant="outline"
+                disabled={isUpdating}
+                onClick={() => void handleAction("ship")}
+              >
+                Mark shipped
+              </Button>
             </div>
           ) : (
             <span
               className={cn(
                 "inline-flex rounded-md border px-2 py-1 text-xs font-medium",
-                deliveryState === "delivered"
+                deliveryState === "shipped"
                   ? "border-emerald-200 bg-emerald-50 text-emerald-800"
-                  : deliveryState === "shipped"
-                    ? "border-violet-200 bg-violet-50 text-violet-800"
-                    : deliveryState === "pending"
-                      ? "border-amber-200 bg-amber-50 text-amber-900"
-                      : "border-neutral-200 bg-neutral-50 text-neutral-600",
+                  : deliveryState === "pending"
+                    ? "border-amber-200 bg-amber-50 text-amber-900"
+                    : "border-neutral-200 bg-neutral-50 text-neutral-600",
               )}
             >
               {ADMIN_DELIVERY_LABELS[deliveryState]}

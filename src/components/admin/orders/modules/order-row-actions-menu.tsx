@@ -7,7 +7,6 @@ import {
   EyeIcon,
   Loader2Icon,
   MoreVertical,
-  PackageCheckIcon,
   TruckIcon,
   XIcon,
 } from "lucide-react";
@@ -16,11 +15,10 @@ import { useAdminOrderActions } from "@/components/admin/orders/modules/use-admi
 import { Button } from "@/components/ui/button";
 import {
   canAdminApproveOrReject,
-  canAdminMarkDelivered,
   canAdminMarkShipped,
 } from "@/lib/admin-order-status";
 import { cn } from "@/lib/utils";
-import type { ApiOrder } from "@/types/order";
+import type { AdminUpdateOrderAction, ApiOrder } from "@/types/order";
 
 type OrderRowActionsMenuProps = {
   order: ApiOrder;
@@ -50,8 +48,7 @@ export function OrderRowActionsMenu({
 
   const canReview = canAdminApproveOrReject(order.status);
   const canShip = canAdminMarkShipped(order.status);
-  const canDeliver = canAdminMarkDelivered(order.status);
-  const hasStatusActions = canReview || canShip || canDeliver;
+  const hasStatusActions = canReview || canShip;
 
   const updatePosition = () => {
     const trigger = triggerRef.current;
@@ -113,7 +110,7 @@ export function OrderRowActionsMenu({
   }, [open]);
 
   const runStatusAction = async (
-    action: "approve" | "reject" | "ship" | "deliver",
+    action: AdminUpdateOrderAction,
     rejectionReason?: string,
   ) => {
     setOpen(false);
@@ -190,33 +187,19 @@ export function OrderRowActionsMenu({
               </>
             ) : null}
 
-            {canShip || canDeliver ? (
+            {canShip ? (
               <>
                 <div className="my-1 border-t border-neutral-100" role="separator" />
-                {canShip ? (
-                  <button
-                    type="button"
-                    role="menuitem"
-                    className={menuItemClass}
-                    disabled={isSubmitting}
-                    onClick={() => void runStatusAction("ship")}
-                  >
-                    <TruckIcon className="size-4 shrink-0" />
-                    Mark As Shipped
-                  </button>
-                ) : null}
-                {canDeliver ? (
-                  <button
-                    type="button"
-                    role="menuitem"
-                    className={menuItemClass}
-                    disabled={isSubmitting}
-                    onClick={() => void runStatusAction("deliver")}
-                  >
-                    <PackageCheckIcon className="size-4 shrink-0" />
-                    Mark As Delivered
-                  </button>
-                ) : null}
+                <button
+                  type="button"
+                  role="menuitem"
+                  className={menuItemClass}
+                  disabled={isSubmitting}
+                  onClick={() => void runStatusAction("ship")}
+                >
+                  <TruckIcon className="size-4 shrink-0" />
+                  Mark As Shipped
+                </button>
               </>
             ) : null}
 

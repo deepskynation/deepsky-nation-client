@@ -2,7 +2,7 @@ import type { ApiOrder, OrderStatus } from "@/types/order";
 
 export type AdminApprovalState = "awaiting" | "approved" | "rejected" | "cancelled" | "none";
 
-export type AdminDeliveryState = "pending" | "shipped" | "delivered" | "none";
+export type AdminDeliveryState = "pending" | "shipped" | "none";
 
 export function getAdminApprovalState(status: string): AdminApprovalState {
   switch (status.toLowerCase()) {
@@ -10,7 +10,6 @@ export function getAdminApprovalState(status: string): AdminApprovalState {
       return "awaiting";
     case "approved":
     case "shipped":
-    case "delivered":
       return "approved";
     case "rejected":
       return "rejected";
@@ -27,8 +26,6 @@ export function getAdminDeliveryState(status: string): AdminDeliveryState {
       return "pending";
     case "shipped":
       return "shipped";
-    case "delivered":
-      return "delivered";
     default:
       return "none";
   }
@@ -42,12 +39,8 @@ export function canAdminMarkShipped(status: string): boolean {
   return status.toLowerCase() === "approved";
 }
 
-export function canAdminMarkDelivered(status: string): boolean {
-  return status.toLowerCase() === "shipped";
-}
-
 export function isAdminOrderTerminal(status: string): boolean {
-  return ["rejected", "cancelled", "delivered"].includes(status.toLowerCase());
+  return ["rejected", "cancelled", "shipped"].includes(status.toLowerCase());
 }
 
 export function formatAdminCustomerLabel(order: ApiOrder): string {
@@ -66,8 +59,7 @@ export const ADMIN_ORDER_STATUS_FILTER_OPTIONS: {
   { value: "pending", label: "Pending Review" },
   { value: "approved", label: "Approved" },
   { value: "rejected", label: "Rejected" },
-  { value: "shipped", label: "Shipped" },
-  { value: "delivered", label: "Delivered" },
+  { value: "shipped", label: "Complete" },
   { value: "cancelled", label: "Cancelled" },
 ];
 
@@ -80,8 +72,7 @@ export const ADMIN_ORDER_STATUS_QUICK_TABS: {
   { value: "pending", label: "Pending" },
   { value: "approved", label: "Approved" },
   { value: "rejected", label: "Rejected" },
-  { value: "shipped", label: "Shipped" },
-  { value: "delivered", label: "Delivered" },
+  { value: "shipped", label: "Complete" },
 ];
 
 export const ADMIN_ORDER_PAYMENT_FILTER_OPTIONS: {
@@ -95,8 +86,7 @@ export const ADMIN_ORDER_PAYMENT_FILTER_OPTIONS: {
 
 export const ADMIN_DELIVERY_LABELS: Record<AdminDeliveryState, string> = {
   pending: "Pending",
-  shipped: "Shipped",
-  delivered: "Delivered",
+  shipped: "Complete",
   none: "—",
 };
 

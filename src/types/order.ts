@@ -8,7 +8,6 @@ export type OrderStatus =
   | "approved"
   | "rejected"
   | "shipped"
-  | "delivered"
   | "cancelled";
 
 export type CreateOrderLinePayload = {
@@ -60,7 +59,6 @@ export type ApiOrder = {
   approved_at?: string | null;
   rejected_at?: string | null;
   shipped_at?: string | null;
-  delivered_at?: string | null;
   delivery_source: string;
   delivery_email: string;
   delivery_phone: string;
@@ -99,7 +97,7 @@ export type AdminOrdersQuery = PaginationQuery & {
   payment_method?: AdminOrderPaymentMethod;
 };
 
-export type AdminUpdateOrderAction = "approve" | "reject" | "ship" | "deliver";
+export type AdminUpdateOrderAction = "approve" | "reject" | "ship";
 
 export type AdminUpdateOrderStatusPayload = {
   orderId: string;

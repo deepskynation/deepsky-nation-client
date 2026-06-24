@@ -24,7 +24,6 @@ type OrderTrendChartProps = {
     pending: number;
     approved: number;
     shipped: number;
-    delivered: number;
     rejected: number;
     cancelled: number;
   }>;
@@ -70,13 +69,7 @@ export function OrderTrendChart({ data }: OrderTrendChartProps) {
                 dataKey="shipped"
                 stackId="orders"
                 fill={CHART_COLORS.shipped}
-                name="Shipped"
-              />
-              <Bar
-                dataKey="delivered"
-                stackId="orders"
-                fill={CHART_COLORS.delivered}
-                name="Delivered"
+                name="Complete"
               />
               <Bar
                 dataKey="rejected"

@@ -101,7 +101,6 @@ export function aggregateOrderTrends(
       pending: 0,
       approved: 0,
       shipped: 0,
-      delivered: 0,
       rejected: 0,
       cancelled: 0,
     };
@@ -109,7 +108,6 @@ export function aggregateOrderTrends(
     existing.pending += point.pending;
     existing.approved += point.approved;
     existing.shipped += point.shipped;
-    existing.delivered += point.delivered;
     existing.rejected += point.rejected;
     existing.cancelled += point.cancelled;
     buckets.set(key, existing);
