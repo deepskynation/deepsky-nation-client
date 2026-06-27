@@ -1,6 +1,7 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { AccessDeniedPanel } from "@/components/common/feedback/access-denied-panel";
 import {
   AuthRequiredPage,
@@ -8,6 +9,7 @@ import {
 } from "@/components/common/feedback/page-state-gate";
 import { useAppSelector } from "@/hooks";
 import { buildLoginRedirectPath } from "@/lib/auth-redirect";
+import { getDashboardPathForRole } from "@/lib/auth-session";
 import {
   selectAuthInitialized,
   selectAuthUser,
@@ -28,9 +30,20 @@ export function RoleRouteGuard({
   children,
 }: RoleRouteGuardProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const authReady = useAppSelector(selectAuthInitialized);
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const user = useAppSelector(selectAuthUser);
+
+  const roleMismatch = Boolean(user && !allowedRoles.includes(user.role));
+  const adminRedirectPath =
+    user?.role === "admin" ? getDashboardPathForRole("admin") : null;
+
+  useEffect(() => {
+    if (roleMismatch && adminRedirectPath) {
+      router.replace(adminRedirectPath);
+    }
+  }, [adminRedirectPath, roleMismatch, router]);
 
   if (!authReady) {
     return <CenteredLoading message="Checking your session…" />;
@@ -49,8 +62,12 @@ export function RoleRouteGuard({
     );
   }
 
-  if (!user || !allowedRoles.includes(user.role)) {
-    const fallbackRole: UserRole = user?.role === "admin" ? "admin" : "user";
+  if (roleMismatch) {
+    if (user?.role === "admin") {
+      return <CenteredLoading message="Redirecting…" />;
+    }
+
+    const fallbackRole: UserRole = "user";
     return <AccessDeniedPanel fallbackRole={fallbackRole} />;
   }
 

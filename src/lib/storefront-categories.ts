@@ -1,6 +1,8 @@
+import { getDashboardPathForRole } from "@/lib/auth-session";
 import { SHOP_PRODUCTS_PAGE_SIZE, type ProductSortOption } from "@/lib/shop-filters";
 import type { ApiProductCategory } from "@/types/catalog";
 import { parseApiProductPrice, type ApiProduct, type ShopProductsQuery } from "@/types/product";
+import type { UserRole } from "@/types";
 
 export const STOREFRONT_CATALOG_PAGE_SIZE = SHOP_PRODUCTS_PAGE_SIZE;
 
@@ -112,13 +114,27 @@ export function buildCategoryPageHrefFromParam(
 }
 
 /** Logo / Home link for storefront chrome (user header, product detail). */
-export function getStorefrontHomeHref(isAuthenticated: boolean): string {
-  return isAuthenticated ? "/dashboard" : "/";
+export function getStorefrontHomeHref(role?: UserRole | null): string {
+  if (!role) {
+    return "/";
+  }
+  return getDashboardPathForRole(role);
 }
 
 /** Products catalog link after browsing from landing vs signed-in dashboard. */
-export function getStorefrontCatalogHref(isAuthenticated: boolean): string {
-  return isAuthenticated ? "/dashboard" : "/#products";
+export function getStorefrontCatalogHref(role?: UserRole | null): string {
+  if (!role || role === "admin") {
+    return "/#products";
+  }
+  return getDashboardPathForRole(role);
+}
+
+/** Product search base path for storefront headers. */
+export function getStorefrontSearchBasePath(role?: UserRole | null): string {
+  if (!role || role === "admin") {
+    return "/";
+  }
+  return getDashboardPathForRole(role);
 }
 
 /** @deprecated Use {@link buildCategoryPageHref} with category name. */

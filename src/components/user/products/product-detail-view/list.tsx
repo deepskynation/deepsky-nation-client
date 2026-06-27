@@ -28,7 +28,7 @@ import {
   getVariantUnitPrice,
   isProductOnSale,
 } from "@/lib/product-variants";
-import { getStorefrontCatalogHref } from "@/lib/storefront-categories";
+import { useStorefrontNavigation } from "@/hooks";
 import {
   glassMediaFlatClassName,
   glassPanelFlatClassName,
@@ -43,7 +43,6 @@ import {
   selectProductDetailError,
   selectProductDetailStatus,
 } from "@/store/slices/productSlice";
-import { selectIsAuthenticated } from "@/store/slices/authSlice";
 import { EmailSubscribeSection } from "@/components/common/marketing/email-subscribe-section";
 import { ProductDetailYouMayAlsoLike } from "@/components/user/products/product-detail-view/modules/product-detail-you-may-also-like";
 import type { ApiProductImage } from "@/types/product";
@@ -109,8 +108,7 @@ export function ProductDetailView({ params }: ProductDetailViewProps) {
   const product = useAppSelector(selectProductDetail);
   const detailStatus = useAppSelector(selectProductDetailStatus);
   const detailError = useAppSelector(selectProductDetailError);
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
-  const catalogHref = getStorefrontCatalogHref(isAuthenticated);
+  const { catalogHref } = useStorefrontNavigation();
   const { requireAuth } = usePurchaseAuth();
 
   const [quantity, setQuantity] = useState(1);
