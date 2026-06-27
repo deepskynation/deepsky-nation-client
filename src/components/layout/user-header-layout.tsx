@@ -19,10 +19,8 @@ import {
 import { HeaderNavLink } from "@/components/layout/header-nav-link";
 import { LandingProfileLink } from "@/components/LandingPage/dashboard/modules/landing-profile-link";
 import { UserProfileMenu } from "@/components/layout/user-profile-menu";
-import { useAppSelector } from "@/hooks";
+import { useAppSelector, useStorefrontNavigation } from "@/hooks";
 import { selectCartItemCount } from "@/store/slices/cartSlice";
-import { selectIsAuthenticated } from "@/store/slices/authSlice";
-import { getStorefrontHomeHref } from "@/lib/storefront-categories";
 import { glassHeaderClassName, storefrontHeaderBarClassName } from "@/lib/glass-styles";
 import { cn } from "@/lib/utils";
 
@@ -104,9 +102,8 @@ export function UserHeaderLayout({ children }: UserHeaderLayoutProps) {
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get("q") ?? "";
   const cartCount = useAppSelector(selectCartItemCount);
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
-  const homeHref = getStorefrontHomeHref(isAuthenticated);
-  const searchBasePath = isAuthenticated ? "/dashboard" : "/";
+  const { showAuthenticatedChrome, homeHref, searchBasePath } =
+    useStorefrontNavigation();
   const navItems = userHeaderMenuItems.map((item) =>
     item.id === "dashboard" ? { ...item, href: homeHref } : item,
   );
@@ -184,7 +181,7 @@ export function UserHeaderLayout({ children }: UserHeaderLayoutProps) {
               <HeaderDesktopActions
                 cartCount={cartCount}
                 onSearchOpen={openSearch}
-                isAuthenticated={isAuthenticated}
+                isAuthenticated={showAuthenticatedChrome}
               />
             </div>
 
@@ -220,7 +217,7 @@ export function UserHeaderLayout({ children }: UserHeaderLayoutProps) {
                 <HeaderMobileActions
                   cartCount={cartCount}
                   onSearchOpen={openSearch}
-                  isAuthenticated={isAuthenticated}
+                  isAuthenticated={showAuthenticatedChrome}
                 />
               </div>
 

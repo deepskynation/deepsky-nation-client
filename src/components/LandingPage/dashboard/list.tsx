@@ -9,7 +9,12 @@ import { EmailSubscribeSection } from "@/components/common/marketing/email-subsc
 import { ModelCarousel } from "@/components/LandingPage/dashboard/modules/model-carousel";
 import { buildCategoryPageHrefFromParam, STOREFRONT_CATALOG_FETCH_PAGE_SIZE } from "@/lib/storefront-categories";
 import { useAppDispatch, useAppSelector } from "@/hooks";
+import { getDashboardPathForRole } from "@/lib/auth-session";
 import { selectShopCategories } from "@/store/slices/categorySlice";
+import {
+  selectAuthInitialized,
+  selectAuthUser,
+} from "@/store/slices/authSlice";
 import {
   fetchReleasedProducts,
   selectShopProducts,
@@ -27,6 +32,14 @@ export default function DashboardList() {
   const shopProductsStatus = useAppSelector(selectShopProductsListStatus);
   const shopProductsError = useAppSelector(selectShopProductsListError);
   const categories = useAppSelector(selectShopCategories);
+  const authReady = useAppSelector(selectAuthInitialized);
+  const authUser = useAppSelector(selectAuthUser);
+
+  useEffect(() => {
+    if (authReady && authUser?.role === "admin") {
+      router.replace(getDashboardPathForRole("admin"));
+    }
+  }, [authReady, authUser?.role, router]);
 
   useEffect(() => {
     const legacyCategoryId = searchParams.get("category");
