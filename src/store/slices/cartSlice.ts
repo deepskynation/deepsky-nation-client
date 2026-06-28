@@ -31,6 +31,7 @@ type CartState = {
   error: string | null;
   mutationStatus: CartMutationStatus;
   mutationError: string | null;
+  updatingItemIds: string[];
 };
 
 const initialState: CartState = {
@@ -40,11 +41,72 @@ const initialState: CartState = {
   error: null,
   mutationStatus: "idle",
   mutationError: null,
+  updatingItemIds: [],
 };
 
+function mergeCartThumbnails(
+  previousItems: ApiCartLine[] | undefined,
+  cart: ApiCart,
+): ApiCart {
+  if (!previousItems?.length) {
+    return cart;
+  }
+
+  const thumbnailsByItemId = new Map(
+    previousItems.map((item) => [item.id, item.thumbnail_base64]),
+  );
+  const thumbnailsByProductId = new Map(
+    previousItems.map((item) => [item.product_id, item.thumbnail_base64]),
+  );
+
+  const items = cart.items.map((item) => {
+    if (item.thumbnail_base64) {
+      return item;
+    }
+
+    const fromItem = thumbnailsByItemId.get(item.id);
+    if (fromItem) {
+      return { ...item, thumbnail_base64: fromItem };
+    }
+
+    const fromProduct = thumbnailsByProductId.get(item.product_id);
+    if (fromProduct) {
+      return { ...item, thumbnail_base64: fromProduct };
+    }
+
+    return item;
+  });
+
+  return { ...cart, items };
+}
+
 function applyCartUpdate(state: CartState, cart: ApiCart) {
-  state.cart = cart;
-  state.selectedItemIds = syncCartSelection(state.selectedItemIds, cart.items);
+  state.cart = mergeCartThumbnails(state.cart?.items, cart);
+  state.selectedItemIds = syncCartSelection(state.selectedItemIds, state.cart.items);
+}
+
+function reconcileCartTotals(state: CartState) {
+  if (!state.cart) {
+    return;
+  }
+
+  state.cart.item_count = state.cart.items.reduce(
+    (sum, row) => sum + row.quantity,
+    0,
+  );
+  state.cart.subtotal = state.cart.items
+    .reduce((sum, row) => sum + Number.parseFloat(row.line_subtotal), 0)
+    .toFixed(2);
+}
+
+function addUpdatingItemId(state: CartState, itemId: string) {
+  if (!state.updatingItemIds.includes(itemId)) {
+    state.updatingItemIds.push(itemId);
+  }
+}
+
+function removeUpdatingItemId(state: CartState, itemId: string) {
+  state.updatingItemIds = state.updatingItemIds.filter((id) => id !== itemId);
 }
 
 function getAccessToken(getState: () => RootState): string | null {
@@ -204,6 +266,27 @@ const cartSlice = createSlice({
       state.error = null;
       state.mutationStatus = "idle";
       state.mutationError = null;
+      state.updatingItemIds = [];
+    },
+    optimisticUpdateCartItemQuantity(
+      state,
+      action: { payload: { itemId: string; quantity: number } },
+    ) {
+      if (!state.cart) {
+        return;
+      }
+
+      const item = state.cart.items.find((row) => row.id === action.payload.itemId);
+      if (!item) {
+        return;
+      }
+
+      const unitPrice = Number.parseFloat(item.unit_price);
+      item.quantity = action.payload.quantity;
+      item.line_subtotal = (unitPrice * action.payload.quantity).toFixed(2);
+      item.is_available =
+        item.is_available && action.payload.quantity <= item.max_quantity;
+      reconcileCartTotals(state);
     },
     toggleCartItemSelected(state, action: { payload: string }) {
       const itemId = action.payload;
@@ -251,12 +334,24 @@ const cartSlice = createSlice({
             : "Failed to load cart.";
       });
 
-    const mutationCases = [
-      addCartItem,
-      updateCartItem,
-      removeCartItem,
-      clearCart,
-    ] as const;
+    builder
+      .addCase(updateCartItem.pending, (state, action) => {
+        addUpdatingItemId(state, action.meta.arg.itemId);
+        state.mutationError = null;
+      })
+      .addCase(updateCartItem.fulfilled, (state, action) => {
+        removeUpdatingItemId(state, action.meta.arg.itemId);
+        applyCartUpdate(state, action.payload);
+      })
+      .addCase(updateCartItem.rejected, (state, action) => {
+        removeUpdatingItemId(state, action.meta.arg.itemId);
+        state.mutationError =
+          typeof action.payload === "string"
+            ? action.payload
+            : "Failed to update cart item.";
+      });
+
+    const mutationCases = [addCartItem, removeCartItem, clearCart] as const;
 
     for (const thunk of mutationCases) {
       builder
@@ -305,6 +400,7 @@ const cartSlice = createSlice({
 
 export const {
   resetCartState,
+  optimisticUpdateCartItemQuantity,
   toggleCartItemSelected,
   setAllAvailableCartItemsSelected,
 } = cartSlice.actions;
@@ -331,5 +427,7 @@ export const selectCartMutationStatus = (state: RootState) =>
   state.cart.mutationStatus;
 export const selectCartMutationError = (state: RootState) =>
   state.cart.mutationError;
+export const selectCartUpdatingItemIds = (state: RootState) =>
+  state.cart.updatingItemIds;
 
 export default cartSlice.reducer;
