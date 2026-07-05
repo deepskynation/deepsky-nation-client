@@ -1,6 +1,5 @@
 "use client";
 
-import { Calendar } from "lucide-react";
 import {
   createCustomDateRange,
   createDateRangeFromPreset,
@@ -12,16 +11,16 @@ import {
 import { cn } from "@/lib/utils";
 
 const sectionLabelClass =
-  "text-[10px] font-medium uppercase tracking-[0.18em] text-[#7D7489]";
+  "text-[10px] font-medium uppercase tracking-[0.18em] text-black/45";
 
 const quickFilterButtonClass =
-  "rounded-lg border border-[#E0E0E0] bg-white px-3 py-2 text-sm font-medium text-neutral-900 transition-colors hover:border-[#7D7489]/40 hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4A235A]/30";
+  "rounded-lg border border-black/15 bg-white px-3 py-2 text-sm font-medium text-neutral-900 transition-colors hover:border-black/30 hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/15";
 
 const quickFilterButtonActiveClass =
-  "border-[#4A235A] bg-[#4A235A] text-white hover:border-[#4A235A] hover:bg-[#4A235A]";
+  "border-black bg-black text-white hover:border-black hover:bg-black";
 
 const dateInputClass =
-  "h-10 w-full min-w-0 rounded-lg border border-[#E0E0E0] bg-white px-3 pr-9 text-sm text-neutral-900 outline-none transition-[border-color,box-shadow] placeholder:text-neutral-400 focus:border-[#7D7489]/60 focus:ring-2 focus:ring-[#4A235A]/15";
+  "h-10 w-full min-w-0 rounded-lg border border-black/15 bg-white px-3 text-sm text-neutral-900 outline-none transition-[border-color,box-shadow] placeholder:text-neutral-400 focus:border-black/30 focus:ring-2 focus:ring-black/10 [color-scheme:light]";
 
 type DateRangeFilterPanelProps = {
   value: DateRangeFilterValue | undefined;
@@ -46,19 +45,13 @@ function DateInput({
       <label htmlFor={id} className={sectionLabelClass}>
         {label}
       </label>
-      <div className="relative">
-        <input
-          id={id}
-          type="date"
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-          className={dateInputClass}
-        />
-        <Calendar
-          className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-neutral-700"
-          aria-hidden
-        />
-      </div>
+      <input
+        id={id}
+        type="date"
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        className={dateInputClass}
+      />
     </div>
   );
 }
@@ -88,7 +81,7 @@ export function DateRangeFilterPanel({
     <div
       id={id}
       className={cn(
-        "w-[min(100vw-2rem,20rem)] rounded-xl border border-[#E0E0E0] bg-white p-4 shadow-[0_8px_24px_rgba(0,0,0,0.08)]",
+        "w-[min(100vw-2rem,20rem)] rounded-xl border border-black/15 bg-white p-4 shadow-[0_8px_24px_rgba(0,0,0,0.08)]",
         className,
       )}
     >
@@ -131,7 +124,7 @@ export function DateRangeFilterPanel({
         </button>
       </section>
 
-      <div className="my-4 h-px bg-[#E0E0E0]" role="separator" />
+      <div className="my-4 h-px bg-black/10" role="separator" />
 
       <section aria-label="Custom Range">
         <p className={sectionLabelClass}>Custom Range</p>

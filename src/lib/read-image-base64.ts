@@ -71,8 +71,22 @@ export function readFileAsDataUrl(file: File): Promise<string> {
   });
 }
 
+const PUBLIC_IMAGE_PATH =
+  /^\/[\w./-]+\.(?:avif|gif|jpe?g|png|webp)(?:\?[\w=&%-]*)?(?:#[\w-]*)?$/i;
+
+function isPublicImagePath(value: string): boolean {
+  return PUBLIC_IMAGE_PATH.test(value);
+}
+
 export function toImagePreviewSrc(base64: string): string {
   if (base64.startsWith("data:")) {
+    return base64;
+  }
+  if (
+    base64.startsWith("http://") ||
+    base64.startsWith("https://") ||
+    isPublicImagePath(base64)
+  ) {
     return base64;
   }
   return `data:image/jpeg;base64,${base64}`;

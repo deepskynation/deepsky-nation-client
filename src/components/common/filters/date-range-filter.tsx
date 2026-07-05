@@ -166,8 +166,8 @@ export function DateRangeFilter({
           });
         }}
         className={cn(
-          "inline-flex h-10 items-center gap-2 rounded-lg border border-[#E0E0E0] bg-white px-3 text-sm font-medium text-neutral-900 shadow-sm transition-colors hover:border-[#7D7489]/40 hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4A235A]/30",
-          isActive && "border-[#4A235A]/35 bg-[#4A235A]/[0.04]",
+          "inline-flex h-10 items-center gap-2 rounded-lg border border-black/15 bg-white px-3 text-sm font-medium text-neutral-900 shadow-sm transition-colors hover:border-black/30 hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/15",
+          isActive && "border-black/35 bg-black/[0.04]",
           triggerClassName,
         )}
       >
@@ -175,11 +175,11 @@ export function DateRangeFilter({
           renderTrigger({ label: triggerText, isActive, isOpen: open })
         ) : (
           <>
-            <Calendar className="size-4 shrink-0 text-[#7D7489]" aria-hidden />
+            <Calendar className="size-4 shrink-0 text-black/45" aria-hidden />
             <span className="truncate">{triggerText}</span>
             <ChevronDown
               className={cn(
-                "size-4 shrink-0 text-[#7D7489] transition-transform",
+                "size-4 shrink-0 text-black/45 transition-transform",
                 open && "rotate-180",
               )}
               aria-hidden

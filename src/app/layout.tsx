@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PurchaseActivityProvider } from "@/components/common/marketing/purchase-activity-provider";
+import { PurchaseActivityProvider } from "@/components/common/marketing/purchase-activity";
 import { ReduxProvider } from "@/store/provider";
 import "./globals.css";
 

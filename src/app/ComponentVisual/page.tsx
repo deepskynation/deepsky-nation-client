@@ -7,13 +7,17 @@ const ComponentVisualClient = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex min-h-[40vh] items-center justify-center p-8 text-sm text-muted-foreground">
+      <main className="flex h-dvh items-center justify-center overflow-y-auto p-8 text-sm text-muted-foreground">
         Loading component previews…
-      </div>
+      </main>
     ),
   },
 );
 
 export default function ComponentVisualPage() {
-  return <ComponentVisualClient />;
+  return (
+    <main className="h-dvh overflow-y-auto">
+      <ComponentVisualClient />
+    </main>
+  );
 }
