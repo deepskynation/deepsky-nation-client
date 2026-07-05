@@ -5,9 +5,9 @@ import { CartItemCard } from "@/components/cart/cart-item-card";
 import { CartOrderSummary } from "@/components/cart/cart-order-summary";
 import {
   DateRangeFilter,
-  formatDateRangeFilterLabel,
   type DateRangeFilterValue,
-} from "@/components/common/filters/date-range-filter";
+} from "@/components/common/filters";
+import { formatDateRangeFilterLabel } from "@/lib/date-range-filter";
 import {
   ToastProvider,
   useToast,
