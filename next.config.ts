@@ -18,6 +18,11 @@ const nextConfig: NextConfig = {
         destination: "/:path*",
         permanent: true,
       },
+      {
+        source: "/ComponentVisual",
+        destination: "/component-visual",
+        permanent: true,
+      },
     ];
   },
 };
