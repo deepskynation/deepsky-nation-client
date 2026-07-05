@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { apiUrl } from "@/lib/api-config";
 import { readApiError } from "@/store/api-utils";
+import { skipPurchaseActivityOrder } from "@/lib/purchase-activity-storage";
 import type { CheckoutDeliveryFormState } from "@/lib/checkout-delivery";
 import type { CheckoutPaymentMethod } from "@/lib/checkout-payment";
 import type { AppDispatch, RootState } from "@/store";
@@ -612,6 +613,7 @@ const orderSlice = createSlice({
       .addCase(placeOrder.fulfilled, (state, action) => {
         state.createStatus = "succeeded";
         state.lastCreated = action.payload;
+        skipPurchaseActivityOrder(action.payload.id);
       })
       .addCase(placeOrder.rejected, (state, action) => {
         state.createStatus = "failed";
