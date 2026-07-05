@@ -1,5 +1,5 @@
-export { DateRangeFilter, DateRangeFilterPanel } from "@/components/common/filters/date-range-filter";
-export type { DateRangeFilterValue, DateRangeQuickFilter } from "@/components/common/filters/date-range-filter";
+export { DateRangeFilter } from "@/components/common/filters/date-range-filter";
+export type { DateRangeFilterValue, DateRangeQuickFilter } from "@/lib/date-range-filter";
 export {
   createDateRangeFromPreset,
   createCustomDateRange,

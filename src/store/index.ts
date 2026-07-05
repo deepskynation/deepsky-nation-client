@@ -9,6 +9,7 @@ import colorReducer from "@/store/slices/colorSlice";
 import cartReducer from "@/store/slices/cartSlice";
 import ordersReducer from "@/store/slices/orderSlice";
 import productsReducer from "@/store/slices/productSlice";
+import purchaseActivityReducer from "@/store/slices/purchaseActivitySlice";
 import settingsReducer from "@/store/slices/settingsSlice";
 import subscriberReducer from "@/store/slices/subscriberSlice";
 
@@ -25,6 +26,7 @@ export const makeStore = () =>
       categories: categoryReducer,
       colors: colorReducer,
       products: productsReducer,
+      purchaseActivity: purchaseActivityReducer,
       settings: settingsReducer,
       subscriber: subscriberReducer,
     },

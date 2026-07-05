@@ -8,3 +8,4 @@ export { usePurchaseAuth } from "@/hooks/use-purchase-auth";
 export { useProductSearchSuggestions } from "@/hooks/use-product-search-suggestions";
 export { useStorefrontNavigation } from "@/hooks/use-storefront-navigation";
 export { useClientMounted } from "@/hooks/use-client-mounted";
+export { usePurchaseActivityPolling } from "@/hooks/use-purchase-activity-polling";

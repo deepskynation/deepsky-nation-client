@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PurchaseActivityProvider } from "@/components/common/marketing/purchase-activity";
 import { ReduxProvider } from "@/store/provider";
 import "./globals.css";
 
@@ -22,7 +23,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full font-sans antialiased">
       <body className="min-h-full flex flex-col">
-        <ReduxProvider>{children}</ReduxProvider>
+        <ReduxProvider>
+          <PurchaseActivityProvider>{children}</PurchaseActivityProvider>
+        </ReduxProvider>
       </body>
     </html>
   );
