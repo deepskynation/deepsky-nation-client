@@ -1,0 +1,50 @@
+import { LOGO_URL } from "@/mock/emails/constants";
+import type { EmailPreview } from "@/mock/emails/types";
+
+export const loginCodeEmailPreview: EmailPreview = {
+  id: "login-code",
+  label: "Login Code",
+  subject: "Your Deepsky Nation sign-in code",
+  html: `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Your sign-in code</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f9fafb;font-family:Calibre,system-ui,sans-serif;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color:#f9fafb;">
+    <tr>
+      <td align="center" style="padding:40px 16px;">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:480px;background:rgba(255,255,255,0.92);border:1px solid rgba(0,0,0,0.1);border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,0.05);">
+          <tr>
+            <td style="padding:32px 28px;text-align:center;">
+              <img src="${LOGO_URL}" alt="Deepsky" width="140" height="28" style="display:block;margin:0 auto 16px;height:28px;width:auto;max-width:140px;border:0;" />
+              <h1 style="margin:0 0 12px;font-size:24px;font-weight:600;color:#000;">
+                Your sign-in code
+              </h1>
+              <p style="margin:0 0 24px;font-size:14px;line-height:1.6;color:rgba(0,0,0,0.6);">
+                Enter this code to sign in to your account.
+              </p>
+              <p style="margin:0 0 8px;font-size:32px;font-weight:700;letter-spacing:0.35em;color:#000;">
+                482913
+              </p>
+              <p style="margin:24px 0 0;font-size:12px;line-height:1.6;color:rgba(0,0,0,0.45);">
+                This code expires in 10 minutes.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 28px 24px;text-align:center;">
+              <p style="margin:0;font-size:12px;color:rgba(0,0,0,0.4);">
+                If you didn&apos;t request this code, you can ignore this email.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`,
+};

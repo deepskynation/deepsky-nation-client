@@ -23,6 +23,10 @@ import {
 } from "@/lib/panel-styles";
 import { cn } from "@/lib/utils";
 import { mockCartItems } from "@/mock/cart";
+import {
+  mockEmailPreviews,
+  type EmailPreview,
+} from "@/mock/emails";
 import { mockPurchaseActivityItems } from "@/mock/purchase-activity";
 import { mockProductCards } from "@/mock/products/product-cards";
 import {
@@ -39,6 +43,7 @@ const COMPONENT_TABS = [
   { id: "cart", label: "Cart" },
   { id: "date-range", label: "Date Range" },
   { id: "toast", label: "Toast" },
+  { id: "emails", label: "Emails" },
 ] as const;
 
 type ComponentTabId = (typeof COMPONENT_TABS)[number]["id"];
@@ -213,6 +218,62 @@ function DateRangeFilterDemo() {
   );
 }
 
+function EmailPreviewDemo() {
+  "use no memo";
+
+  const [activeEmailId, setActiveEmailId] = useState<EmailPreview["id"]>(
+    mockEmailPreviews[0].id,
+  );
+  const activeEmail =
+    mockEmailPreviews.find((email) => email.id === activeEmailId) ??
+    mockEmailPreviews[0];
+
+  return (
+    <div className="max-w-3xl space-y-4 rounded-xl border border-black/10 bg-white/70 p-6">
+      <div
+        role="tablist"
+        aria-label="Email template previews"
+        className={cn(segmentListClassName, "flex-wrap")}
+      >
+        {mockEmailPreviews.map((email) => {
+          const isActive = activeEmailId === email.id;
+
+          return (
+            <button
+              key={email.id}
+              type="button"
+              role="tab"
+              aria-selected={isActive}
+              onClick={() => setActiveEmailId(email.id)}
+              className={segmentTabClassName(isActive)}
+            >
+              {email.label}
+            </button>
+          );
+        })}
+      </div>
+
+      <p className="text-xs text-black/50">
+        Subject: <span className="text-black/70">{activeEmail.subject}</span>
+      </p>
+
+      <iframe
+        key={activeEmail.id}
+        title={`${activeEmail.label} email preview`}
+        srcDoc={activeEmail.html}
+        sandbox=""
+        className="h-[640px] w-full rounded-xl border border-black/10 bg-[#f9fafb]"
+      />
+
+      <p className="text-xs text-black/50">
+        Reference only — live templates live in{" "}
+        <code className="text-[11px]">deepsky-nation-server/emails/</code>.
+        Update these mocks when you redesign an email.
+      </p>
+    </div>
+  );
+}
+
 const TAB_COPY: Record<
   ComponentTabId,
   { title: string; description: string; render: () => ReactNode }
@@ -260,6 +321,12 @@ const TAB_COPY: Record<
         <ToastDemo />
       </ToastProvider>
     ),
+  },
+  emails: {
+    title: "Transactional Emails",
+    description:
+      "Inbox email layouts sent by the backend. Mock data for visual reference — not React components.",
+    render: () => <EmailPreviewDemo />,
   },
 };
 
