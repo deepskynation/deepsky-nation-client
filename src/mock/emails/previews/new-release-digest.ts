@@ -2,7 +2,40 @@
 import { LOGO_URL, SHOP_LINK, UNSUBSCRIBE_LINK } from "@/mock/emails/constants";
 import type { EmailPreview } from "@/mock/emails/types";
 
-const PRODUCT_CARDS_HTML = `<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom:16px;border-bottom:1px solid rgba(0,0,0,0.06);"><tr><td width="120" valign="top" style="padding:0 16px 16px 0;"><a href="#product-tee" style="text-decoration:none;"><img src="/product-3.jpg" alt="Deep Sky Logo Tee" width="120" height="150" style="display:block;width:120px;height:150px;object-fit:cover;border-radius:8px;border:0;" /></a></td><td valign="top" style="padding:0 0 16px;"><span style="display:inline-block;margin-bottom:8px;padding:2px 8px;background:#000;color:#fff;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;border-radius:4px;">NEW</span><div style="font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:0.04em;color:#000;line-height:1.4;max-height:34px;overflow:hidden;">Deep Sky Logo Tee</div><div style="margin-top:8px;font-size:13px;color:#000;">PHP 1,299.00</div><a href="#product-tee" style="display:inline-block;margin-top:8px;font-size:12px;font-weight:500;color:#000;text-decoration:underline;">View product</a></td></tr></table><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom:16px;border-bottom:1px solid rgba(0,0,0,0.06);"><tr><td width="120" valign="top" style="padding:0 16px 16px 0;"><a href="#product-cap" style="text-decoration:none;"><img src="/product-7.jpg" alt="Orion Cap" width="120" height="150" style="display:block;width:120px;height:150px;object-fit:cover;border-radius:8px;border:0;" /></a></td><td valign="top" style="padding:0 0 16px;"><span style="display:inline-block;margin-bottom:8px;padding:2px 8px;background:#000;color:#fff;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;border-radius:4px;">NEW</span><div style="font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:0.04em;color:#000;line-height:1.4;max-height:34px;overflow:hidden;">Orion Cap</div><div style="margin-top:8px;font-size:13px;color:#000;">PHP 899.00</div><a href="#product-cap" style="display:inline-block;margin-top:8px;font-size:12px;font-weight:500;color:#000;text-decoration:underline;">View product</a></td></tr></table><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom:16px;border-bottom:1px solid rgba(0,0,0,0.06);"><tr><td width="120" valign="top" style="padding:0 16px 16px 0;"><a href="#product-hoodie" style="text-decoration:none;"><img src="/product-5.jpg" alt="Nebula Hoodie" width="120" height="150" style="display:block;width:120px;height:150px;object-fit:cover;border-radius:8px;border:0;" /></a></td><td valign="top" style="padding:0 0 16px;"><span style="display:inline-block;margin-bottom:8px;padding:2px 8px;background:#000;color:#fff;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;border-radius:4px;">NEW</span><div style="font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:0.04em;color:#000;line-height:1.4;max-height:34px;overflow:hidden;">Nebula Hoodie</div><div style="margin-top:8px;font-size:13px;color:#000;">PHP 2,499.00</div><a href="#product-hoodie" style="display:inline-block;margin-top:8px;font-size:12px;font-weight:500;color:#000;text-decoration:underline;">View product</a></td></tr></table>`;
+type ReleaseProduct = {
+  href: string;
+  imageSrc: string;
+  name: string;
+  price: string;
+};
+
+/** Add or remove entries here — card HTML and intro copy update automatically. */
+const RELEASE_PRODUCTS: ReleaseProduct[] = [
+  {
+    href: "#product-tee",
+    imageSrc: "/product-3.jpg",
+    name: "Deep Sky Logo Tee",
+    price: "PHP 1,299.00",
+  },
+  // {
+  //   href: "#product-cap",
+  //   imageSrc: "/product-7.jpg",
+  //   name: "Orion Cap",
+  //   price: "PHP 899.00",
+  // },
+  // {
+  //   href: "#product-hoodie",
+  //   imageSrc: "/product-5.jpg",
+  //   name: "Nebula Hoodie",
+  //   price: "PHP 2,499.00",
+  // },
+];
+
+function renderReleaseProductCard(product: ReleaseProduct): string {
+  return `<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom:16px;border-bottom:1px solid rgba(0,0,0,0.06);"><tr><td width="120" valign="top" style="padding:0 16px 16px 0;"><a href="${product.href}" style="text-decoration:none;"><img src="${product.imageSrc}" alt="${product.name}" width="120" height="150" style="display:block;width:120px;height:150px;object-fit:cover;border-radius:8px;border:0;" /></a></td><td valign="top" style="padding:0 0 16px;"><span style="display:inline-block;margin-bottom:8px;padding:2px 8px;background:#000;color:#fff;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;border-radius:4px;">NEW</span><div style="font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:0.04em;color:#000;line-height:1.4;max-height:34px;overflow:hidden;">${product.name}</div><div style="margin-top:8px;font-size:13px;color:#000;">${product.price}</div><a href="${product.href}" style="display:inline-block;margin-top:8px;font-size:12px;font-weight:500;color:#000;text-decoration:underline;">View product</a></td></tr></table>`;
+}
+
+const PRODUCT_CARDS_HTML = RELEASE_PRODUCTS.map(renderReleaseProductCard).join("");
 
 export const newReleaseDigestEmailPreview: EmailPreview = {
   id: "new-release-digest",
@@ -27,7 +60,7 @@ export const newReleaseDigestEmailPreview: EmailPreview = {
             <td style="padding:32px 28px 20px;text-align:center;">
               <img src="${LOGO_URL}" alt="Deepsky" width="140" height="28" style="display:block;margin:0 auto 16px;height:28px;width:auto;max-width:140px;border:0;" />
               <p style="margin:0;font-size:14px;line-height:1.6;color:rgba(0,0,0,0.6);">
-                We just released 3 new piece(s). Shop them before they sell out.
+                We just released ${RELEASE_PRODUCTS.length} new piece(s). Shop them before they sell out.
               </p>
             </td>
           </tr>

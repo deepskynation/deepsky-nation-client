@@ -1,7 +1,37 @@
 import { LOGO_URL, ORDERS_LINK } from "@/mock/emails/constants";
 import type { EmailPreview } from "@/mock/emails/types";
 
-const ORDER_LINE_ITEMS_HTML = `<table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr><td style="padding:8px 0;border-bottom:1px solid rgba(0,0,0,0.06);"><div style="font-size:13px;color:#000;">Deep Sky Logo Tee (M · Black)</div><div style="font-size:12px;color:rgba(0,0,0,0.5);">Qty 2 × PHP 1,299.00</div></td><td style="padding:8px 0;border-bottom:1px solid rgba(0,0,0,0.06);text-align:right;font-size:13px;color:#000;white-space:nowrap;">PHP 2,598.00</td></tr><tr><td style="padding:8px 0;border-bottom:1px solid rgba(0,0,0,0.06);"><div style="font-size:13px;color:#000;">Orion Cap (One Size · Sand)</div><div style="font-size:12px;color:rgba(0,0,0,0.5);">Qty 1 × PHP 899.00</div></td><td style="padding:8px 0;border-bottom:1px solid rgba(0,0,0,0.06);text-align:right;font-size:13px;color:#000;white-space:nowrap;">PHP 899.00</td></tr></table>`;
+type OrderLineItem = {
+  name: string;
+  variant: string;
+  quantity: number;
+  unitPrice: string;
+  lineTotal: string;
+};
+
+/** Add or remove entries here — line-item HTML updates automatically. */
+const ORDER_LINE_ITEMS: OrderLineItem[] = [
+  {
+    name: "Deep Sky Logo Tee",
+    variant: "M · Black",
+    quantity: 2,
+    unitPrice: "PHP 1,299.00",
+    lineTotal: "PHP 2,598.00",
+  },
+  {
+    name: "Orion Cap",
+    variant: "One Size · Sand",
+    quantity: 1,
+    unitPrice: "PHP 899.00",
+    lineTotal: "PHP 899.00",
+  },
+];
+
+function renderOrderLineItem(item: OrderLineItem): string {
+  return `<tr><td style="padding:8px 0;border-bottom:1px solid rgba(0,0,0,0.06);"><div style="font-size:13px;color:#000;">${item.name} (${item.variant})</div><div style="font-size:12px;color:rgba(0,0,0,0.5);">Qty ${item.quantity} × ${item.unitPrice}</div></td><td style="padding:8px 0;border-bottom:1px solid rgba(0,0,0,0.06);text-align:right;font-size:13px;color:#000;white-space:nowrap;">${item.lineTotal}</td></tr>`;
+}
+
+const ORDER_LINE_ITEMS_HTML = `<table role="presentation" width="100%" cellspacing="0" cellpadding="0">${ORDER_LINE_ITEMS.map(renderOrderLineItem).join("")}</table>`;
 
 export const orderReceiptEmailPreview: EmailPreview = {
   id: "order-receipt",

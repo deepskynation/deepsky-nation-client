@@ -2,7 +2,44 @@
 import { LOGO_URL, SHOP_LINK, UNSUBSCRIBE_LINK } from "@/mock/emails/constants";
 import type { EmailPreview } from "@/mock/emails/types";
 
-const PRODUCT_CARDS_HTML = `<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom:16px;border-bottom:1px solid rgba(0,0,0,0.06);"><tr><td width="120" valign="top" style="padding:0 16px 16px 0;"><a href="#product-tee" style="text-decoration:none;"><img src="/product-3.jpg" alt="Deep Sky Logo Tee" width="120" height="150" style="display:block;width:120px;height:150px;object-fit:cover;border-radius:8px;border:0;" /></a></td><td valign="top" style="padding:0 0 16px;"><span style="display:inline-block;margin-bottom:8px;padding:2px 8px;background:#dc2626;color:#fff;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;border-radius:4px;">SALE</span><div style="font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:0.04em;color:#000;line-height:1.4;max-height:34px;overflow:hidden;">Deep Sky Logo Tee</div><div style="margin-top:8px;"><div style="font-size:12px;color:rgba(0,0,0,0.5);text-decoration:line-through;">PHP 1,299.00</div><div style="margin-top:2px;font-size:13px;font-weight:600;color:#000;">PHP 899.00</div></div><a href="#product-tee" style="display:inline-block;margin-top:8px;font-size:12px;font-weight:500;color:#000;text-decoration:underline;">View product</a></td></tr></table><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom:16px;border-bottom:1px solid rgba(0,0,0,0.06);"><tr><td width="120" valign="top" style="padding:0 16px 16px 0;"><a href="#product-cap" style="text-decoration:none;"><img src="/product-7.jpg" alt="Orion Cap" width="120" height="150" style="display:block;width:120px;height:150px;object-fit:cover;border-radius:8px;border:0;" /></a></td><td valign="top" style="padding:0 0 16px;"><span style="display:inline-block;margin-bottom:8px;padding:2px 8px;background:#dc2626;color:#fff;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;border-radius:4px;">SALE</span><div style="font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:0.04em;color:#000;line-height:1.4;max-height:34px;overflow:hidden;">Orion Cap</div><div style="margin-top:8px;"><div style="font-size:12px;color:rgba(0,0,0,0.5);text-decoration:line-through;">PHP 1,199.00</div><div style="margin-top:2px;font-size:13px;font-weight:600;color:#000;">PHP 799.00</div></div><a href="#product-cap" style="display:inline-block;margin-top:8px;font-size:12px;font-weight:500;color:#000;text-decoration:underline;">View product</a></td></tr></table><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom:16px;border-bottom:1px solid rgba(0,0,0,0.06);"><tr><td width="120" valign="top" style="padding:0 16px 16px 0;"><a href="#product-print" style="text-decoration:none;"><img src="/product-1.jpg" alt="Stellar Map Print" width="120" height="150" style="display:block;width:120px;height:150px;object-fit:cover;border-radius:8px;border:0;" /></a></td><td valign="top" style="padding:0 0 16px;"><span style="display:inline-block;margin-bottom:8px;padding:2px 8px;background:#dc2626;color:#fff;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;border-radius:4px;">SALE</span><div style="font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:0.04em;color:#000;line-height:1.4;max-height:34px;overflow:hidden;">Stellar Map Print</div><div style="margin-top:8px;"><div style="font-size:12px;color:rgba(0,0,0,0.5);text-decoration:line-through;">PHP 1,899.00</div><div style="margin-top:2px;font-size:13px;font-weight:600;color:#000;">PHP 1,499.00</div></div><a href="#product-print" style="display:inline-block;margin-top:8px;font-size:12px;font-weight:500;color:#000;text-decoration:underline;">View product</a></td></tr></table>`;
+type SaleProduct = {
+  href: string;
+  imageSrc: string;
+  name: string;
+  originalPrice: string;
+  salePrice: string;
+};
+
+/** Add or remove entries here — card HTML and intro copy update automatically. */
+const SALE_PRODUCTS: SaleProduct[] = [
+  {
+    href: "#product-tee",
+    imageSrc: "/product-3.jpg",
+    name: "Deep Sky Logo Tee",
+    originalPrice: "PHP 1,299.00",
+    salePrice: "PHP 899.00",
+  },
+  // {
+  //   href: "#product-cap",
+  //   imageSrc: "/product-7.jpg",
+  //   name: "Orion Cap",
+  //   originalPrice: "PHP 1,199.00",
+  //   salePrice: "PHP 799.00",
+  // },
+  // {
+  //   href: "#product-print",
+  //   imageSrc: "/product-1.jpg",
+  //   name: "Stellar Map Print",
+  //   originalPrice: "PHP 1,899.00",
+  //   salePrice: "PHP 1,499.00",
+  // },
+];
+
+function renderSaleProductCard(product: SaleProduct): string {
+  return `<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom:16px;border-bottom:1px solid rgba(0,0,0,0.06);"><tr><td width="120" valign="top" style="padding:0 16px 16px 0;"><a href="${product.href}" style="text-decoration:none;"><img src="${product.imageSrc}" alt="${product.name}" width="120" height="150" style="display:block;width:120px;height:150px;object-fit:cover;border-radius:8px;border:0;" /></a></td><td valign="top" style="padding:0 0 16px;"><span style="display:inline-block;margin-bottom:8px;padding:2px 8px;background:#dc2626;color:#fff;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;border-radius:4px;">SALE</span><div style="font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:0.04em;color:#000;line-height:1.4;max-height:34px;overflow:hidden;">${product.name}</div><div style="margin-top:8px;"><div style="font-size:12px;color:rgba(0,0,0,0.5);text-decoration:line-through;">${product.originalPrice}</div><div style="margin-top:2px;font-size:13px;font-weight:600;color:#000;">${product.salePrice}</div></div><a href="${product.href}" style="display:inline-block;margin-top:8px;font-size:12px;font-weight:500;color:#000;text-decoration:underline;">View product</a></td></tr></table>`;
+}
+
+const PRODUCT_CARDS_HTML = SALE_PRODUCTS.map(renderSaleProductCard).join("");
 
 export const saleDigestEmailPreview: EmailPreview = {
   id: "sale-digest",
@@ -27,7 +64,7 @@ export const saleDigestEmailPreview: EmailPreview = {
             <td style="padding:32px 28px 20px;text-align:center;">
               <img src="${LOGO_URL}" alt="Deepsky" width="140" height="28" style="display:block;margin:0 auto 16px;height:28px;width:auto;max-width:140px;border:0;" />
               <p style="margin:0;font-size:14px;line-height:1.6;color:rgba(0,0,0,0.6);">
-                3 item(s) are on sale right now.
+                ${SALE_PRODUCTS.length} item(s) are on sale right now.
               </p>
             </td>
           </tr>

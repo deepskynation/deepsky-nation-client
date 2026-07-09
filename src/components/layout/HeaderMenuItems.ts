@@ -34,12 +34,12 @@ export const dashboardHeaderMenuItems: MenuItemTypes[] = [
     href: "/size-chart",
   },
 
-  {
-    id: "about-us",
-    title: "About Us",
-    icon: UserCircleIcon,
-    href: "/about-us",
-  },
+  // {
+  //   id: "about-us",
+  //   title: "About Us",
+  //   icon: UserCircleIcon,
+  //   href: "/about-us",
+  // },
   // {
   //   id: "contact-us",
   //   title: "Contact Us",
@@ -68,12 +68,12 @@ export const userHeaderMenuItems: MenuItemTypes[] = [
     icon: RulerIcon,
     href: "/size-chart",
   },
-  {
-    id: "about-us",
-    title: "About Us",
-    icon: UserCircleIcon,
-    href: "/about-us",
-  },
+  // {
+  //   id: "about-us",
+  //   title: "About Us",
+  //   icon: UserCircleIcon,
+  //   href: "/about-us",
+  // },
   // {
   //     id: "profile",
   //     title: "Profile",
