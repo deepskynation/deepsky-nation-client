@@ -2,22 +2,32 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { apiUrl } from "@/lib/api-config";
 import { readApiError } from "@/store/api-utils";
 import type { RootState } from "@/store";
-import type { SubscriberSubscribeResponse } from "@/types/subscriber";
+import type {
+  SubscriberSubscribeResponse,
+  SubscriberUnsubscribeResponse,
+} from "@/types/subscriber";
 
 type SubscribeThunkConfig = {
   rejectValue: string;
 };
 
 export type SubscriberSubscribeStatus = "idle" | "loading" | "succeeded" | "failed";
+export type SubscriberUnsubscribeStatus = "idle" | "loading" | "succeeded" | "failed";
 
 export type SubscriberState = {
   subscribeStatus: SubscriberSubscribeStatus;
   subscribeError: string | null;
+  unsubscribeStatus: SubscriberUnsubscribeStatus;
+  unsubscribeError: string | null;
+  unsubscribeMessage: string | null;
 };
 
 const initialState: SubscriberState = {
   subscribeStatus: "idle",
   subscribeError: null,
+  unsubscribeStatus: "idle",
+  unsubscribeError: null,
+  unsubscribeMessage: null,
 };
 
 export const subscribeToEmail = createAsyncThunk<
@@ -43,6 +53,27 @@ export const subscribeToEmail = createAsyncThunk<
   return (await response.json()) as SubscriberSubscribeResponse;
 });
 
+export const unsubscribeFromEmail = createAsyncThunk<
+  SubscriberUnsubscribeResponse,
+  string,
+  SubscribeThunkConfig
+>("subscriber/unsubscribe", async (token, { rejectWithValue }) => {
+  const trimmed = token.trim();
+  if (!trimmed) {
+    return rejectWithValue("This unsubscribe link is invalid.");
+  }
+
+  const response = await fetch(
+    apiUrl(`/api/subscribers/unsubscribe?token=${encodeURIComponent(trimmed)}`),
+  );
+
+  if (!response.ok) {
+    return rejectWithValue(await readApiError(response));
+  }
+
+  return (await response.json()) as SubscriberUnsubscribeResponse;
+});
+
 const subscriberSlice = createSlice({
   name: "subscriber",
   initialState,
@@ -56,6 +87,11 @@ const subscriberSlice = createSlice({
     resetSubscribeState(state) {
       state.subscribeStatus = "idle";
       state.subscribeError = null;
+    },
+    resetUnsubscribeState(state) {
+      state.unsubscribeStatus = "idle";
+      state.unsubscribeError = null;
+      state.unsubscribeMessage = null;
     },
   },
   extraReducers: (builder) => {
@@ -72,11 +108,29 @@ const subscriberSlice = createSlice({
         state.subscribeStatus = "failed";
         state.subscribeError =
           action.payload ?? "Could not subscribe. Please try again.";
+      })
+      .addCase(unsubscribeFromEmail.pending, (state) => {
+        state.unsubscribeStatus = "loading";
+        state.unsubscribeError = null;
+        state.unsubscribeMessage = null;
+      })
+      .addCase(unsubscribeFromEmail.fulfilled, (state, action) => {
+        state.unsubscribeStatus = "succeeded";
+        state.unsubscribeError = null;
+        state.unsubscribeMessage =
+          action.payload.message ?? "You've been unsubscribed.";
+      })
+      .addCase(unsubscribeFromEmail.rejected, (state, action) => {
+        state.unsubscribeStatus = "failed";
+        state.unsubscribeError =
+          action.payload ?? "Could not unsubscribe. Please try again.";
+        state.unsubscribeMessage = null;
       });
   },
 });
 
-export const { clearSubscribeError, resetSubscribeState } = subscriberSlice.actions;
+export const { clearSubscribeError, resetSubscribeState, resetUnsubscribeState } =
+  subscriberSlice.actions;
 
 export const selectSubscribeStatus = (state: RootState) =>
   state.subscriber.subscribeStatus;
@@ -84,5 +138,11 @@ export const selectSubscribeError = (state: RootState) =>
   state.subscriber.subscribeError;
 export const selectIsSubscribing = (state: RootState) =>
   state.subscriber.subscribeStatus === "loading";
+export const selectUnsubscribeStatus = (state: RootState) =>
+  state.subscriber.unsubscribeStatus;
+export const selectUnsubscribeError = (state: RootState) =>
+  state.subscriber.unsubscribeError;
+export const selectUnsubscribeMessage = (state: RootState) =>
+  state.subscriber.unsubscribeMessage;
 
 export default subscriberSlice.reducer;

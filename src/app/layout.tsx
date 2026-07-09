@@ -4,14 +4,13 @@ import { ReduxProvider } from "@/store/provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Deepsky",
+  title: "DEEPSKY",
   description: "Deepsky storefront",
   icons: {
     icon: [
-      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
-      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+      { url: "/deepsky_logo_v5.png" },
     ],
-    apple: "/apple-icon.png",
+
   },
 };
 
