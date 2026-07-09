@@ -16,13 +16,15 @@ import { cn } from "@/lib/utils";
 
 type EmailSubscribeSectionProps = {
   title?: string;
+  description?: string;
   showSocialLinks?: boolean;
   className?: string;
   inputClassName?: string;
 };
 
 export function EmailSubscribeSection({
-  title = "Subscribe to our email",
+  title = "Get new drops & sale alerts",
+  description = "Subscribe for emails when we release new products or mark items on sale. Unsubscribe anytime.",
   showSocialLinks = true,
   className,
   inputClassName,
@@ -51,6 +53,11 @@ export function EmailSubscribeSection({
           <h2 className="font-serif text-xl font-normal text-black sm:text-2xl">
             {title}
           </h2>
+          {description ? (
+            <p className="max-w-md text-sm leading-relaxed text-black/55">
+              {description}
+            </p>
+          ) : null}
         </div>
       </AnimateInView>
 

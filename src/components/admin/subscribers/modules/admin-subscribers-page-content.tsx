@@ -13,8 +13,8 @@ export function AdminSubscribersPageContent() {
           Email Subscribers
         </h1>
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          View newsletter signups from the product detail page and other public
-          subscribe forms.
+          View newsletter signups from the shop. Subscribers receive emails when
+          new products are released or go on sale.
         </p>
       </header>
 
