@@ -96,7 +96,7 @@ export default function TableRow({ product, className, onEdit }: TableRowProps) 
 
         <td className="px-4 py-3.5">
           <div className="min-w-0 max-w-[240px]">
-            <p className="truncate font-medium text-neutral-900">{product.title}</p>
+            <p className="truncate font-medium text-neutral-900 uppercase">{product.title}</p>
             {product.description ? (
               <p className="mt-0.5 truncate text-xs text-muted-foreground">
                 {product.description}

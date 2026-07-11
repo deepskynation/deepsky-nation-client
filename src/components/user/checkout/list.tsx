@@ -383,7 +383,7 @@ export function CheckoutView({ params }: CheckoutViewProps) {
         <div className="mx-auto max-w-6xl px-6 py-8 lg:px-12 lg:py-10">
           <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="space-y-1" />
-            <ol className="flex items-center gap-2 text-xs font-medium text-black/45">
+            {/* <ol className="flex items-center gap-2 text-xs font-medium text-black/45">
               <li>
                 <Link href="/dashboard" className="hover:text-black">
                   Products
@@ -401,7 +401,7 @@ export function CheckoutView({ params }: CheckoutViewProps) {
                 /
               </li>
               <li className="text-black">Checkout</li>
-            </ol>
+            </ol> */}
           </div>
 
           <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:gap-8">

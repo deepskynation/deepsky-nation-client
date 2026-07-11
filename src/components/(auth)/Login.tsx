@@ -26,6 +26,10 @@ type LoginStep = "signin" | "code";
 
 const LAST_AUTH_METHOD_KEY = "deepsky-last-auth-method";
 const LAST_EMAIL_KEY = "deepsky-last-email";
+/** Keep in sync with server `email_login_code_resend_seconds`. */
+const RESEND_COOLDOWN_SECONDS = 30;
+/** Keep in sync with server `email_login_code_max_sends_per_hour`. */
+const MAX_SENDS_PER_HOUR = 5;
 
 function OrDivider() {
   return (
@@ -55,6 +59,8 @@ function LoginContent() {
     null,
   );
   const [googleCredential, setGoogleCredential] = useState<string | null>(null);
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const [sendCount, setSendCount] = useState(0);
   const verifyingRef = useRef(false);
 
   useEffect(() => {
@@ -66,6 +72,23 @@ function LoginContent() {
     if (storedEmail) {
       setEmail(storedEmail);
     }
+  }, []);
+
+  useEffect(() => {
+    if (resendCooldown <= 0) {
+      return;
+    }
+
+    const timerId = window.setTimeout(() => {
+      setResendCooldown((seconds) => Math.max(0, seconds - 1));
+    }, 1000);
+
+    return () => window.clearTimeout(timerId);
+  }, [resendCooldown]);
+
+  const registerSuccessfulSend = useCallback((isInitialSend: boolean) => {
+    setResendCooldown(RESEND_COOLDOWN_SECONDS);
+    setSendCount((count) => (isInitialSend ? 1 : count + 1));
   }, []);
 
   const finishLogin = (role: "user" | "admin") => {
@@ -85,6 +108,7 @@ function LoginContent() {
       window.localStorage.setItem(LAST_EMAIL_KEY, result.payload.email);
       setStep("code");
       setCode("");
+      registerSuccessfulSend(true);
       return;
     }
   };
@@ -109,6 +133,7 @@ function LoginContent() {
       setEmail(trimmed);
       setStep("code");
       setCode("");
+      registerSuccessfulSend(true);
       return true;
     }
 
@@ -154,6 +179,10 @@ function LoginContent() {
   );
 
   const handleResendCode = async () => {
+    if (resendCooldown > 0 || sendCount >= MAX_SENDS_PER_HOUR || isSubmitting) {
+      return;
+    }
+
     dispatch(clearAuthError());
     setIsSubmitting(true);
 
@@ -164,6 +193,7 @@ function LoginContent() {
         return;
       }
       setCode("");
+      registerSuccessfulSend(false);
       return;
     }
 
@@ -171,8 +201,12 @@ function LoginContent() {
     setIsSubmitting(false);
     if (sendEmailCode.fulfilled.match(result)) {
       setCode("");
+      registerSuccessfulSend(false);
     }
   };
+
+  const canResend =
+    !isSubmitting && resendCooldown === 0 && sendCount < MAX_SENDS_PER_HOUR;
 
   if (step === "code") {
     return (
@@ -214,21 +248,30 @@ function LoginContent() {
             ) : null}
           </div>
 
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col items-center gap-2">
             <button
               type="button"
               onClick={handleResendCode}
-              disabled={isSubmitting}
-              className="text-sm text-black/55 transition-colors hover:text-black disabled:opacity-50"
+              disabled={!canResend}
+              className="text-sm text-black/55 transition-colors hover:text-black disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Resend code
+              {resendCooldown > 0
+                ? `Resend code in ${resendCooldown}s`
+                : sendCount >= MAX_SENDS_PER_HOUR
+                  ? "Resend limit reached"
+                  : "Resend code"}
             </button>
+            <p className="text-xs text-black/40">
+              Attempts {sendCount} / {MAX_SENDS_PER_HOUR}
+            </p>
             <button
               type="button"
               onClick={() => {
                 setStep("signin");
                 setCode("");
                 setGoogleCredential(null);
+                setResendCooldown(0);
+                setSendCount(0);
                 verifyingRef.current = false;
                 dispatch(clearAuthError());
               }}
