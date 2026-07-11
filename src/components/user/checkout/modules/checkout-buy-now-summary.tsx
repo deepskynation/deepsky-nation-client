@@ -65,7 +65,7 @@ export function CheckoutBuyNowSummary({
           </div>
 
           <div className="min-w-0 flex-1 space-y-1">
-            <p className="text-sm font-semibold text-black">{product.title}</p>
+            <p className="uppercase `text-sm font-semibold text-black">{product.title}</p>
             <p className="text-xs text-black/50">
               {product.category_name ?? "Uncategorized"}
             </p>

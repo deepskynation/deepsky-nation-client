@@ -314,7 +314,7 @@ export function ProductDetailView({ params }: ProductDetailViewProps) {
     <div className="min-h-full bg-gradient-to-b from-neutral-100 via-white to-neutral-200/90 text-black">
       <DashboardGlassSection variant="light" className="min-h-full">
         <div className="mx-auto max-w-6xl px-6 py-8 lg:px-12 lg:py-10">
-          <ol className="mb-8 flex items-center gap-2 text-xs font-medium text-black/45">
+          {/* <ol className="mb-8 flex items-center gap-2 text-xs font-medium text-black/45">
             <li>
               <Link href={catalogHref} className="hover:text-black">
                 Products
@@ -326,7 +326,7 @@ export function ProductDetailView({ params }: ProductDetailViewProps) {
             <li className="max-w-[12rem] truncate text-black sm:max-w-xs">
               {product.title}
             </li>
-          </ol>
+          </ol> */}
 
           <div className="grid gap-6 lg:grid-cols-[1fr_1fr] lg:gap-10">
             <div className={cn(glassPanelFlatClassName, "p-5 sm:p-6")}>
@@ -409,7 +409,7 @@ export function ProductDetailView({ params }: ProductDetailViewProps) {
                 <p className="text-xs text-black/45">
                   {product.category_name ?? "Uncategorized"}
                 </p>
-                <h1 className="font-serif text-2xl font-normal text-black sm:text-3xl">
+                <h1 className="uppercase font-serif text-2xl font-normal text-black sm:text-3xl">
                   {product.title}
                 </h1>
                 {onSale ? (
