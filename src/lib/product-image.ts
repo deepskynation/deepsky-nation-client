@@ -1,8 +1,13 @@
 import { toImagePreviewSrc } from "@/lib/read-image-base64";
 import type { ApiProduct, ApiProductImage, ProductImageRole } from "@/types/product";
 
+export type ProductCarouselSlide = {
+  src: string;
+  role: ProductImageRole;
+};
+
 /** Placeholder first, then alternate product shot, then gallery — for card hover carousel. */
-export function getProductCarouselSrcs(product: ApiProduct): string[] {
+export function getProductCarouselSrcs(product: ApiProduct): ProductCarouselSlide[] {
   const gallery = imagesByRole(product.images, "gallery");
   const model = imagesByRole(product.images, "model");
   const placeholder = product.images.find((image) => image.role === "placeholder");
@@ -27,9 +32,12 @@ export function getProductCarouselSrcs(product: ApiProduct): string[] {
   const fallback =
     ordered.length > 0 ? ordered : gallery.length > 0 ? gallery : product.images.slice(0, 1);
 
-  return fallback
-    .map((image) => (image.image_base64 ? toImagePreviewSrc(image.image_base64) : null))
-    .filter((src): src is string => Boolean(src));
+  return fallback.flatMap((image) => {
+    if (!image.image_base64) {
+      return [];
+    }
+    return [{ src: toImagePreviewSrc(image.image_base64), role: image.role }];
+  });
 }
 
 /** Placeholder image first, then any other image from the product. */

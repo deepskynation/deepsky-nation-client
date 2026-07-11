@@ -66,19 +66,27 @@ function ProductCardMedia({ product, priority = false }: ProductCardMediaProps) 
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {slides.map((src, index) => (
-        <img
-          key={`${product.id}-${index}`}
-          src={src}
-          alt={product.title}
-          fetchPriority={priority && index === 0 ? "high" : "auto"}
-          loading={priority && index === 0 ? "eager" : "lazy"}
-          className={cn(
-            "absolute inset-0 block size-full object-cover transition-opacity duration-500",
-            index === activeIndex ? "opacity-100" : "opacity-0",
-          )}
-        />
-      ))}
+      {slides.map((slide, index) => {
+        const isPlaceholderShot =
+          slide.role === "placeholder" || slide.role === "model";
+
+        return (
+          <img
+            key={`${product.id}-${index}`}
+            src={slide.src}
+            alt={product.title}
+            fetchPriority={priority && index === 0 ? "high" : "auto"}
+            loading={priority && index === 0 ? "eager" : "lazy"}
+            className={cn(
+              "absolute inset-0 block size-full transition-opacity duration-500",
+              isPlaceholderShot
+                ? "object-contain p-[12%]"
+                : "object-cover",
+              index === activeIndex ? "opacity-100" : "opacity-0",
+            )}
+          />
+        );
+      })}
 
       {hasCarousel && isHovered ? (
         <div
@@ -126,7 +134,7 @@ export function ProductCard({
   const cardClassName = cn(
     glassCardClassName,
     glassCardHoverClassName,
-    "group flex h-full w-full flex-col motion-safe:hover:-translate-y-1",
+    "group flex h-full w-full flex-col shadow-none hover:shadow-none motion-safe:hover:-translate-y-1",
     href && "cursor-pointer",
   );
 
