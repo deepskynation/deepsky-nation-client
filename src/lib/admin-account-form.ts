@@ -47,7 +47,9 @@ export function validateAdminAccountForm(
     }
   }
 
-  if (usernameChanged || emailChanged || passwordChanging) {
+  // Email / password changes still require the current password.
+  // Username-only updates do not.
+  if (emailChanged || passwordChanging) {
     if (!form.current_password) {
       return "Enter your current password to save account changes.";
     }

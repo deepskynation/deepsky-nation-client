@@ -194,8 +194,7 @@ export function AdminProfilePageContent() {
         <div className={sectionClassName}>
           <h2 className={sectionTitleClassName}>Account</h2>
           <p className={hintClassName}>
-            Update your username, email, or password. Your current password is required
-            to save any changes.
+            Update your username. Email cannot be changed here.
           </p>
 
           <div className="space-y-4">
@@ -217,47 +216,9 @@ export function AdminProfilePageContent() {
                 type="email"
                 autoComplete="email"
                 value={form.email}
-                onChange={(event) => updateField("email", event.target.value)}
+                readOnly
                 className={fieldClassName}
-                disabled={isSavingAccount}
-              />
-            </FormField>
-
-            <FormField id="admin-profile-current-password" label="Current Password">
-              <input
-                id="admin-profile-current-password"
-                type="password"
-                autoComplete="current-password"
-                value={form.current_password}
-                onChange={(event) => updateField("current_password", event.target.value)}
-                className={fieldClassName}
-                disabled={isSavingAccount}
-              />
-            </FormField>
-
-            <FormField id="admin-profile-new-password" label="New Password">
-              <input
-                id="admin-profile-new-password"
-                type="password"
-                autoComplete="new-password"
-                value={form.new_password}
-                onChange={(event) => updateField("new_password", event.target.value)}
-                className={fieldClassName}
-                disabled={isSavingAccount}
-                placeholder="Leave blank to keep current password"
-              />
-            </FormField>
-
-            <FormField id="admin-profile-confirm-password" label="Confirm New Password">
-              <input
-                id="admin-profile-confirm-password"
-                type="password"
-                autoComplete="new-password"
-                value={form.confirm_password}
-                onChange={(event) => updateField("confirm_password", event.target.value)}
-                className={fieldClassName}
-                disabled={isSavingAccount}
-                placeholder="Leave blank to keep current password"
+                disabled
               />
             </FormField>
           </div>
