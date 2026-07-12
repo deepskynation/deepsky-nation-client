@@ -4,6 +4,7 @@ export type ShippingFeeResponse = {
 
 export type ShopSettings = {
   default_shipping_fee: string;
+  created_at: string;
   updated_at: string;
 };
 
