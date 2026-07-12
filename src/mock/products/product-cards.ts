@@ -67,7 +67,7 @@ export const mockProductCards: ApiProduct[] = [
     sale: false,
     images: [
       mockImage("mock-img-2a", "placeholder", "/product-4.jpg"),
-      mockImage("mock-img-2b", "model", "/product-5.jpg"),
+      mockImage("mock-img-2b", "back", "/product-5.jpg"),
       mockImage("mock-img-2c", "gallery", "/product-6.jpg"),
     ],
     variants: mockColorPickerVariants,

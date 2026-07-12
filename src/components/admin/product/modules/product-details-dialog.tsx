@@ -30,8 +30,9 @@ import { parseApiProductPrice } from "@/types/product";
 import { isProductOnSale } from "@/lib/product-variants";
 
 const ROLE_SECTIONS: { role: ProductImageRole; title: string }[] = [
-  { role: "placeholder", title: "Placeholder 1" },
-  { role: "model", title: "Placeholder 2" },
+  { role: "placeholder", title: "Front view" },
+  { role: "back", title: "Back view" },
+  { role: "model", title: "Model" },
   { role: "sizing", title: "Size Chart" },
   { role: "gallery", title: "Gallery" },
 ];
@@ -213,7 +214,7 @@ export function ProductDetailsDialog({
               {ROLE_SECTIONS.map(({ role, title }) => {
                 const roleImages = imagesByRole(display.images, role);
                 if (
-                  (role === "model" || role === "sizing") &&
+                  (role === "back" || role === "model" || role === "sizing") &&
                   roleImages.length === 0
                 ) {
                   return null;
@@ -231,9 +232,11 @@ export function ProductDetailsDialog({
                           ? "No gallery images."
                           : role === "sizing"
                             ? "No size chart."
-                            : role === "model"
-                              ? "No Placeholder 2 image."
-                              : "No Placeholder 1 image."
+                            : role === "back"
+                              ? "No back view image."
+                              : role === "model"
+                                ? "No model image."
+                                : "No front view image."
                       }
                     />
                   </div>

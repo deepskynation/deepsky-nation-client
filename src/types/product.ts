@@ -11,7 +11,12 @@ export type Product = {
 
 export type ProductVisibility = "released" | "private";
 
-export type ProductImageRole = "placeholder" | "model" | "gallery" | "sizing";
+export type ProductImageRole =
+  | "placeholder"
+  | "back"
+  | "model"
+  | "gallery"
+  | "sizing";
 
 /** Matches backend `ProductImageResponse`. */
 export type ApiProductImage = {
