@@ -21,6 +21,7 @@ export type AdminUnsubscriberListItem = {
   email: string;
   subscribed_at: string;
   unsubscribed_at: string;
+  created_at: string;
 };
 
 export type AdminUnsubscribersListResponse =
