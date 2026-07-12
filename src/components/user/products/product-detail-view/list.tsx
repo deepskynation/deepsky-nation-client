@@ -307,7 +307,7 @@ export function ProductDetailView({ params }: ProductDetailViewProps) {
   };
 
   const placeholderImage = imagesByRole(product.images, "placeholder")[0];
-  const modelImage = imagesByRole(product.images, "model")[0];
+  const backImage = imagesByRole(product.images, "back")[0];
   const sizingImages = imagesByRole(product.images, "sizing");
 
   return (
@@ -361,12 +361,12 @@ export function ProductDetailView({ params }: ProductDetailViewProps) {
               <div className="mt-6 grid grid-cols-2 gap-2">
                 <ProductDetailImageTile
                   image={placeholderImage}
-                  alt="Product View 1"
+                  alt="Front view"
                   onPreview={openImagePreview}
                 />
                 <ProductDetailImageTile
-                  image={modelImage}
-                  alt="Product View 2"
+                  image={backImage}
+                  alt="Back view"
                   onPreview={openImagePreview}
                 />
               </div>

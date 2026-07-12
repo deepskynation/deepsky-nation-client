@@ -124,7 +124,7 @@ export function OrderDetailView({ params }: OrderDetailViewProps) {
     >
       <div className="min-h-full bg-gradient-to-b from-neutral-100 via-white to-neutral-200/90 text-black">
         <DashboardGlassSection variant="light" className="min-h-full">
-          <div className="mx-auto max-w-6xl px-6 py-8 lg:px-12 lg:py-10">
+          <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-12 lg:py-10">
             <div className="mb-6">
               <Link
                 href="/orders"
@@ -149,7 +149,7 @@ export function OrderDetailView({ params }: OrderDetailViewProps) {
                 className="max-w-none"
               />
             ) : order ? (
-              <div className={cn(glassCardClassName, "p-5 sm:p-8")}>
+              <div className={cn(glassCardClassName, "p-4 sm:p-8")}>
                 <OrderDetailContent order={order} orderProducts={orderProducts} />
               </div>
             ) : null}

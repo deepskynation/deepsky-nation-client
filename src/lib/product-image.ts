@@ -6,10 +6,10 @@ export type ProductCarouselSlide = {
   role: ProductImageRole;
 };
 
-/** Placeholder first, then alternate product shot, then gallery — for card hover carousel. */
+/** Front first, then back, then gallery — for card hover carousel. */
 export function getProductCarouselSrcs(product: ApiProduct): ProductCarouselSlide[] {
   const gallery = imagesByRole(product.images, "gallery");
-  const model = imagesByRole(product.images, "model");
+  const back = imagesByRole(product.images, "back");
   const placeholder = product.images.find((image) => image.role === "placeholder");
   const ordered: ApiProductImage[] = [];
 
@@ -17,7 +17,7 @@ export function getProductCarouselSrcs(product: ApiProduct): ProductCarouselSlid
     ordered.push(placeholder);
   }
 
-  for (const image of model) {
+  for (const image of back) {
     if (!ordered.some((existing) => existing.id === image.id)) {
       ordered.push(image);
     }
@@ -59,7 +59,9 @@ export function imagesByRole(
 }
 
 export const PRODUCT_IMAGE_SECTIONS: { role: ProductImageRole; title: string }[] = [
-  { role: "placeholder", title: "Product" },
+  { role: "placeholder", title: "Front view" },
+  { role: "back", title: "Back view" },
+  { role: "model", title: "Model" },
   { role: "gallery", title: "Gallery" },
   { role: "sizing", title: "Size Chart" },
 ];
@@ -69,10 +71,13 @@ export function emptyLabelForProductImageRole(role: ProductImageRole): string {
     return "No gallery images.";
   }
   if (role === "placeholder") {
-    return "No Placeholder 1 image.";
+    return "No front view image.";
+  }
+  if (role === "back") {
+    return "No back view image.";
   }
   if (role === "model") {
-    return "No Placeholder 2 image.";
+    return "No model image.";
   }
   return "No size chart.";
 }

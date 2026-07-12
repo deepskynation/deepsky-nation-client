@@ -68,7 +68,7 @@ function ProductCardMedia({ product, priority = false }: ProductCardMediaProps) 
     >
       {slides.map((slide, index) => {
         const isPlaceholderShot =
-          slide.role === "placeholder" || slide.role === "model";
+          slide.role === "placeholder" || slide.role === "back";
 
         return (
           <img

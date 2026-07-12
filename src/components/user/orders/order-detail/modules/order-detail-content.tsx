@@ -43,7 +43,7 @@ function DetailSection({
   className?: string;
 }) {
   return (
-    <section className={cn(glassPanelFlatClassName, "space-y-4 p-5 sm:p-6", className)}>
+    <section className={cn(glassPanelFlatClassName, "space-y-4 p-4 sm:p-6", className)}>
       <h2 className="text-sm font-semibold text-black">{title}</h2>
       {children}
     </section>
@@ -139,7 +139,7 @@ export function OrderDetailContent({
               Placed {formatOrderDateTime(order.created_at)}
             </p>
           </div>
-          <div className="flex w-full flex-row flex-wrap items-center justify-end gap-2 sm:w-auto">
+          <div className="flex w-full flex-row flex-wrap items-center gap-2 sm:w-auto sm:justify-end">
             <span
               className={cn(
                 "inline-flex shrink-0 items-center whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium ring-1 ring-inset",
@@ -207,7 +207,7 @@ export function OrderDetailContent({
                   return (
                     <li
                       key={item.id}
-                      className="space-y-3 rounded-xl bg-black/[0.03] px-4 py-3.5"
+                      className="space-y-3 rounded-xl bg-black/[0.03] px-3 py-3 sm:px-4 sm:py-3.5"
                     >
                       <div className="flex gap-3">
                         <div
@@ -241,44 +241,48 @@ export function OrderDetailContent({
                           )}
                         </div>
 
-                        <div className="min-w-0 flex-1 space-y-1">
-                          <p className="font-medium text-black">
-                            {product?.title ??
-                              item.product_title?.trim() ??
-                              (productId ? "Product" : "Order Item")}
-                          </p>
-                          {item.product_code ? (
-                            <p className="font-mono text-xs text-black/45">
-                              {item.product_code}
-                            </p>
-                          ) : product?.product_code ? (
-                            <p className="font-mono text-xs text-black/45">
-                              {product.product_code}
-                            </p>
-                          ) : null}
-                          {productId && product ? (
-                            <Link
-                              href={`/products/${productId}`}
-                              className="text-xs text-black/50 underline-offset-2 hover:text-black hover:underline"
-                            >
-                              Buy again
-                            </Link>
-                          ) : null}
-                          {variantLabel || item.variant_label ? (
-                            <p className="text-xs text-black/60">
-                              {variantLabel ?? item.variant_label}
-                            </p>
-                          ) : null}
-                          <p className="text-xs text-black/50">Qty {item.quantity}</p>
-                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
+                            <div className="min-w-0 space-y-1">
+                              <p className="break-words font-medium text-black">
+                                {product?.title ??
+                                  item.product_title?.trim() ??
+                                  (productId ? "Product" : "Order Item")}
+                              </p>
+                              {item.product_code ? (
+                                <p className="break-all font-mono text-xs text-black/45">
+                                  {item.product_code}
+                                </p>
+                              ) : product?.product_code ? (
+                                <p className="break-all font-mono text-xs text-black/45">
+                                  {product.product_code}
+                                </p>
+                              ) : null}
+                              {productId && product ? (
+                                <Link
+                                  href={`/products/${productId}`}
+                                  className="inline-block text-xs text-black/50 underline-offset-2 hover:text-black hover:underline"
+                                >
+                                  Buy again
+                                </Link>
+                              ) : null}
+                              {(variantLabel || item.variant_label) && (
+                                <p className="text-xs text-black/60">
+                                  {variantLabel ?? item.variant_label}
+                                </p>
+                              )}
+                              <p className="text-xs text-black/50">Qty {item.quantity}</p>
+                            </div>
 
-                        <div className="text-right text-sm">
-                          <p className="font-semibold text-black">
-                            {formatMoney(item.line_total)}
-                          </p>
-                          <p className="text-xs text-black/45">
-                            {formatMoney(item.unit_price)} each
-                          </p>
+                            <div className="shrink-0 text-sm sm:text-right">
+                              <p className="font-semibold tabular-nums text-black">
+                                {formatMoney(item.line_total)}
+                              </p>
+                              <p className="text-xs tabular-nums text-black/45">
+                                {formatMoney(item.unit_price)} each
+                              </p>
+                            </div>
+                          </div>
                         </div>
                       </div>
 
@@ -307,7 +311,7 @@ export function OrderDetailContent({
                 </div>
                 <div>
                   <dt className="text-xs font-medium text-black/45">Email</dt>
-                  <dd className="mt-0.5 text-black">{order.delivery_email}</dd>
+                  <dd className="mt-0.5 break-all text-black">{order.delivery_email}</dd>
                 </div>
                 <div>
                   <dt className="text-xs font-medium text-black/45">Phone</dt>

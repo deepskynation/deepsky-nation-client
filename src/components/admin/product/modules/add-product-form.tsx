@@ -270,8 +270,8 @@ function scrollToFirstInvalidField(fields: ProductFormFieldErrors) {
 }
 
 function hydrateFormFromProduct(product: ApiProduct) {
-  const placeholder = imagesByRole(product.images, "placeholder")[0];
-  const placeholder2 = imagesByRole(product.images, "placeholder")[0];
+  const placeholder1 = imagesByRole(product.images, "placeholder")[0];
+  const placeholder2 = imagesByRole(product.images, "back")[0];
   const sizing = imagesByRole(product.images, "sizing")[0];
   const gallery = imagesByRole(product.images, "gallery");
   const detailLines = formatProductDetails(product.details);
@@ -288,8 +288,8 @@ function hydrateFormFromProduct(product: ApiProduct) {
       visibility: product.visibility,
       is_featured: Boolean(product.is_featured),
     },
-    placeholderImage: placeholder
-      ? toImagePreviewSrc(placeholder.image_base64)
+    placeholderImage: placeholder1
+      ? toImagePreviewSrc(placeholder1.image_base64)
       : null,
     placeholder2Image: placeholder2
       ? toImagePreviewSrc(placeholder2.image_base64)
@@ -525,7 +525,7 @@ export function AddProductForm({
     }
 
     if (placeholder2Image) {
-      images.push({ image_base64: placeholder2Image, role: "model" });
+      images.push({ image_base64: placeholder2Image, role: "back" });
     }
 
     if (sizingImage) {
@@ -1144,7 +1144,7 @@ export function AddProductForm({
           <div>
             <h2 className={sectionTitleClassName}>Images</h2>
             <p className={cn(hintClassName, "mt-1")}>
-              Placeholder 1 is required. Placeholder 2, galleries, and size chart are optional.
+              Front view is required. Back view, galleries, and size chart are optional.
             </p>
           </div>
 
@@ -1153,8 +1153,8 @@ export function AddProductForm({
               <ProductImageSlot
                 id="product-placeholder-1"
                 variant="wide"
-                label="Placeholder 1"
-                hint="Front View"
+                label="Front view"
+                hint="Front of the garment"
                 required
                 value={placeholderImage}
                 onChange={(value) => {
@@ -1167,8 +1167,8 @@ export function AddProductForm({
 
               <ProductImageSlot
                 variant="wide"
-                label="Placeholder 2"
-                hint="Back View"
+                label="Back view"
+                hint="Back of the garment"
                 value={placeholder2Image}
                 onChange={setPlaceholder2Image}
                 disabled={isSubmitting}

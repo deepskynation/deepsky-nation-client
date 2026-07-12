@@ -1,11 +1,9 @@
 export const sidebarIconNames = [
   "home",
   "shopping-bag",
-  "shopping-cart",
   "package",
   "user-circle",
   "mail",
-  "model-artist",
 ] as const;
 
 export type SidebarIconName = (typeof sidebarIconNames)[number];
@@ -84,62 +82,6 @@ export const adminSidebarConfig: SidebarConfig = {
     },
   ],
 };
-
-
-export const userSidebarConfig: SidebarConfig = {
-  productTitle: "Deepsky",
-  sections: [
-    {
-      id: "shop",
-      label: "Shop",
-      items: [
-        {
-          id: "dashboard",
-          title: "Home",
-          icon: "home",
-          href: "/dashboard",
-        },
-        {
-          id: "cart",
-          title: "Cart",
-          icon: "shopping-cart",
-          href: "/cart",
-        },
-        {
-          id: "orders",
-          title: "Orders",
-          icon: "package",
-          href: "/orders",
-        },
-      ],
-    },
-    {
-      id: "account",
-      label: "Account",
-      items: [
-        {
-          id: "size-chart",
-          title: "Size Chart",
-          icon: "model-artist",
-          href: "/size-chart",
-        },
-        {
-          id: "about-us",
-          title: "About Us",
-          icon: "user-circle",
-          href: "/about-us",
-        },
-        {
-          id: "profile",
-          title: "Profile",
-          icon: "user-circle",
-          href: "/profile",
-        },
-      ],
-    },
-  ],
-};
-
 
 /** @deprecated Use adminSidebarConfig.sections flat items if needed */
 export const adminSideBarMenuItems = adminSidebarConfig.sections.flatMap(
