@@ -13,7 +13,7 @@ import { createPortal } from "react-dom";
 import {
   AlertTriangleIcon,
   CheckIcon,
-  LightbulbIcon,
+  InfoIcon,
   XIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -43,26 +43,22 @@ const AUTO_DISMISS_MS = 4500;
 const VARIANT_CONFIG = {
   success: {
     defaultTitle: "Success!",
-    container: "border-emerald-200 bg-emerald-50/95",
-    iconBg: "bg-emerald-500",
+    iconWrap: "border-emerald-400 text-emerald-500",
     Icon: CheckIcon,
   },
   info: {
     defaultTitle: "Did you know?",
-    container: "border-sky-200 bg-sky-50/95",
-    iconBg: "bg-sky-500",
-    Icon: LightbulbIcon,
+    iconWrap: "border-sky-400 text-sky-500",
+    Icon: InfoIcon,
   },
   warning: {
     defaultTitle: "Warning!",
-    container: "border-amber-200 bg-amber-50/95",
-    iconBg: "bg-amber-500",
+    iconWrap: "border-amber-400 text-amber-500",
     Icon: AlertTriangleIcon,
   },
   error: {
     defaultTitle: "Something went wrong!",
-    container: "border-red-200 bg-red-50/95",
-    iconBg: "bg-red-500",
+    iconWrap: "border-red-400 text-red-500",
     Icon: XIcon,
   },
 } as const;
@@ -96,7 +92,7 @@ function ToastViewport({
     <div
       aria-live="polite"
       aria-relevant="additions"
-      className="pointer-events-none fixed inset-x-0 top-20 z-[10000] flex flex-col items-center gap-3 px-4 md:top-24 sm:items-end sm:pr-6"
+      className="pointer-events-none fixed right-4 bottom-4 z-[10000] flex w-[min(100%-2rem,22rem)] flex-col-reverse gap-3 sm:right-6 sm:bottom-6"
     >
       {toasts.map((toast) => {
         const config = VARIANT_CONFIG[toast.variant];
@@ -106,25 +102,22 @@ function ToastViewport({
           <div
             key={toast.id}
             role="status"
-            className={cn(
-              "pointer-events-auto flex w-full max-w-sm items-center gap-3 rounded-2xl border px-4 py-3.5 shadow-[0_8px_24px_rgba(15,23,42,0.08)] motion-safe:animate-hero-fade-up",
-              config.container,
-            )}
+            className="pointer-events-auto flex w-full items-start gap-3 rounded-xl border border-neutral-200/80 bg-white px-4 py-3.5 shadow-[0_8px_24px_rgba(15,23,42,0.08)] motion-safe:animate-hero-fade-up"
           >
-            <div
+            {/* <div
               className={cn(
-                "flex size-9 shrink-0 items-center justify-center rounded-full text-white",
-                config.iconBg,
+                "mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full border-2 bg-transparent",
+                config.iconWrap,
               )}
             >
-              <Icon className="size-4" strokeWidth={2.5} aria-hidden />
-            </div>
+              <Icon className="size-3.5" strokeWidth={2.5} aria-hidden />
+            </div> */}
 
-            <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold leading-tight text-foreground">
+            <div className="min-w-0 flex-1 pt-0.5">
+              <p className="text-sm font-semibold leading-tight text-neutral-800">
                 {toast.title}
               </p>
-              <p className="mt-0.5 text-sm leading-snug text-muted-foreground">
+              <p className="mt-1 text-sm leading-snug text-neutral-500">
                 {toast.message}
               </p>
             </div>
@@ -132,10 +125,10 @@ function ToastViewport({
             <button
               type="button"
               onClick={() => dismiss(toast.id)}
-              className="shrink-0 rounded-md p-1.5 text-foreground/45 transition-colors hover:bg-black/5 hover:text-foreground/70"
+              className="shrink-0 rounded-md p-1 text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-600"
               aria-label="Dismiss notification"
             >
-              <XIcon className="size-4" />
+              <XIcon className="size-4" strokeWidth={2} />
             </button>
           </div>
         );
