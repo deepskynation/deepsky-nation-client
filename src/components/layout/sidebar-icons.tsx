@@ -4,9 +4,7 @@ import {
   HomeIcon,
   MailIcon,
   PackageIcon,
-  PaletteIcon,
   ShoppingBagIcon,
-  ShoppingCartIcon,
   UserCircleIcon,
   type LucideIcon,
 } from "lucide-react";
@@ -15,11 +13,9 @@ import type { SidebarIconName } from "@/components/layout/SideBarMenuItems";
 const sidebarIconMap: Record<SidebarIconName, LucideIcon> = {
   home: HomeIcon,
   "shopping-bag": ShoppingBagIcon,
-  "shopping-cart": ShoppingCartIcon,
   package: PackageIcon,
   "user-circle": UserCircleIcon,
   mail: MailIcon,
-  "model-artist": PaletteIcon,
 };
 
 type SidebarIconProps = {

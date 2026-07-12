@@ -16,6 +16,8 @@ import { PurchaseActivityProvider } from "@/components/common/marketing/purchase
 import { ColorPicker } from "@/components/common/product/color-picker";
 import { ProductCard } from "@/components/common/product/ProductCard";
 import { SizePicker } from "@/components/common/product/size-picker";
+import { AppSidebar } from "@/components/layout/app-sidebar";
+import { adminSidebarConfig } from "@/components/layout/SideBarMenuItems";
 import { Button } from "@/components/ui/button";
 import {
   segmentListClassName,
@@ -44,6 +46,7 @@ const COMPONENT_TABS = [
   { id: "date-range", label: "Date Range" },
   { id: "toast", label: "Toast" },
   { id: "emails", label: "Emails" },
+  { id: "app-sidebar", label: "App Sidebar" },
 ] as const;
 
 type ComponentTabId = (typeof COMPONENT_TABS)[number]["id"];
@@ -274,6 +277,21 @@ function EmailPreviewDemo() {
   );
 }
 
+function SideBarDemo() {
+  "use no memo";
+
+  return (
+    <div className="h-[480px] overflow-hidden rounded-xl border border-black/10 bg-neutral-50">
+      <div className="flex h-full">
+        <AppSidebar config={adminSidebarConfig} brandHref="#" />
+        <div className="flex flex-1 items-center justify-center text-sm text-black/40">
+          Main content area
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const TAB_COPY: Record<
   ComponentTabId,
   { title: string; description: string; render: () => ReactNode }
@@ -327,6 +345,11 @@ const TAB_COPY: Record<
     description:
       "Inbox email layouts sent by the backend. Mock data for visual reference — not React components.",
     render: () => <EmailPreviewDemo />,
+  },
+  "app-sidebar": {
+    title: "App Sidebar",
+    description: "Admin sidebar with collapsible nav sections.",
+    render: () => <SideBarDemo />,
   },
 };
 
