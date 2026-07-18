@@ -10,7 +10,7 @@ import {
   AuthRequiredPage,
   CenteredLoading,
 } from "@/components/common/feedback/page-state-gate";
-import { DashboardGlassSection } from "@/components/LandingPage/dashboard/modules/dashboard-glass-section";
+// import { DashboardGlassSection } from "@/components/LandingPage/dashboard/modules/dashboard-glass-section";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { useDebouncedCartQuantityUpdate } from "@/hooks/use-debounced-cart-quantity-update";
 import { buildLoginRedirectPath } from "@/lib/auth-redirect";
@@ -154,7 +154,7 @@ export function CartList() {
 
   return (
     <div className="min-h-full text-black">
-      <DashboardGlassSection variant="light" className="min-h-full bg-transparent">
+      <div className="min-h-full bg-white ">
         <div className="w-full px-6 py-8 lg:px-12 lg:py-10">
           <header className="mb-6">
             <h1 className="text-xl font-semibold tracking-tight text-black">
@@ -264,7 +264,7 @@ export function CartList() {
             </div>
           )}
         </div>
-      </DashboardGlassSection>
+      </div>
     </div>
   );
 }

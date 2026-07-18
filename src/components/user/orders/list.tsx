@@ -47,10 +47,22 @@ export function OrdersList() {
   const listQuery = useAppSelector(selectMyOrdersListQuery);
   const pagination = useAppSelector(selectMyOrdersPagination);
   const [viewMode, setViewMode] = useState<OrdersListView>("cards");
+  const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
-    setViewMode(window.matchMedia("(min-width: 768px)").matches ? "table" : "cards");
+    const mediaQuery = window.matchMedia("(min-width: 768px)");
+    const syncViewport = () => setIsDesktop(mediaQuery.matches);
+
+    // Initial: cards on mobile, table on desktop.
+    syncViewport();
+    setViewMode(mediaQuery.matches ? "table" : "cards");
+
+    mediaQuery.addEventListener("change", syncViewport);
+    return () => mediaQuery.removeEventListener("change", syncViewport);
   }, []);
+
+  // Table rows stay desktop-only; cards handle small screens.
+  const effectiveView: OrdersListView = isDesktop ? viewMode : "cards";
 
   const loadOrders = useCallback(
     (query?: Partial<MyOrdersQuery>) => {
@@ -106,7 +118,7 @@ export function OrdersList() {
       authRequiredLayout="centered"
     >
       <div className="min-h-full bg-gradient-to-b from-neutral-100 via-white to-neutral-200/90 text-black">
-        <DashboardGlassSection variant="light" className="min-h-full">
+        <div className="min-h-full bg-white ">
           <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-12 lg:py-10">
             <header className="mb-6 space-y-1 sm:mb-8">
               <p className="text-[11px] uppercase tracking-[0.35em] text-black/45">
@@ -140,7 +152,11 @@ export function OrdersList() {
                     {pagination?.total ?? orders.length} order
                     {(pagination?.total ?? orders.length) === 1 ? "" : "s"}
                   </p>
-                  <OrdersViewToggle value={viewMode} onChange={setViewMode} />
+                  <OrdersViewToggle
+                    value={effectiveView}
+                    onChange={setViewMode}
+                    className="hidden md:inline-flex"
+                  />
                 </div>
               ) : null}
 
@@ -169,7 +185,7 @@ export function OrdersList() {
                     </div>
                   ) : null}
 
-                  {viewMode === "cards" ? (
+                  {effectiveView === "cards" ? (
                     <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                       {orders.map((order) => (
                         <OrderCard key={order.id} order={order} />
@@ -213,7 +229,7 @@ export function OrdersList() {
               ) : null}
             </div>
           </div>
-        </DashboardGlassSection>
+        </div>
       </div>
     </PageStateGate>
   );

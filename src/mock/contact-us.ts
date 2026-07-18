@@ -5,11 +5,11 @@ export const contactUsContent = {
     "Have a question, collaboration idea, or order inquiry? Reach out to us through Facebook or Gmail.",
   facebook: {
     label: "Facebook",
-    href: "https://www.facebook.com/Deepskynation",
+    href: "https://www.facebook.com/deepskyclothing",
   },
   instagram: {
     label: "Instagram",
-    href: "https://www.instagram.com/deepskynation/",
+    href: "https://www.instagram.com/deepskyclothing/",
   },
   gmail: {
     label: "Gmail",
@@ -27,7 +27,7 @@ export const customerServiceContent = {
     "Refund requests are reviewed manually by our team. This site does not process refunds automatically.",
 };
 
-export const footerContent = {
-  brand: "Deepsky",
-  copyright: `© ${new Date().getFullYear()} Deepsky. All rights reserved.`,
-};
+// export const footerContent = {
+//   brand: "DEEPSKY",
+//   copyright: `© ${new Date().getFullYear()} Deepsky. All rights reserved.`,
+// };
