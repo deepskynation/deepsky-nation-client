@@ -23,6 +23,7 @@ import { useAppSelector, useStorefrontNavigation } from "@/hooks";
 import { selectCartItemCount } from "@/store/slices/cartSlice";
 import { glassHeaderClassName, storefrontHeaderBarClassName } from "@/lib/glass-styles";
 import { cn } from "@/lib/utils";
+import { FooterSection } from "@/components/LandingPage/dashboard/modules/footer";
 
 function HeaderDesktopActions({
   cartCount,
@@ -134,7 +135,7 @@ export function UserHeaderLayout({ children }: UserHeaderLayoutProps) {
   }, [mobileMenuOpen]);
 
   return (
-    <div>
+    <div className="flex min-h-screen flex-col bg-white text-black">
       <header
         className={cn(
           "sticky top-0 z-50",
@@ -254,7 +255,8 @@ export function UserHeaderLayout({ children }: UserHeaderLayoutProps) {
         </div>
       </header>
 
-      <main>{children}</main>
+      <main className="flex flex-1 flex-col">{children}</main>
+      <FooterSection />
     </div>
   );
 }
