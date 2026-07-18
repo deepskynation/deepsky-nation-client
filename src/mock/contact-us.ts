@@ -27,7 +27,7 @@ export const customerServiceContent = {
     "Refund requests are reviewed manually by our team. This site does not process refunds automatically.",
 };
 
-export const footerContent = {
-  brand: "Deepsky",
-  copyright: `© ${new Date().getFullYear()} Deepsky. All rights reserved.`,
-};
+// export const footerContent = {
+//   brand: "DEEPSKY",
+//   copyright: `© ${new Date().getFullYear()} Deepsky. All rights reserved.`,
+// };

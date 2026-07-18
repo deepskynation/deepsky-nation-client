@@ -6,6 +6,7 @@ import { DashboardGlassSection } from "@/components/LandingPage/dashboard/module
 import { LandingStorefrontHeader } from "@/components/LandingPage/dashboard/modules/landing-storefront-header";
 import { StorefrontCategorySections } from "@/components/common/product/storefront-category-sections";
 import { EmailSubscribeSection } from "@/components/common/marketing/email-subscribe-section";
+import { FooterSection } from "@/components/LandingPage/dashboard/modules/footer";
 import { ModelCarousel } from "@/components/LandingPage/dashboard/modules/model-carousel";
 import { buildCategoryPageHrefFromParam, STOREFRONT_CATALOG_FETCH_PAGE_SIZE } from "@/lib/storefront-categories";
 import { useAppDispatch, useAppSelector } from "@/hooks";
@@ -85,10 +86,9 @@ export default function DashboardList() {
         <ModelCarousel variant="banner" />
       </section>
 
-      <DashboardGlassSection
+      <div
         id="products"
-        variant="light"
-        className="scroll-mt-24 border-t border-white/40"
+        className="bg-white"
       >
         <div className="mx-auto max-w-7xl px-6 py-10 lg:px-12 lg:py-14">
           <StorefrontCategorySections
@@ -102,7 +102,9 @@ export default function DashboardList() {
 
           <EmailSubscribeSection className="mt-12" />
         </div>
-      </DashboardGlassSection>
+      </div>
+
+      <FooterSection />
     </div>
   );
 }

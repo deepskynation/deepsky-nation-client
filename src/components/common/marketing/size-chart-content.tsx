@@ -3,8 +3,9 @@
 import { useState } from "react";
 import Image from "next/image";
 import { CheckoutImagePreviewDialog } from "@/components/user/checkout/modules/checkout-image-preview-dialog";
+import { EmailSubscribeSection } from "@/components/common/marketing/email-subscribe-section";
+import { FooterSection } from "@/components/LandingPage/dashboard/modules/footer";
 import { cn } from "@/lib/utils";
-
 const SIZE_CHART_BANNER_SRC = "/deepsky_logo_v2.jpg";
 const SIZE_CHART_BANNER_ALT = "Deepsky size chart banner";
 const SIZE_CHART_DESCRIPTION =
@@ -77,6 +78,8 @@ export function SizeChartContent({
             className="h-full w-full object-contain"
           />
         </button>
+
+        <EmailSubscribeSection className="mt-12" />
       </div>
 
       <CheckoutImagePreviewDialog
@@ -85,6 +88,8 @@ export function SizeChartContent({
         imageAlt={imageAlt}
         onOpenChange={setImagePreviewOpen}
       />
+
+      <FooterSection />
     </>
   );
 }
