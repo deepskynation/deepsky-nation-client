@@ -44,8 +44,7 @@ export function OrderCard({ order, className }: OrderCardProps) {
       <Link
         href={detailHref}
         className={cn(
-          "group block rounded-xl border border-white/50 bg-white/40 p-4 shadow-[0_8px_32px_rgba(0,0,0,0.06)] backdrop-blur-2xl transition-all",
-          "hover:border-white/70 hover:bg-white/55 hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)]",
+          "group block rounded-xl border border-gray-200 bg-white/40 p-4 backdrop-blur-2xl transition-all",
           "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black/30",
           className,
         )}

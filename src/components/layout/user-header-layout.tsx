@@ -134,7 +134,7 @@ export function UserHeaderLayout({ children }: UserHeaderLayoutProps) {
   }, [mobileMenuOpen]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-neutral-100 via-white to-neutral-200/90 text-black">
+    <div>
       <header
         className={cn(
           "sticky top-0 z-50",

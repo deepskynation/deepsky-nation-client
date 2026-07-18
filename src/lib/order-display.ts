@@ -294,6 +294,6 @@ export function getUserInitials(name: string): string {
     .toUpperCase();
 }
 
-/** Shared grid for header + row columns (sample UI layout). */
+/** Shared grid for header + row columns — fixed status track so long labels stay aligned. */
 export const ORDERS_TABLE_GRID_CLASS =
-  "grid grid-cols-[minmax(7rem,0.9fr)_minmax(9rem,1.1fr)_minmax(8rem,1fr)_minmax(10rem,1.25fr)_minmax(7rem,0.95fr)_minmax(6.5rem,auto)] items-center gap-x-4 gap-y-2";
+  "grid grid-cols-[minmax(7rem,0.9fr)_minmax(5.5rem,0.7fr)_minmax(6.5rem,0.75fr)_minmax(8rem,1.35fr)_minmax(6.5rem,0.85fr)_16rem] items-center gap-x-4 gap-y-2";

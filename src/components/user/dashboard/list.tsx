@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { DashboardGlassSection } from "@/components/LandingPage/dashboard/modules/dashboard-glass-section";
+// import { DashboardGlassSection } from "@/components/LandingPage/dashboard/modules/dashboard-glass-section";
 import { PageStateGate } from "@/components/common/feedback/page-state-gate";
 import { DashboardAlerts } from "@/components/user/dashboard/modules/dashboard-alerts";
 import { DashboardCartSummary } from "@/components/user/dashboard/modules/dashboard-cart-summary";
@@ -112,7 +112,7 @@ export function UserDashboardPageContent() {
       <div className="min-h-full bg-gradient-to-b from-neutral-100 via-white to-neutral-200/90 text-black">
         <DashboardModelShowcase />
 
-        <DashboardGlassSection variant="light" className="min-h-full">
+        <div className="min-h-full bg-white ">
           <div className="mx-auto max-w-7xl space-y-10 px-6 py-8 lg:px-12 lg:py-10">
             <DashboardFeaturedProducts
               products={shopProducts}
@@ -143,7 +143,7 @@ export function UserDashboardPageContent() {
             <EmailSubscribeSection className="mt-12" />
           </div>
           
-        </DashboardGlassSection>
+        </div>
       </div>
     </PageStateGate>
   );

@@ -56,8 +56,8 @@ export function OrdersTableRow({
         className={cn(
           "group",
           ORDERS_TABLE_GRID_CLASS,
-          "rounded-xl bg-black/[0.03] px-4 py-3.5 text-sm transition-all",
-          "hover:bg-white hover:shadow-[0_1px_3px_rgba(0,0,0,0.06)] hover:ring-1 hover:ring-black/6",
+          "rounded-md border border-gray-200 px-4 py-3.5 text-sm transition-all",
+          "hover:bg-white hover:border-gray-200",
           "cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black/30",
           className,
         )}
@@ -102,34 +102,38 @@ export function OrdersTableRow({
           <span className="truncate">{formatOrderDate(order.created_at)}</span>
         </div>
 
-        <div role="cell" className="flex items-center justify-end gap-2">
-          <button
-            type="button"
-            onClick={(event) => {
-              event.preventDefault();
-              event.stopPropagation();
-              setReceiptOpen(true);
-            }}
-            className={cn(
-              "inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-1 text-xs font-medium text-black/55 ring-1 ring-black/10",
-              "opacity-0 transition-opacity hover:bg-black/[0.04] hover:text-black",
-              "group-hover:opacity-100 focus-visible:opacity-100",
-            )}
-            aria-label="View Receipt"
-          >
-            <FileText className="size-3.5" aria-hidden />
-            Receipt
-          </button>
+        <div
+          role="cell"
+          className="grid grid-cols-[4.75rem_minmax(0,1fr)_1rem] items-center gap-2"
+        >
+          <div className="flex h-7 items-center justify-end">
+            <button
+              type="button"
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                setReceiptOpen(true);
+              }}
+              className={cn(
+                "inline-flex max-w-full shrink-0 items-center gap-1 rounded-full px-2 py-1 text-xs font-medium text-black/55 ring-1 ring-black/10",
+                "transition-colors hover:bg-black/[0.04] hover:text-black",
+              )}
+              aria-label="View Receipt"
+            >
+              <FileText className="size-3.5 shrink-0" aria-hidden />
+              <span className="truncate">Receipt</span>
+            </button>
+          </div>
           <span
             className={cn(
-              "inline-flex shrink-0 items-center whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset",
+              "inline-flex max-w-full justify-self-end items-center whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset",
               status.className,
             )}
           >
             {status.label}
           </span>
           <ChevronRight
-            className="size-4 shrink-0 text-black/30"
+            className="size-4 shrink-0 justify-self-end text-black/30"
             aria-hidden
           />
           <span className="sr-only">View Order Details</span>

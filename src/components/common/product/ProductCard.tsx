@@ -134,7 +134,7 @@ export function ProductCard({
   const cardClassName = cn(
     glassCardClassName,
     glassCardHoverClassName,
-    "group flex h-full w-full flex-col shadow-none hover:shadow-none motion-safe:hover:-translate-y-1",
+    "bg-white hover:bg-white group flex h-full w-full flex-col shadow-none hover:shadow-none motion-safe:hover:-translate-y-1",
     href && "cursor-pointer",
   );
 
