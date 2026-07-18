@@ -5,11 +5,11 @@ export const contactUsContent = {
     "Have a question, collaboration idea, or order inquiry? Reach out to us through Facebook or Gmail.",
   facebook: {
     label: "Facebook",
-    href: "https://www.facebook.com/Deepskynation",
+    href: "https://www.facebook.com/deepskyclothing",
   },
   instagram: {
     label: "Instagram",
-    href: "https://www.instagram.com/deepskynation/",
+    href: "https://www.instagram.com/deepskyclothing/",
   },
   gmail: {
     label: "Gmail",
