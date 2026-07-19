@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { SidebarConfig } from "@/components/layout/SideBarMenuItems";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { ContentTopBar } from "@/components/layout/content-top-bar";
@@ -25,10 +25,25 @@ export function SidebarLayout({
 }: SidebarLayoutProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  // Prevent a second (document) scrollbar beside main; sidebar nav scroll stays.
+  useEffect(() => {
+    const { documentElement, body } = document;
+    const previous = {
+      htmlOverflow: documentElement.style.overflow,
+      bodyOverflow: body.style.overflow,
+    };
+    documentElement.style.overflow = "hidden";
+    body.style.overflow = "hidden";
+    return () => {
+      documentElement.style.overflow = previous.htmlOverflow;
+      body.style.overflow = previous.bodyOverflow;
+    };
+  }, []);
+
   return (
     <div
       className={cn(
-        "h-dvh overflow-hidden bg-background text-foreground",
+        "h-dvh min-h-0 overflow-hidden bg-background text-foreground",
         className,
       )}
     >
