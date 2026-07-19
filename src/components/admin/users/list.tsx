@@ -224,38 +224,36 @@ export function AdminUsersList() {
           ) : null}
 
           <div className={tableWrapClassName}>
-            <div className="overflow-x-auto">
-              <table className="min-w-[860px] w-full text-sm">
-                <AdminUsersTableHeader />
-                <tbody>
-                  {isLoading && users.length === 0 ? (
-                    <tr>
-                      <td colSpan={5}>
-                        <div className={cn(emptyStateClassName, "border-0")}>
-                          <Loader2Icon className="size-5 animate-spin" aria-hidden />
-                          <span>Loading users…</span>
-                        </div>
-                      </td>
-                    </tr>
-                  ) : null}
+            <table className="w-full text-sm">
+              <AdminUsersTableHeader />
+              <tbody>
+                {isLoading && users.length === 0 ? (
+                  <tr>
+                    <td colSpan={6}>
+                      <div className={cn(emptyStateClassName, "border-0")}>
+                        <Loader2Icon className="size-5 animate-spin" aria-hidden />
+                        <span>Loading users…</span>
+                      </div>
+                    </td>
+                  </tr>
+                ) : null}
 
-                  {!isLoading && users.length === 0 ? (
-                    <tr>
-                      <td colSpan={5}>
-                        <div className={cn(emptyStateClassName, "border-0")}>
-                          <UsersIcon className="size-8 text-neutral-300" aria-hidden />
-                          <span>No users found.</span>
-                        </div>
-                      </td>
-                    </tr>
-                  ) : null}
+                {!isLoading && users.length === 0 ? (
+                  <tr>
+                    <td colSpan={6}>
+                      <div className={cn(emptyStateClassName, "border-0")}>
+                        <UsersIcon className="size-8 text-neutral-300" aria-hidden />
+                        <span>No users found.</span>
+                      </div>
+                    </td>
+                  </tr>
+                ) : null}
 
-                  {users.map((user) => (
-                    <AdminUsersTableRow key={user.id} user={user} />
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                {users.map((user) => (
+                  <AdminUsersTableRow key={user.id} user={user} />
+                ))}
+              </tbody>
+            </table>
 
             {showPagination ? (
               <div className="border-t border-neutral-200 bg-neutral-50/50 px-4 py-3">
