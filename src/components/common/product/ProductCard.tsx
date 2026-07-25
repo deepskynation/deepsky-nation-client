@@ -147,7 +147,7 @@ export function ProductCard({
         )}
       >
         {isSoldOut ? (
-          <span className="absolute top-2 left-2 z-10 rounded-full bg-black px-2.5 py-0.5 text-[10px] font-medium text-white">
+          <span className="absolute top-2 left-2 z-10 rounded-full bg-black px-2.5 py-0.5 text-[10px] font-medium text-white uppercase">
             Sold out
           </span>
         ) : onSale ? (

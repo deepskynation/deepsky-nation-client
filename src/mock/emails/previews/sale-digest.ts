@@ -44,13 +44,13 @@ const PRODUCT_CARDS_HTML = SALE_PRODUCTS.map(renderSaleProductCard).join("");
 export const saleDigestEmailPreview: EmailPreview = {
   id: "sale-digest",
   label: "Sale Digest",
-  subject: "Sale alert — Deepsky Nation",
+  subject: "New Flash Sale — Deepsky Nation",
   html: `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sale alert — Deepsky Nation</title>
+  <title>New Flash Sale — Deepsky Nation</title>
 </head>
 <body style="margin:0;padding:0;background-color:#f9fafb;font-family:Calibre,system-ui,sans-serif;">
   <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">
