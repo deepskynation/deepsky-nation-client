@@ -2,6 +2,16 @@ import { mockAccounts } from "@/mock/auth/mock-accounts";
 import type { Product, User } from "@/types";
 
 export { mockAccounts, authenticateMockAccount } from "@/mock/auth/mock-accounts";
+export {
+  mockWaybillCod,
+  mockWaybillCustomize,
+  mockWaybillLalamove,
+  mockWaybillPrepaid,
+  mockWaybills,
+  WAYBILL_LOGO_OPTIONS,
+  type WaybillLogoOptionId,
+  type WaybillPrintData,
+} from "@/mock/waybill";
 
 export const mockUsers: User[] = mockAccounts.map(
   ({ id, email, name, role }) => ({
