@@ -9,12 +9,13 @@ import {
   selectAdminOrdersListQuery,
   updateAdminOrderStatus,
 } from "@/store/slices/orderSlice";
-import type { AdminUpdateOrderAction, ApiOrder } from "@/types/order";
+import type { AdminShipOrderDetails, AdminUpdateOrderAction, ApiOrder } from "@/types/order";
 
 const ACTION_SUCCESS_MESSAGES: Record<AdminUpdateOrderAction, string> = {
   approve: "Order approved. The customer will be notified by email.",
   reject: "Order rejected.",
   ship: "Order marked as shipped.",
+  set_waybill: "Waybill saved.",
 };
 
 export function useAdminOrderActions() {
@@ -26,14 +27,18 @@ export function useAdminOrderActions() {
     async (
       order: Pick<ApiOrder, "id" | "order_number">,
       action: AdminUpdateOrderAction,
-      rejectionReason?: string,
+      options?:{
+        rejectionReason?: string;
+        shippingDetails?: AdminShipOrderDetails;
+      }
     ) => {
       try {
         await dispatch(
           updateAdminOrderStatus({
             orderId: order.id,
             action,
-            rejectionReason,
+            rejectionReason: options?.rejectionReason,
+            shippingDetails: options?.shippingDetails,
           }),
         ).unwrap();
 

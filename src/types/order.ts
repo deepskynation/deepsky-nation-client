@@ -59,6 +59,13 @@ export type ApiOrder = {
   approved_at?: string | null;
   rejected_at?: string | null;
   shipped_at?: string | null;
+  courier?: string | null;
+  tracking_number?: string | null;
+  package_weight_kg?: string | null;
+  waybill_logo_type?: string | null;
+  waybill_logo_url?: string | null;
+  sorting_code?: string | null;
+  hub_code?: string | null;
   delivery_source: string;
   delivery_email: string;
   delivery_phone: string;
@@ -97,12 +104,23 @@ export type AdminOrdersQuery = PaginationQuery & {
   payment_method?: AdminOrderPaymentMethod;
 };
 
-export type AdminUpdateOrderAction = "approve" | "reject" | "ship";
+export type AdminUpdateOrderAction = "approve" | "reject" | "ship" | "set_waybill";
+export type WaybillLogoType = "jt" | "lalamove" | "custom";
+
+export type AdminShipOrderDetails = {
+  courier: string;
+  trackingNumber: string;
+  packageWeightKg: string;
+  waybillLogoType: WaybillLogoType;
+  waybillLogoUrl?: string | null;
+};
+
 
 export type AdminUpdateOrderStatusPayload = {
   orderId: string;
   action: AdminUpdateOrderAction;
   rejectionReason?: string;
+  shippingDetails?: AdminShipOrderDetails;
 };
 
 /** Legacy placeholder — prefer `ApiOrder`. */

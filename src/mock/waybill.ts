@@ -1,5 +1,7 @@
 /** Mock waybill payloads for Component Visual / print preview. */
 
+import type { ApiOrder } from "@/types/order";
+
 export type WaybillPrintItem = {
   title: string;
   variant_label?: string | null;
@@ -82,6 +84,9 @@ const DEEPSKY_SHIPPER: WaybillShipper = {
   country: "Philippines",
   postal_code: "1100",
 };
+
+/** Default shop shipper used for live waybill print until shop settings expand. */
+export const DEEPSKY_WAYBILL_SHIPPER = DEEPSKY_SHIPPER;
 
 /** Prepaid online-transfer sample (J&T). */
 export const mockWaybillPrepaid: WaybillPrintData = {
@@ -246,3 +251,56 @@ export const mockWaybills: WaybillPrintData[] = [
   mockWaybillLalamove,
   mockWaybillCustomize,
 ];
+
+/** ApiOrder-shaped sample for PrintWaybillDialog / orderToWaybillPrintData. */
+export const mockApiOrderWithWaybill: ApiOrder = {
+  id: "visual-waybill-order",
+  order_number: "ORD-100087",
+  status: "approved",
+  user_id: "visual-user",
+  customer_username: "Jordan Cruz",
+  rejection_reason: null,
+  approved_at: "2026-07-22T10:00:00+08:00",
+  rejected_at: null,
+  shipped_at: null,
+  courier: "J&T Express",
+  tracking_number: "770180382589",
+  package_weight_kg: "0.800",
+  waybill_logo_type: "jt",
+  waybill_logo_url: null,
+  sorting_code: "460-600001",
+  hub_code: "029",
+  delivery_source: "custom",
+  delivery_email: "jordan@example.com",
+  delivery_phone: "639271118899",
+  delivery_address_line: "15 Rizal Ave, Brgy. Centro",
+  delivery_city: "Cebu City",
+  delivery_region: "Cebu",
+  delivery_country: "Philippines",
+  delivery_postal_code: "6000",
+  subtotal: "2449.00",
+  shipping_fee: "50.00",
+  total: "2499.00",
+  expected_delivery_date: "2026-07-28",
+  created_at: "2026-07-21T09:00:00+08:00",
+  items: [
+    {
+      id: "visual-item-1",
+      variant_id: "visual-variant-1",
+      product_id: "visual-product-1",
+      product_code: "PROD-1000001",
+      product_title: "Galaxy Hoodie",
+      variant_label: "L · Charcoal",
+      quantity: 1,
+      unit_price: "2449.00",
+      line_total: "2449.00",
+    },
+  ],
+  payment: {
+    id: "visual-payment-1",
+    payment_method: "cod",
+    payment_receipt_url: null,
+    has_receipt: false,
+    payment_receipt_uploaded_at: null,
+  },
+};

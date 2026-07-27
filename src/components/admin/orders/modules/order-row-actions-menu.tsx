@@ -1,24 +1,43 @@
 "use client";
 
 import { createPortal } from "react-dom";
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import {
   CheckIcon,
   EyeIcon,
+  FileTextIcon,
   Loader2Icon,
   MoreVertical,
+  PrinterIcon,
   TruckIcon,
   XIcon,
 } from "lucide-react";
+import { PrintWaybillDialog } from "@/components/admin/orders/modules/print-waybill-dialog";
 import { RejectOrderDialog } from "@/components/admin/orders/modules/reject-order-dialog";
+import { ShipOrderDialog } from "@/components/admin/orders/modules/ship-order-dialog";
 import { useAdminOrderActions } from "@/components/admin/orders/modules/use-admin-order-actions";
 import { Button } from "@/components/ui/button";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   canAdminApproveOrReject,
+  canAdminEditWaybill,
   canAdminMarkShipped,
+  hasAdminWaybillReady,
 } from "@/lib/admin-order-status";
 import { cn } from "@/lib/utils";
-import type { AdminUpdateOrderAction, ApiOrder } from "@/types/order";
+import type {
+  AdminShipOrderDetails,
+  AdminUpdateOrderAction,
+  ApiOrder,
+  WaybillLogoType,
+} from "@/types/order";
 
 type OrderRowActionsMenuProps = {
   order: ApiOrder;
@@ -32,6 +51,10 @@ type MenuPosition = {
   minWidth: number;
 };
 
+function isWaybillLogoType(value: string | null | undefined): value is WaybillLogoType {
+  return value === "jt" || value === "lalamove" || value === "custom";
+}
+
 export function OrderRowActionsMenu({
   order,
   onViewDetails,
@@ -40,6 +63,9 @@ export function OrderRowActionsMenu({
   const { runAction } = useAdminOrderActions();
   const [open, setOpen] = useState(false);
   const [rejectOpen, setRejectOpen] = useState(false);
+  const [waybillOpen, setWaybillOpen] = useState(false);
+  const [printOpen, setPrintOpen] = useState(false);
+  const [shipConfirmOpen, setShipConfirmOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [position, setPosition] = useState<MenuPosition | null>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -47,8 +73,25 @@ export function OrderRowActionsMenu({
   const menuId = useId();
 
   const canReview = canAdminApproveOrReject(order.status);
+  const canEditWaybill = canAdminEditWaybill(order.status);
   const canShip = canAdminMarkShipped(order.status);
-  const hasStatusActions = canReview || canShip;
+  const waybillReady = hasAdminWaybillReady(order);
+  const hasStatusActions = canReview || canEditWaybill || canShip || waybillReady;
+
+  const waybillInitialValues = useMemo((): Partial<AdminShipOrderDetails> | null => {
+    if (!waybillReady) {
+      return null;
+    }
+    return {
+      courier: order.courier ?? undefined,
+      trackingNumber: order.tracking_number ?? undefined,
+      packageWeightKg: order.package_weight_kg ?? undefined,
+      waybillLogoType: isWaybillLogoType(order.waybill_logo_type)
+        ? order.waybill_logo_type
+        : undefined,
+      waybillLogoUrl: order.waybill_logo_url ?? null,
+    };
+  }, [order, waybillReady]);
 
   const updatePosition = () => {
     const trigger = triggerRef.current;
@@ -111,12 +154,15 @@ export function OrderRowActionsMenu({
 
   const runStatusAction = async (
     action: AdminUpdateOrderAction,
-    rejectionReason?: string,
+    options?: {
+      rejectionReason?: string;
+      shippingDetails?: AdminShipOrderDetails;
+    },
   ) => {
     setOpen(false);
     setIsSubmitting(true);
     try {
-      await runAction(order, action, rejectionReason);
+      await runAction(order, action, options);
     } finally {
       setIsSubmitting(false);
     }
@@ -187,19 +233,50 @@ export function OrderRowActionsMenu({
               </>
             ) : null}
 
-            {canShip ? (
+            {canEditWaybill || canShip || waybillReady ? (
               <>
                 <div className="my-1 border-t border-neutral-100" role="separator" />
-                <button
-                  type="button"
-                  role="menuitem"
-                  className={menuItemClass}
-                  disabled={isSubmitting}
-                  onClick={() => void runStatusAction("ship")}
-                >
-                  <TruckIcon className="size-4 shrink-0" />
-                  Mark As Shipped
-                </button>
+                {canEditWaybill ? (
+                  <button
+                    type="button"
+                    role="menuitem"
+                    className={menuItemClass}
+                    disabled={isSubmitting}
+                    onClick={() => runMenuAction(() => setWaybillOpen(true))}
+                  >
+                    <FileTextIcon className="size-4 shrink-0" />
+                    {waybillReady ? "Edit Waybill" : "Set Up Waybill"}
+                  </button>
+                ) : null}
+                {waybillReady ? (
+                  <button
+                    type="button"
+                    role="menuitem"
+                    className={menuItemClass}
+                    disabled={isSubmitting}
+                    onClick={() => runMenuAction(() => setPrintOpen(true))}
+                  >
+                    <PrinterIcon className="size-4 shrink-0" />
+                    Print Waybill
+                  </button>
+                ) : null}
+                {canShip ? (
+                  <button
+                    type="button"
+                    role="menuitem"
+                    className={menuItemClass}
+                    disabled={isSubmitting || !waybillReady}
+                    title={
+                      waybillReady
+                        ? undefined
+                        : "Set up the waybill before marking as shipped"
+                    }
+                    onClick={() => runMenuAction(() => setShipConfirmOpen(true))}
+                  >
+                    <TruckIcon className="size-4 shrink-0" />
+                    Mark As Shipped
+                  </button>
+                ) : null}
               </>
             ) : null}
 
@@ -241,8 +318,58 @@ export function OrderRowActionsMenu({
         open={rejectOpen}
         onOpenChange={setRejectOpen}
         isSubmitting={isSubmitting}
-        onConfirm={(reason) => void runStatusAction("reject", reason)}
+        onConfirm={(reason) =>
+          void runStatusAction("reject", { rejectionReason: reason })
+        }
       />
+      <ShipOrderDialog
+        order={order}
+        open={waybillOpen}
+        onOpenChange={setWaybillOpen}
+        isSubmitting={isSubmitting}
+        mode={waybillReady ? "edit" : "create"}
+        initialValues={waybillInitialValues}
+        onConfirm={(details) =>
+          void runStatusAction("set_waybill", { shippingDetails: details })
+        }
+      />
+      <PrintWaybillDialog
+        order={order}
+        open={printOpen}
+        onOpenChange={setPrintOpen}
+      />
+      <Dialog open={shipConfirmOpen} onOpenChange={setShipConfirmOpen}>
+        <DialogContent className="sm:max-w-md" showCloseButton>
+          <DialogHeader>
+            <DialogTitle>Ship this order?</DialogTitle>
+            <DialogDescription>
+              This marks the order as shipped using the saved waybill and notifies
+              the customer by email. Waybill details can no longer be edited after
+              shipping.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              disabled={isSubmitting}
+              onClick={() => setShipConfirmOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              disabled={isSubmitting}
+              onClick={() => {
+                setShipConfirmOpen(false);
+                void runStatusAction("ship");
+              }}
+            >
+              Mark shipped
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

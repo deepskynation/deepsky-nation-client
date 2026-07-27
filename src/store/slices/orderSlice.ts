@@ -430,15 +430,23 @@ export const updateAdminOrderStatus = createAsyncThunk<
   OrdersThunkConfig
 >(
   "orders/updateAdminOrderStatus",
-  async ({ orderId, action, rejectionReason }, { getState, rejectWithValue }) => {
+  async ({ orderId, action, rejectionReason, shippingDetails }, { getState, rejectWithValue }) => {
     const token = getAccessToken(getState);
     if (!token) {
       return rejectWithValue("You must be signed in as an admin.");
     }
 
-    const body: { action: string; rejection_reason?: string } = { action };
+    const body: Record<string, unknown>= { action };
     if (action === "reject" && rejectionReason?.trim()) {
       body.rejection_reason = rejectionReason.trim();
+    }
+
+    if (action === "set_waybill" && shippingDetails) {
+      body.courier = shippingDetails.courier;
+      body.tracking_number = shippingDetails.trackingNumber;
+      body.package_weight_kg = shippingDetails.packageWeightKg;
+      body.waybill_logo_type = shippingDetails.waybillLogoType;
+      body.waybill_logo_url = shippingDetails.waybillLogoUrl ?? null;
     }
 
     try {
