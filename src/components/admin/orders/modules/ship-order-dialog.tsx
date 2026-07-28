@@ -347,7 +347,7 @@ export function ShipOrderDialog({
         )}
       >
         <DialogHeader className="shrink-0 border-b border-black/5 px-6 py-3 pr-12">
-          <DialogTitle>{isEdit ? "Edit waybill" : "Set up waybill"}</DialogTitle>
+          <DialogTitle>{isEdit ? "(Edit Waybill)" : "(Set up Waybill)"}</DialogTitle>
           <DialogDescription>
             {isEdit
               ? "Update courier, tracking, weight, and logo. Preview updates as you type."
