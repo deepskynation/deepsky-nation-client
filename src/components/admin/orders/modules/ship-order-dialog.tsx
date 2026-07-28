@@ -4,6 +4,7 @@ import { XIcon } from "lucide-react";
 import {
   useEffect,
   useId,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -152,6 +153,8 @@ export function ShipOrderDialog({
 }: ShipOrderDialogProps) {
   const fileInputId = useId();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const previewViewportRef = useRef<HTMLDivElement>(null);
+  const previewSheetRef = useRef<HTMLDivElement>(null);
   const orderId = order.id;
 
   const [logoType, setLogoType] = useState<WaybillLogoType>("jt");
@@ -163,6 +166,8 @@ export function ShipOrderDialog({
   const [paymentMethod, setPaymentMethod] =
     useState<WaybillPaymentMethod>("cod");
   const [error, setError] = useState<string | null>(null);
+  const [previewScale, setPreviewScale] = useState(1);
+  const [previewSize, setPreviewSize] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
     if (!open) {
@@ -204,6 +209,45 @@ export function ShipOrderDialog({
       paymentMethod,
     ],
   );
+
+  useLayoutEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    const viewport = previewViewportRef.current;
+    const sheet = previewSheetRef.current;
+    if (!viewport || !sheet) {
+      return;
+    }
+
+    const updateScale = () => {
+      const availableWidth = viewport.clientWidth;
+      const availableHeight = viewport.clientHeight;
+      const naturalWidth = sheet.scrollWidth;
+      const naturalHeight = sheet.scrollHeight;
+      if (naturalWidth <= 0 || naturalHeight <= 0) {
+        return;
+      }
+      const next = Math.min(
+        availableWidth / naturalWidth,
+        availableHeight / naturalHeight,
+        1,
+      );
+      const scale = Number.isFinite(next) && next > 0 ? next * 0.96 : 1;
+      setPreviewScale(scale);
+      setPreviewSize({
+        width: naturalWidth * scale,
+        height: naturalHeight * scale,
+      });
+    };
+
+    updateScale();
+    const observer = new ResizeObserver(updateScale);
+    observer.observe(viewport);
+    observer.observe(sheet);
+    return () => observer.disconnect();
+  }, [open, livePreview]);
 
   const handleClose = (nextOpen: boolean) => {
     if (!nextOpen) {
@@ -510,9 +554,27 @@ export function ShipOrderDialog({
             <p className="no-print shrink-0 px-4 pt-3 text-xs font-medium tracking-wide text-neutral-500 uppercase">
               Live preview
             </p>
-            <div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden px-4 py-2">
-              <div className="max-h-full origin-center scale-[0.72] sm:scale-75 md:scale-[0.82] lg:scale-90 xl:scale-100">
-                <PrintOrderDetails data={livePreview} />
+            <div
+              ref={previewViewportRef}
+              className="flex min-h-0 flex-1 items-center justify-center overflow-hidden px-4 py-2"
+            >
+              <div
+                className="shrink-0 overflow-hidden"
+                style={{
+                  width: previewSize.width || undefined,
+                  height: previewSize.height || undefined,
+                }}
+              >
+                <div
+                  ref={previewSheetRef}
+                  className="origin-top-left"
+                  style={{
+                    transform: `scale(${previewScale})`,
+                    width: "105mm",
+                  }}
+                >
+                  <PrintOrderDetails data={livePreview} />
+                </div>
               </div>
             </div>
             <p className="no-print shrink-0 px-4 pb-2 text-[11px] text-neutral-500">

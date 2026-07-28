@@ -271,7 +271,7 @@ export function WaybillLogoDialog({
 
         <DialogFooter className="gap-2 sm:gap-0">
           <DialogClose
-            nativeButton={false}
+            nativeButton
             render={<Button type="button" variant="outline" />}
           >
             Cancel
