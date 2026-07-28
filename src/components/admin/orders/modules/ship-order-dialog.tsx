@@ -169,6 +169,8 @@ export function ShipOrderDialog({
   const [previewScale, setPreviewScale] = useState(1);
   const [previewSize, setPreviewSize] = useState({ width: 0, height: 0 });
 
+  // Only hydrate when the dialog opens. Re-running on `order` / `initialValues`
+  // identity changes resets fields mid-typing (courier name especially).
   useEffect(() => {
     if (!open) {
       return;
@@ -182,7 +184,8 @@ export function ShipOrderDialog({
     setCustomCourier(next.customCourier);
     setPaymentMethod(next.paymentMethod);
     setError(next.error);
-  }, [open, initialValues, order]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- hydrate once per open
+  }, [open]);
 
   const draftCourier =
     logoType === "custom"
@@ -235,10 +238,14 @@ export function ShipOrderDialog({
         1,
       );
       const scale = Number.isFinite(next) && next > 0 ? next * 0.96 : 1;
-      setPreviewScale(scale);
-      setPreviewSize({
-        width: naturalWidth * scale,
-        height: naturalHeight * scale,
+      setPreviewScale((prev) => (prev === scale ? prev : scale));
+      setPreviewSize((prev) => {
+        const width = naturalWidth * scale;
+        const height = naturalHeight * scale;
+        if (prev.width === width && prev.height === height) {
+          return prev;
+        }
+        return { width, height };
       });
     };
 
@@ -247,7 +254,7 @@ export function ShipOrderDialog({
     observer.observe(viewport);
     observer.observe(sheet);
     return () => observer.disconnect();
-  }, [open, livePreview]);
+  }, [open, logoType, customLogoUrl]);
 
   const handleClose = (nextOpen: boolean) => {
     if (!nextOpen) {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import PrintOrderDetails from "@/components/admin/orders/modules/print-order-details";
 import { ShipOrderDialog } from "@/components/admin/orders/modules/ship-order-dialog";
 import { PrintWaybillDialog } from "@/components/admin/orders/modules/print-waybill-dialog";
@@ -357,14 +357,17 @@ function ShipOrderDialogDemo() {
     null,
   );
 
-  const editInitial: Partial<AdminShipOrderDetails> = {
-    courier: "J&T Express",
-    trackingNumber: "DSN971234567890",
-    packageWeightKg: "1.250",
-    waybillLogoType: "jt",
-    waybillLogoUrl: null,
-    waybillPaymentMethod: "cod",
-  };
+  const editInitial = useMemo(
+    (): Partial<AdminShipOrderDetails> => ({
+      courier: "J&T Express",
+      trackingNumber: "DSN971234567890",
+      packageWeightKg: "1.250",
+      waybillLogoType: "jt",
+      waybillLogoUrl: null,
+      waybillPaymentMethod: "cod",
+    }),
+    [],
+  );
 
   return (
     <div className="max-w-md space-y-4 rounded-xl border border-black/10 bg-white/70 p-6">
