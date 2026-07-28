@@ -1,8 +1,13 @@
 import { DEEPSKY_WAYBILL_SHIPPER, type WaybillPrintData } from "@/mock/waybill";
-import type { AdminShipOrderDetails, ApiOrder, WaybillLogoType } from "@/types/order";
+import type {
+  AdminShipOrderDetails,
+  ApiOrder,
+  WaybillLogoType,
+  WaybillPaymentMethod,
+} from "@/types/order";
 
-function paymentMethodFromOrder(
-  method: string,
+function paymentMethodFromValue(
+  method: string | null | undefined,
 ): WaybillPrintData["payment_method"] {
   return method === "online_transfer" ? "online_transfer" : "cod";
 }
@@ -44,6 +49,7 @@ export function orderToWaybillPrintData(order: ApiOrder): WaybillPrintData | nul
   const sorting = (order.sorting_code ?? "").trim();
   const hub = (order.hub_code ?? "").trim();
   const logoType = (order.waybill_logo_type ?? "").trim();
+  const paymentMethod = (order.waybill_payment_method ?? "").trim();
   const weight = Number(order.package_weight_kg);
 
   if (!tracking || !courier || !sorting || !hub || !logoType) {
@@ -55,6 +61,9 @@ export function orderToWaybillPrintData(order: ApiOrder): WaybillPrintData | nul
   if (logoType === "custom" && !(order.waybill_logo_url ?? "").trim()) {
     return null;
   }
+  if (paymentMethod !== "cod" && paymentMethod !== "online_transfer") {
+    return null;
+  }
 
   return {
     order_number: order.order_number,
@@ -62,7 +71,7 @@ export function orderToWaybillPrintData(order: ApiOrder): WaybillPrintData | nul
     courier,
     shipped_at: order.shipped_at ?? order.created_at,
     expected_delivery_date: order.expected_delivery_date,
-    payment_method: paymentMethodFromOrder(order.payment.payment_method),
+    payment_method: paymentMethodFromValue(paymentMethod),
     weight_kg: weight,
     sorting_code: sorting,
     hub_code: hub,
@@ -90,9 +99,11 @@ export function buildWaybillDraftPreview(
     | "packageWeightKg"
     | "waybillLogoType"
     | "waybillLogoUrl"
+    | "waybillPaymentMethod"
   >,
 ): WaybillPrintData {
   const logoType: WaybillLogoType = draft.waybillLogoType;
+  const paymentMethod: WaybillPaymentMethod = draft.waybillPaymentMethod;
   const weight = Number(draft.packageWeightKg);
   const weightKg = !Number.isNaN(weight) && weight > 0 ? weight : 0;
 
@@ -102,7 +113,7 @@ export function buildWaybillDraftPreview(
     courier: draft.courier.trim() || "Courier",
     shipped_at: order.shipped_at ?? order.created_at,
     expected_delivery_date: order.expected_delivery_date,
-    payment_method: paymentMethodFromOrder(order.payment.payment_method),
+    payment_method: paymentMethodFromValue(paymentMethod),
     weight_kg: weightKg,
     sorting_code: (order.sorting_code ?? "").trim() || "---",
     hub_code: (order.hub_code ?? "").trim() || "000",

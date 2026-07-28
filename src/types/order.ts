@@ -64,6 +64,7 @@ export type ApiOrder = {
   package_weight_kg?: string | null;
   waybill_logo_type?: string | null;
   waybill_logo_url?: string | null;
+  waybill_payment_method?: "cod" | "online_transfer" | string | null;
   sorting_code?: string | null;
   hub_code?: string | null;
   delivery_source: string;
@@ -106,6 +107,7 @@ export type AdminOrdersQuery = PaginationQuery & {
 
 export type AdminUpdateOrderAction = "approve" | "reject" | "ship" | "set_waybill";
 export type WaybillLogoType = "jt" | "lalamove" | "custom";
+export type WaybillPaymentMethod = "cod" | "online_transfer";
 
 export type AdminShipOrderDetails = {
   courier: string;
@@ -113,6 +115,7 @@ export type AdminShipOrderDetails = {
   packageWeightKg: string;
   waybillLogoType: WaybillLogoType;
   waybillLogoUrl?: string | null;
+  waybillPaymentMethod: WaybillPaymentMethod;
 };
 
 

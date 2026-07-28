@@ -32,6 +32,7 @@ import type {
   AdminShipOrderDetails,
   ApiOrder,
   WaybillLogoType,
+  WaybillPaymentMethod,
 } from "@/types/order";
 
 export type WaybillDialogMode = "create" | "edit";
@@ -50,6 +51,11 @@ const LOGO_KINDS = [
   { id: "jt" as const, label: "J&T Express" },
   { id: "lalamove" as const, label: "Lalamove" },
   { id: "custom" as const, label: "Custom logo" },
+];
+
+const PAYMENT_KINDS = [
+  { id: "cod" as const, label: "COD" },
+  { id: "online_transfer" as const, label: "Prepaid" },
 ];
 
 const COURIER_BY_LOGO: Record<Exclude<WaybillLogoType, "custom">, string> = {
@@ -100,7 +106,14 @@ function isWaybillLogoType(value: string | null | undefined): value is WaybillLo
   return value === "jt" || value === "lalamove" || value === "custom";
 }
 
+function isWaybillPaymentMethod(
+  value: string | null | undefined,
+): value is WaybillPaymentMethod {
+  return value === "cod" || value === "online_transfer";
+}
+
 function formStateFromInitial(
+  order: ApiOrder,
   initialValues?: Partial<AdminShipOrderDetails> | null,
 ) {
   const logoType = isWaybillLogoType(initialValues?.waybillLogoType)
@@ -108,6 +121,12 @@ function formStateFromInitial(
     : ("jt" as WaybillLogoType);
   const customLogoUrl =
     logoType === "custom" ? (initialValues?.waybillLogoUrl ?? "") : "";
+  const paymentFromOrder = isWaybillPaymentMethod(order.payment.payment_method)
+    ? order.payment.payment_method
+    : ("cod" as WaybillPaymentMethod);
+  const paymentMethod = isWaybillPaymentMethod(initialValues?.waybillPaymentMethod)
+    ? initialValues.waybillPaymentMethod
+    : paymentFromOrder;
 
   return {
     logoType,
@@ -117,6 +136,7 @@ function formStateFromInitial(
     packageWeightKg: initialValues?.packageWeightKg ?? "",
     customCourier:
       logoType === "custom" ? (initialValues?.courier ?? "") : "",
+    paymentMethod,
     error: null as string | null,
   };
 }
@@ -140,21 +160,24 @@ export function ShipOrderDialog({
   const [trackingNumber, setTrackingNumber] = useState("");
   const [packageWeightKg, setPackageWeightKg] = useState("");
   const [customCourier, setCustomCourier] = useState("");
+  const [paymentMethod, setPaymentMethod] =
+    useState<WaybillPaymentMethod>("cod");
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!open) {
       return;
     }
-    const next = formStateFromInitial(initialValues);
+    const next = formStateFromInitial(order, initialValues);
     setLogoType(next.logoType);
     setCustomLogoUrl(next.customLogoUrl);
     setCustomLogoFileName(next.customLogoFileName);
     setTrackingNumber(next.trackingNumber);
     setPackageWeightKg(next.packageWeightKg);
     setCustomCourier(next.customCourier);
+    setPaymentMethod(next.paymentMethod);
     setError(next.error);
-  }, [open, initialValues]);
+  }, [open, initialValues, order]);
 
   const draftCourier =
     logoType === "custom"
@@ -169,6 +192,7 @@ export function ShipOrderDialog({
         packageWeightKg,
         waybillLogoType: logoType,
         waybillLogoUrl: logoType === "custom" ? customLogoUrl : null,
+        waybillPaymentMethod: paymentMethod,
       }),
     [
       order,
@@ -177,18 +201,20 @@ export function ShipOrderDialog({
       packageWeightKg,
       logoType,
       customLogoUrl,
+      paymentMethod,
     ],
   );
 
   const handleClose = (nextOpen: boolean) => {
     if (!nextOpen) {
-      const next = formStateFromInitial(null);
+      const next = formStateFromInitial(order, null);
       setLogoType(next.logoType);
       setCustomLogoUrl(next.customLogoUrl);
       setCustomLogoFileName(next.customLogoFileName);
       setTrackingNumber(next.trackingNumber);
       setPackageWeightKg(next.packageWeightKg);
       setCustomCourier(next.customCourier);
+      setPaymentMethod(next.paymentMethod);
       setError(next.error);
     }
     onOpenChange(nextOpen);
@@ -245,6 +271,7 @@ export function ShipOrderDialog({
       packageWeightKg: trimmedWeight,
       waybillLogoType: logoType,
       waybillLogoUrl: logoType === "custom" ? customLogoUrl : null,
+      waybillPaymentMethod: paymentMethod,
     });
     handleClose(false);
   };
@@ -260,8 +287,15 @@ export function ShipOrderDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="flex max-h-[90vh] flex-col gap-0 overflow-hidden p-0 sm:max-w-5xl">
-        <DialogHeader className="shrink-0 border-b border-black/5 px-6 py-4">
+      <DialogContent
+        showCloseButton
+        className={cn(
+          "fixed inset-3 top-3 left-3 right-3 bottom-3 flex h-auto max-h-[calc(100dvh-1.5rem)] w-auto max-w-none",
+          "translate-x-0 translate-y-0 flex-col gap-0 overflow-hidden rounded-xl p-0",
+          "sm:max-w-none data-open:zoom-in-100 data-closed:zoom-out-100",
+        )}
+      >
+        <DialogHeader className="shrink-0 border-b border-black/5 px-6 py-3 pr-12">
           <DialogTitle>{isEdit ? "Edit waybill" : "Set up waybill"}</DialogTitle>
           <DialogDescription>
             {isEdit
@@ -270,8 +304,8 @@ export function ShipOrderDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid min-h-0 flex-1 gap-0 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)]">
-          <div className="space-y-4 overflow-y-auto border-b border-black/5 px-6 py-4 lg:border-r lg:border-b-0">
+        <div className="grid min-h-0 flex-1 grid-rows-[auto_1fr] gap-0 lg:grid-rows-1 lg:grid-cols-[minmax(18rem,24rem)_minmax(0,1fr)]">
+          <div className="space-y-3 overflow-y-auto border-b border-black/5 px-6 py-4 lg:overflow-visible lg:border-r lg:border-b-0">
             <div className="space-y-2">
               <p className={labelClassName}>Courier logo</p>
               <div
@@ -381,6 +415,34 @@ export function ShipOrderDialog({
             </div>
 
             <div className="space-y-2">
+              <p className={labelClassName}>Payment on label</p>
+              <div
+                role="tablist"
+                aria-label="Waybill payment options"
+                className={cn(segmentListClassName, "flex-wrap")}
+              >
+                {PAYMENT_KINDS.map((option) => {
+                  const isActive = paymentMethod === option.id;
+                  return (
+                    <button
+                      key={option.id}
+                      type="button"
+                      role="tab"
+                      aria-selected={isActive}
+                      onClick={() => {
+                        setPaymentMethod(option.id);
+                        setError(null);
+                      }}
+                      className={segmentTabClassName(isActive)}
+                    >
+                      {option.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="space-y-2">
               <label htmlFor={`ship-tracking-${orderId}`} className={labelClassName}>
                 Tracking number
               </label>
@@ -410,6 +472,10 @@ export function ShipOrderDialog({
                 onChange={(event) => {
                   setPackageWeightKg(event.target.value);
                   if (error) setError(null);
+                }}
+                onWheel={(event) => {
+                  // Prevent scroll from changing the number while the field is focused.
+                  event.currentTarget.blur();
                 }}
                 placeholder="e.g. 1.250"
               />
@@ -444,18 +510,18 @@ export function ShipOrderDialog({
             <p className="no-print shrink-0 px-4 pt-3 text-xs font-medium tracking-wide text-neutral-500 uppercase">
               Live preview
             </p>
-            <div className="flex min-h-0 flex-1 justify-center overflow-auto px-4 py-3">
-              <div className="origin-top scale-[0.85] sm:scale-90 lg:scale-[0.78] xl:scale-90">
+            <div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden px-4 py-2">
+              <div className="max-h-full origin-center scale-[0.72] sm:scale-75 md:scale-[0.82] lg:scale-90 xl:scale-100">
                 <PrintOrderDetails data={livePreview} />
               </div>
             </div>
-            <p className="no-print shrink-0 px-4 pb-3 text-[11px] text-neutral-500">
+            <p className="no-print shrink-0 px-4 pb-2 text-[11px] text-neutral-500">
               Sorting / hub codes update after you save the waybill.
             </p>
           </div>
         </div>
 
-        <DialogFooter className="shrink-0 border-t border-black/5 px-6 py-4">
+        <DialogFooter className="mb-3 shrink-0 gap-2 border-t border-black/5 px-6 pt-3 pb-4 sm:justify-end">
           <Button
             type="button"
             variant="outline"

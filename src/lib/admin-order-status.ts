@@ -51,6 +51,7 @@ export function hasAdminWaybillReady(
     | "package_weight_kg"
     | "waybill_logo_type"
     | "waybill_logo_url"
+    | "waybill_payment_method"
   >,
 ): boolean {
   if (!(order.courier ?? "").trim()) {
@@ -68,6 +69,10 @@ export function hasAdminWaybillReady(
     return false;
   }
   if (logoType === "custom" && !(order.waybill_logo_url ?? "").trim()) {
+    return false;
+  }
+  const paymentMethod = (order.waybill_payment_method ?? "").trim();
+  if (paymentMethod !== "cod" && paymentMethod !== "online_transfer") {
     return false;
   }
   return true;

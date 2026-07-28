@@ -90,6 +90,11 @@ export function OrderRowActionsMenu({
         ? order.waybill_logo_type
         : undefined,
       waybillLogoUrl: order.waybill_logo_url ?? null,
+      waybillPaymentMethod:
+        order.waybill_payment_method === "cod" ||
+        order.waybill_payment_method === "online_transfer"
+          ? order.waybill_payment_method
+          : undefined,
     };
   }, [order, waybillReady]);
 

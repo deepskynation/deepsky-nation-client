@@ -363,6 +363,7 @@ function ShipOrderDialogDemo() {
     packageWeightKg: "1.250",
     waybillLogoType: "jt",
     waybillLogoUrl: null,
+    waybillPaymentMethod: "cod",
   };
 
   return (

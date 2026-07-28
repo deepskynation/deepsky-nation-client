@@ -268,6 +268,7 @@ export const mockApiOrderWithWaybill: ApiOrder = {
   package_weight_kg: "0.800",
   waybill_logo_type: "jt",
   waybill_logo_url: null,
+  waybill_payment_method: "cod",
   sorting_code: "460-600001",
   hub_code: "029",
   delivery_source: "custom",

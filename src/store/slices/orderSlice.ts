@@ -447,6 +447,7 @@ export const updateAdminOrderStatus = createAsyncThunk<
       body.package_weight_kg = shippingDetails.packageWeightKg;
       body.waybill_logo_type = shippingDetails.waybillLogoType;
       body.waybill_logo_url = shippingDetails.waybillLogoUrl ?? null;
+      body.waybill_payment_method = shippingDetails.waybillPaymentMethod;
     }
 
     try {
