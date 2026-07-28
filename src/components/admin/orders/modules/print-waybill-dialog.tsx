@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { createPortal } from "react-dom";
 import PrintOrderDetails from "@/components/admin/orders/modules/print-order-details";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,9 +29,19 @@ export function PrintWaybillDialog({
   const printData = useMemo(() => orderToWaybillPrintData(order), [order]);
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="no-print max-h-[90vh] overflow-y-auto sm:max-w-lg">
-        <DialogHeader>
+    <>
+      {open && printData
+        ? createPortal(
+            <div id="waybill-print-root">
+              <PrintOrderDetails data={printData} />
+            </div>,
+            document.body,
+          )
+        : null}
+
+      <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
+        <DialogHeader className="no-print">
           <DialogTitle>Print waybill</DialogTitle>
           <DialogDescription>
             Preview the shipping label, then print. Use A6 / 4×6 paper size if
@@ -39,7 +50,7 @@ export function PrintWaybillDialog({
         </DialogHeader>
 
         {printData ? (
-          <div className="flex justify-center overflow-x-auto py-2">
+          <div className="waybill-print-host flex justify-center py-2">
             <PrintOrderDetails data={printData} />
           </div>
         ) : (
@@ -66,5 +77,6 @@ export function PrintWaybillDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
+    </>
   );
 }

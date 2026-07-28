@@ -195,6 +195,13 @@ export default function PrintOrderDetails({
   return (
     <>
       <style>{`
+        #waybill-print-root {
+          position: fixed;
+          left: -10000px;
+          top: 0;
+          visibility: hidden;
+          pointer-events: none;
+        }
         @media print {
           @page {
             size: 105mm 148mm;
@@ -206,9 +213,41 @@ export default function PrintOrderDetails({
             padding: 0 !important;
             background: white !important;
           }
-          .no-print {
+          .no-print,
+          [data-slot="dialog-overlay"],
+          [data-slot="dialog-close"] {
             display: none !important;
           }
+          [data-slot="dialog-content"] {
+            position: static !important;
+            inset: auto !important;
+            top: auto !important;
+            left: auto !important;
+            transform: none !important;
+            width: auto !important;
+            max-width: none !important;
+            max-height: none !important;
+            height: auto !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow: visible !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            border: none !important;
+            border-radius: 0 !important;
+          }
+          /* Dialog flow: print the detached root, not the modal or app shell. */
+          body:has(#waybill-print-root) > *:not(#waybill-print-root) {
+            display: none !important;
+          }
+          body:has(#waybill-print-root) #waybill-print-root {
+            display: block !important;
+            visibility: visible !important;
+            position: static !important;
+            left: auto !important;
+            pointer-events: auto !important;
+          }
+          /* Original inline print flow (component visual, etc.). */
           body * {
             visibility: hidden !important;
           }
