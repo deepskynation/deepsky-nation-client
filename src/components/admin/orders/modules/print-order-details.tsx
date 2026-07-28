@@ -143,10 +143,14 @@ function AttemptBoxes({ label }: { label: string }) {
 function resolveWaybillLogo(data: WaybillPrintData): {
   src: string;
   alt: string;
-} {
-  if (data.isCustomize && data.custom_logo_url?.trim()) {
+} | null {
+  if (data.isCustomize) {
+    const customSrc = data.custom_logo_url?.trim();
+    if (!customSrc) {
+      return null;
+    }
     return {
-      src: data.custom_logo_url.trim(),
+      src: customSrc,
       alt: "Custom courier logo",
     };
   }
@@ -161,6 +165,9 @@ function resolveWaybillLogo(data: WaybillPrintData): {
 
 function WaybillHeaderLogo({ data }: { data: WaybillPrintData }) {
   const logo = resolveWaybillLogo(data);
+  if (!logo) {
+    return null;
+  }
 
   return (
     // eslint-disable-next-line @next/next/no-img-element -- static public assets for print
