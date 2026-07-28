@@ -39,6 +39,45 @@ export function canAdminMarkShipped(status: string): boolean {
   return status.toLowerCase() === "approved";
 }
 
+export function canAdminEditWaybill(status: string): boolean {
+  return status.toLowerCase() === "approved";
+}
+
+export function hasAdminWaybillReady(
+  order: Pick<
+    ApiOrder,
+    | "courier"
+    | "tracking_number"
+    | "package_weight_kg"
+    | "waybill_logo_type"
+    | "waybill_logo_url"
+    | "waybill_payment_method"
+  >,
+): boolean {
+  if (!(order.courier ?? "").trim()) {
+    return false;
+  }
+  if (!(order.tracking_number ?? "").trim()) {
+    return false;
+  }
+  const weight = Number(order.package_weight_kg);
+  if (!order.package_weight_kg || Number.isNaN(weight) || weight <= 0) {
+    return false;
+  }
+  const logoType = (order.waybill_logo_type ?? "").trim();
+  if (!logoType) {
+    return false;
+  }
+  if (logoType === "custom" && !(order.waybill_logo_url ?? "").trim()) {
+    return false;
+  }
+  const paymentMethod = (order.waybill_payment_method ?? "").trim();
+  if (paymentMethod !== "cod" && paymentMethod !== "online_transfer") {
+    return false;
+  }
+  return true;
+}
+
 export function isAdminOrderTerminal(status: string): boolean {
   return ["rejected", "cancelled", "shipped"].includes(status.toLowerCase());
 }

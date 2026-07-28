@@ -1,6 +1,13 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
+import PrintOrderDetails from "@/components/admin/orders/modules/print-order-details";
+import { ShipOrderDialog } from "@/components/admin/orders/modules/ship-order-dialog";
+import { PrintWaybillDialog } from "@/components/admin/orders/modules/print-waybill-dialog";
+import {
+  WaybillLogoDialog,
+  type WaybillLogoChoice,
+} from "@/components/admin/orders/modules/waybill-logo-dialog";
 import { CartItemCard } from "@/components/cart/cart-item-card";
 import { CartOrderSummary } from "@/components/cart/cart-order-summary";
 import {
@@ -35,6 +42,13 @@ import {
   mockColorPickerVariants,
   mockSizePickerVariants,
 } from "@/mock/products/product-variants";
+import {
+  mockApiOrderWithWaybill,
+  mockWaybillCod,
+  mockWaybillPrepaid,
+  type WaybillPrintData,
+} from "@/mock/waybill";
+import type { AdminShipOrderDetails } from "@/types/order";
 import type { PurchaseActivityToastItem } from "@/types/purchase-activity";
 
 const COMPONENT_TABS = [
@@ -46,6 +60,9 @@ const COMPONENT_TABS = [
   { id: "date-range", label: "Date Range" },
   { id: "toast", label: "Toast" },
   { id: "emails", label: "Emails" },
+  { id: "waybill", label: "Waybill" },
+  { id: "ship-dialog", label: "Waybill Setup" },
+  { id: "print-waybill", label: "Print Waybill" },
   { id: "app-sidebar", label: "App Sidebar" },
 ] as const;
 
@@ -292,6 +309,236 @@ function SideBarDemo() {
   );
 }
 
+const WAYBILL_SAMPLES: { id: string; label: string; data: WaybillPrintData }[] =
+  [
+    { id: "prepaid", label: "Prepaid", data: mockWaybillPrepaid },
+    { id: "cod", label: "COD", data: mockWaybillCod },
+  ];
+
+function applyWaybillLogoChoice(
+  data: WaybillPrintData,
+  choice: WaybillLogoChoice,
+): WaybillPrintData {
+  if (choice.kind === "jt") {
+    return {
+      ...data,
+      courier: "jnt",
+      isJT: true,
+      isLalamove: false,
+      isCustomize: false,
+      custom_logo_url: null,
+    };
+  }
+  if (choice.kind === "lalamove") {
+    return {
+      ...data,
+      courier: "lalamove",
+      isJT: false,
+      isLalamove: true,
+      isCustomize: false,
+      custom_logo_url: null,
+    };
+  }
+  return {
+    ...data,
+    isJT: false,
+    isLalamove: false,
+    isCustomize: true,
+    custom_logo_url: choice.dataUrl,
+  };
+}
+
+function ShipOrderDialogDemo() {
+  "use no memo";
+
+  const [createOpen, setCreateOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [lastConfirm, setLastConfirm] = useState<AdminShipOrderDetails | null>(
+    null,
+  );
+
+  const editInitial = useMemo(
+    (): Partial<AdminShipOrderDetails> => ({
+      courier: "J&T Express",
+      trackingNumber: "DSN971234567890",
+      packageWeightKg: "1.250",
+      waybillLogoType: "jt",
+      waybillLogoUrl: null,
+      waybillPaymentMethod: "cod",
+    }),
+    [],
+  );
+
+  return (
+    <div className="max-w-md space-y-4 rounded-xl border border-black/10 bg-white/70 p-6">
+      <div className="flex flex-wrap gap-2">
+        <Button type="button" onClick={() => setCreateOpen(true)}>
+          Set up waybill
+        </Button>
+        <Button type="button" variant="outline" onClick={() => setEditOpen(true)}>
+          Edit waybill
+        </Button>
+      </div>
+      <p className="text-xs text-black/50">
+        Preview only — save does not call the API. Ship is a separate confirm after
+        waybill is saved on an approved order.
+      </p>
+      {lastConfirm ? (
+        <pre className="overflow-x-auto rounded-lg bg-neutral-950 p-3 text-[11px] leading-relaxed text-neutral-100">
+          {JSON.stringify(lastConfirm, null, 2)}
+        </pre>
+      ) : null}
+      <ShipOrderDialog
+        order={mockApiOrderWithWaybill}
+        open={createOpen}
+        onOpenChange={setCreateOpen}
+        mode="create"
+        onConfirm={(details) => {
+          setLastConfirm(details);
+          setCreateOpen(false);
+        }}
+      />
+      <ShipOrderDialog
+        order={mockApiOrderWithWaybill}
+        open={editOpen}
+        onOpenChange={setEditOpen}
+        mode="edit"
+        initialValues={editInitial}
+        onConfirm={(details) => {
+          setLastConfirm(details);
+          setEditOpen(false);
+        }}
+      />
+    </div>
+  );
+}
+
+function PrintWaybillDialogDemo() {
+  "use no memo";
+
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="max-w-md space-y-4 rounded-xl border border-black/10 bg-white/70 p-6">
+      <Button type="button" onClick={() => setOpen(true)}>
+        Open print waybill dialog
+      </Button>
+      <p className="text-xs text-black/50">
+        Same dialog used after waybill setup on an approved order. Maps{" "}
+        <code className="text-[10px]">ApiOrder</code> → print label via{" "}
+        <code className="text-[10px]">orderToWaybillPrintData</code>.
+      </p>
+      <PrintWaybillDialog
+        order={mockApiOrderWithWaybill}
+        open={open}
+        onOpenChange={setOpen}
+      />
+    </div>
+  );
+}
+
+function WaybillDemo() {
+  "use no memo";
+
+  const [sampleId, setSampleId] = useState(WAYBILL_SAMPLES[0].id);
+  const [logoChoice, setLogoChoice] = useState<WaybillLogoChoice>({
+    kind: "jt",
+  });
+  const [logoDialogOpen, setLogoDialogOpen] = useState(false);
+  const [logoDialogForPrint, setLogoDialogForPrint] = useState(false);
+
+  const baseSample =
+    WAYBILL_SAMPLES.find((sample) => sample.id === sampleId) ??
+    WAYBILL_SAMPLES[0];
+  const activeData = applyWaybillLogoChoice(baseSample.data, logoChoice);
+
+  const openLogoDialog = (forPrint: boolean) => {
+    setLogoDialogForPrint(forPrint);
+    setLogoDialogOpen(true);
+  };
+
+  const handleLogoConfirm = (choice: WaybillLogoChoice) => {
+    setLogoChoice(choice);
+    setLogoDialogOpen(false);
+    if (logoDialogForPrint) {
+      window.setTimeout(() => {
+        window.print();
+      }, 80);
+    }
+  };
+
+  const logoLabel =
+    logoChoice.kind === "jt"
+      ? "J&T Express"
+      : logoChoice.kind === "lalamove"
+        ? "Lalamove"
+        : `Custom (${logoChoice.fileName})`;
+
+  return (
+    <div className="max-w-3xl space-y-4 rounded-xl border border-black/10 bg-white/70 p-6">
+      <div className="no-print flex flex-wrap items-center justify-between gap-3">
+        <div
+          role="tablist"
+          aria-label="Waybill samples"
+          className={cn(segmentListClassName, "flex-wrap")}
+        >
+          {WAYBILL_SAMPLES.map((sample) => {
+            const isActive = sampleId === sample.id;
+
+            return (
+              <button
+                key={sample.id}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                onClick={() => setSampleId(sample.id)}
+                className={segmentTabClassName(isActive)}
+              >
+                {sample.label}
+              </button>
+            );
+          })}
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => openLogoDialog(false)}
+          >
+            Choose logo
+          </Button>
+          <Button type="button" size="sm" onClick={() => openLogoDialog(true)}>
+            Print waybill
+          </Button>
+        </div>
+      </div>
+
+      <p className="no-print text-xs text-black/55">
+        Current logo: <span className="font-medium text-black/75">{logoLabel}</span>
+      </p>
+
+      <div className="flex justify-center bg-neutral-100/80 p-6 print:bg-transparent print:p-0">
+        <PrintOrderDetails data={activeData} />
+      </div>
+
+      <p className="no-print text-xs text-black/50">
+        Print opens a dialog to pick J&amp;T, Lalamove, or a custom JPG/PNG/WEBP/SVG
+        upload. A6 layout from{" "}
+        <code className="text-[11px]">client/src/mock/waybill.ts</code>.
+      </p>
+
+      <WaybillLogoDialog
+        open={logoDialogOpen}
+        onOpenChange={setLogoDialogOpen}
+        value={logoChoice}
+        onConfirm={handleLogoConfirm}
+        confirmForPrint={logoDialogForPrint}
+      />
+    </div>
+  );
+}
+
 const TAB_COPY: Record<
   ComponentTabId,
   { title: string; description: string; render: () => ReactNode }
@@ -346,6 +593,24 @@ const TAB_COPY: Record<
       "Inbox email layouts sent by the backend. Mock data for visual reference — not React components.",
     render: () => <EmailPreviewDemo />,
   },
+  waybill: {
+    title: "Shipping Waybill",
+    description:
+      "A6 waybill mock. Choose logo via dialog (J&T, Lalamove, or custom JPG/PNG/WEBP/SVG), then print.",
+    render: () => <WaybillDemo />,
+  },
+  "ship-dialog": {
+    title: "Waybill setup / edit",
+    description:
+      "Save courier logo, tracking, and weight before shipping. Edit stays available until the order is shipped.",
+    render: () => <ShipOrderDialogDemo />,
+  },
+  "print-waybill": {
+    title: "Print waybill dialog",
+    description:
+      "Admin print preview after waybill is saved. Opens the live-order print dialog with mock ApiOrder data.",
+    render: () => <PrintWaybillDialogDemo />,
+  },
   "app-sidebar": {
     title: "App Sidebar",
     description: "Admin sidebar with collapsible nav sections.",
@@ -360,13 +625,13 @@ export default function ComponentVisualClient() {
   const activePanel = TAB_COPY[activeTab];
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-semibold">Component Visual</h1>
+    <div className="p-8 print:p-0">
+      <h1 className="no-print text-2xl font-semibold">Component Visual</h1>
 
       <div
         role="tablist"
         aria-label="Component previews"
-        className={cn(segmentListClassName, "mt-6")}
+        className={cn(segmentListClassName, "no-print mt-6")}
       >
         {COMPONENT_TABS.map((tab) => {
           const isActive = activeTab === tab.id;
@@ -389,10 +654,12 @@ export default function ComponentVisualClient() {
       <section
         role="tabpanel"
         aria-labelledby={activeTab}
-        className="mt-8 space-y-4"
+        className="mt-8 space-y-4 print:mt-0"
       >
-        <h2 className="text-lg font-medium">{activePanel.title}</h2>
-        <p className="text-sm text-muted-foreground">{activePanel.description}</p>
+        <h2 className="no-print text-lg font-medium">{activePanel.title}</h2>
+        <p className="no-print text-sm text-muted-foreground">
+          {activePanel.description}
+        </p>
         {activePanel.render()}
       </section>
     </div>
