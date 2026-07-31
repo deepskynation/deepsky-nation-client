@@ -69,20 +69,20 @@ export type WaybillPrintData = {
 export const WAYBILL_LOGO_OPTIONS = [
   { id: "jt", label: "J&T Express", src: "/j%26t-logo.svg?v=2" },
   { id: "lalamove", label: "Lalamove", src: "/lalamove-logo.webp" },
-  { id: "deepsky", label: "Deepsky Nation", src: "/deepsky-logo.png" },
+  { id: "deepsky", label: "Deepsky Clothing", src: "/deepsky-logo.png" },
 ] as const;
 
 export type WaybillLogoOptionId = (typeof WAYBILL_LOGO_OPTIONS)[number]["id"];
 
 const DEEPSKY_SHIPPER: WaybillShipper = {
-  name: "Deepsky Nation",
+  name: "Deepsky Clothing",
   phone: "639170000000",
-  address_line: "Unit 12, Cosmic Plaza, 88 Aurora Blvd",
-  city: "Quezon City",
+  address_line: "Blk 12 Lot 9 SMB Hills, Summitville Brgy Putatan Muntinlupa City",
+  city: "Muntinlupa City",
   region: "Metro Manila",
-  area: "Project 4",
+  area: "SMB Hills",
   country: "Philippines",
-  postal_code: "1100",
+  postal_code: "1772",
 };
 
 /** Default shop shipper used for live waybill print until shop settings expand. */

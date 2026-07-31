@@ -86,6 +86,81 @@ export function orderToWaybillPrintData(order: ApiOrder): WaybillPrintData | nul
   };
 }
 
+/** Public API payload for `GET /api/public/waybill/{tracking_number}`. */
+export type PublicWaybillApiResponse = {
+  order_number: string;
+  tracking_number: string;
+  courier: string;
+  shipped_at: string | null;
+  expected_delivery_date: string | null;
+  payment_method: "cod" | "online_transfer";
+  weight_kg: string | number;
+  sorting_code: string;
+  hub_code: string;
+  consignee: {
+    name: string;
+    phone: string;
+    email: string;
+    address_line: string;
+    city: string;
+    region: string;
+    country: string;
+    postal_code: string;
+    address_type?: string;
+  };
+  items: Array<{
+    title: string;
+    variant_label?: string | null;
+    quantity: number;
+  }>;
+  total: string;
+  waybill_logo_type: WaybillLogoType;
+  waybill_logo_url?: string | null;
+  created_at: string;
+};
+
+/** Map public waybill API response → printable label data. */
+export function publicWaybillToPrintData(
+  payload: PublicWaybillApiResponse,
+): WaybillPrintData {
+  const logoType = payload.waybill_logo_type;
+  const weight = Number(payload.weight_kg);
+
+  return {
+    order_number: payload.order_number,
+    tracking_number: payload.tracking_number.trim(),
+    courier: payload.courier.trim(),
+    shipped_at: payload.shipped_at ?? payload.created_at,
+    expected_delivery_date: payload.expected_delivery_date,
+    payment_method: paymentMethodFromValue(payload.payment_method),
+    weight_kg: Number.isFinite(weight) ? weight : 0,
+    sorting_code: payload.sorting_code.trim(),
+    hub_code: payload.hub_code.trim(),
+    shipper: DEEPSKY_WAYBILL_SHIPPER,
+    consignee: {
+      name: payload.consignee.name,
+      phone: payload.consignee.phone,
+      email: payload.consignee.email,
+      address_line: payload.consignee.address_line,
+      city: payload.consignee.city,
+      region: payload.consignee.region,
+      country: payload.consignee.country,
+      postal_code: payload.consignee.postal_code,
+      address_type: payload.consignee.address_type ?? "HOME",
+    },
+    items: payload.items.map((item) => ({
+      title: item.title,
+      variant_label: item.variant_label,
+      quantity: item.quantity,
+    })),
+    total: payload.total,
+    isJT: logoType === "jt",
+    isLalamove: logoType === "lalamove",
+    isCustomize: logoType === "custom",
+    custom_logo_url: logoType === "custom" ? payload.waybill_logo_url : null,
+  };
+}
+
 /**
  * Live preview while editing waybill fields. Uses draft form values and
  * falls back to placeholders for codes/weight until they are valid.
