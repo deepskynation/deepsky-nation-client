@@ -1,5 +1,7 @@
 "use client";
 
+import { WaybillBarcode } from "@/components/admin/orders/modules/waybill-barcode";
+import { WaybillQrCode } from "@/components/admin/orders/modules/waybill-qr-code";
 import { cn } from "@/lib/utils";
 import type { WaybillPrintData } from "@/mock/waybill";
 
@@ -7,92 +9,6 @@ type PrintOrderDetailsProps = {
   data: WaybillPrintData;
   className?: string;
 };
-
-/** Deterministic bar widths from tracking chars — visual placeholder, not a real barcode. */
-function BarcodePlaceholder({
-  value,
-  className,
-  barClassName,
-  fullWidth = false,
-}: {
-  value: string;
-  className?: string;
-  barClassName?: string;
-  /** Stretch bars across the container (main tracking barcode). */
-  fullWidth?: boolean;
-}) {
-  const source = fullWidth ? value.repeat(4) : value.repeat(2);
-  const bars = Array.from(source).flatMap((char, index) => {
-    const code = char.charCodeAt(0);
-    const narrow = (code % 3) + 1;
-    const gap = (code % 2) + 1;
-    return [
-      { key: `${index}-b`, width: narrow, filled: true },
-      { key: `${index}-g`, width: gap, filled: false },
-    ];
-  });
-
-  return (
-    <div
-      className={cn(
-        "flex w-full items-stretch overflow-hidden bg-white",
-        fullWidth ? "justify-stretch gap-0 px-3" : "justify-center gap-px",
-        className,
-      )}
-      aria-hidden
-    >
-      {bars.map((bar) => (
-        <span
-          key={bar.key}
-          className={cn(
-            "h-full",
-            fullWidth ? "min-w-px flex-1" : "shrink-0",
-            bar.filled ? "bg-black" : "bg-transparent",
-            barClassName,
-          )}
-          style={
-            fullWidth ? { flexGrow: bar.width } : { width: `${bar.width}px` }
-          }
-        />
-      ))}
-    </div>
-  );
-}
-
-/** Simple QR-looking grid placeholder (not a scannable QR). */
-function QrPlaceholder({ value }: { value: string }) {
-  const size = 21;
-  const cells: boolean[] = [];
-  let seed = 0;
-  for (let i = 0; i < value.length; i += 1) {
-    seed = (seed + value.charCodeAt(i) * (i + 1)) % 9973;
-  }
-  for (let i = 0; i < size * size; i += 1) {
-    seed = (seed * 1103515245 + 12345) >>> 0;
-    const row = Math.floor(i / size);
-    const col = i % size;
-    const finder =
-      (row < 5 && col < 5) ||
-      (row < 5 && col >= size - 5) ||
-      (row >= size - 5 && col < 5);
-    cells.push(finder ? row === 0 || col === 0 || row === 4 || col === 4 || (row > 1 && row < 3 && col > 1 && col < 3) || (finder && ((row + col) % 2 === 0)) : seed % 3 !== 0);
-  }
-
-  return (
-    <div
-      className="grid aspect-square w-full border border-black bg-white p-[2px]"
-      style={{ gridTemplateColumns: `repeat(${size}, 1fr)` }}
-      aria-hidden
-    >
-      {cells.map((filled, index) => (
-        <span
-          key={index}
-          className={filled ? "bg-black" : "bg-white"}
-        />
-      ))}
-    </div>
-  );
-}
 
 function formatSendDate(iso: string): string {
   const date = new Date(iso);
@@ -317,10 +233,11 @@ export default function PrintOrderDetails({
 
         {/* Main barcode — full-width band like PH J&T AWB */}
         <section className="border-b-2 border-black px-0 py-2">
-          <BarcodePlaceholder
+          <WaybillBarcode
             value={data.tracking_number}
             className="h-10"
             fullWidth
+            barHeight={40}
           />
           <p className="mt-1 text-center text-[15px] leading-none font-bold tracking-wider">
             {data.tracking_number}
@@ -388,7 +305,7 @@ export default function PrintOrderDetails({
         {/* QR | qty/weight + small barcode | COD amount */}
         <section className="grid grid-cols-[28%_42%_30%] border-t-2 border-black">
           <div className="border-r border-black p-1.5">
-            <QrPlaceholder value={data.tracking_number} />
+            <WaybillQrCode trackingNumber={data.tracking_number} />
           </div>
           <div className="flex flex-col border-r border-black">
             <div className="border-b border-black px-1.5 py-1.5 text-[9px] leading-snug">
@@ -402,9 +319,10 @@ export default function PrintOrderDetails({
               </p>
             </div>
             <div className="flex flex-1 flex-col justify-center px-1 py-1">
-              <BarcodePlaceholder
+              <WaybillBarcode
                 value={data.tracking_number}
                 className="h-7"
+                barHeight={28}
               />
             </div>
           </div>
