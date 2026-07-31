@@ -283,13 +283,13 @@ export default function PrintOrderDetails({
             <VerticalLabel>SELLER</VerticalLabel>
             <div className="min-w-0 flex-1 px-1.5 py-1">
               <p className="text-[10px] leading-snug font-bold">
+                {data.shipper.name}{" "}
                 {data.shipper.phone?.trim() ? (
                   <>
                     {" "}
                     <span className="font-semibold">{data.shipper.phone}</span>
                   </>
                 ) : null}
-                <span className="font-semibold">{data.shipper.phone}</span>
               </p>
               <p className="mt-0.5 text-[9px] leading-snug">
                 {data.shipper.address_line}
