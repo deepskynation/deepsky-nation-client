@@ -10,7 +10,7 @@ export type WaybillPrintItem = {
 
 export type WaybillShipper = {
   name: string;
-  phone: string;
+  phone?: string;
   address_line: string;
   city: string;
   region: string;
@@ -76,7 +76,7 @@ export type WaybillLogoOptionId = (typeof WAYBILL_LOGO_OPTIONS)[number]["id"];
 
 const DEEPSKY_SHIPPER: WaybillShipper = {
   name: "Deepsky Clothing",
-  phone: "639170000000",
+  // phone: "639170000000",
   address_line: "Blk 12 Lot 9 SMB Hills, Summitville Brgy Putatan Muntinlupa City",
   city: "Muntinlupa City",
   region: "Metro Manila",
