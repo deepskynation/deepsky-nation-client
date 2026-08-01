@@ -11,7 +11,6 @@ import {
 } from "@/components/common/feedback/page-state-gate";
 import { GlassMessagePanel } from "@/components/common/feedback/glass-message-panel";
 import { useToast } from "@/components/common/feedback/toast-provider";
-import { DashboardGlassSection } from "@/components/LandingPage/dashboard/modules/dashboard-glass-section";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { usePurchaseAuth } from "@/hooks/use-purchase-auth";
 import {
@@ -311,9 +310,8 @@ export function ProductDetailView({ params }: ProductDetailViewProps) {
   const sizingImages = imagesByRole(product.images, "sizing");
 
   return (
-    <div className="min-h-full bg-gradient-to-b from-neutral-100 via-white to-neutral-200/90 text-black">
-      <DashboardGlassSection variant="light" className="min-h-full">
-        <div className="mx-auto max-w-6xl px-6 py-8 lg:px-12 lg:py-10">
+    <div className="min-h-full bg-white text-black">
+      <div className="mx-auto max-w-6xl px-6 py-8 lg:px-12 lg:py-10">
           {/* <ol className="mb-8 flex items-center gap-2 text-xs font-medium text-black/45">
             <li>
               <Link href={catalogHref} className="hover:text-black">
@@ -549,8 +547,7 @@ export function ProductDetailView({ params }: ProductDetailViewProps) {
           />
 
           <EmailSubscribeSection className="mt-10" />
-        </div>
-      </DashboardGlassSection>
+      </div>
 
       <CheckoutImagePreviewDialog
         open={imagePreviewOpen}
