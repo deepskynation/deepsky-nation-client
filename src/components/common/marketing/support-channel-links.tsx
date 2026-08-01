@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 
 const channelLinkClassName = cn(
   glassCardClassName,
-  "flex items-center gap-4 p-4 transition-opacity hover:opacity-90 sm:p-5",
+  "border border-black/10 flex items-center gap-4 p-4 shadow-none transition-opacity hover:opacity-90 sm:p-5",
 );
 
 type SupportChannelLinksProps = {
