@@ -6,21 +6,19 @@ import { getWaybillPublicUrl } from "@/lib/waybill-public-url";
 import { cn } from "@/lib/utils";
 
 type WaybillQrCodeProps = {
-  trackingNumber: string;
+  orderNumber: string;
   className?: string;
 };
 
-/** Scannable QR encoding the public waybill URL for this tracking number. */
+/** Scannable QR encoding the public waybill URL for this order number. */
 export function WaybillQrCode({
-  trackingNumber,
+  orderNumber,
   className,
 }: WaybillQrCodeProps) {
-  const url = useMemo(
-    () => getWaybillPublicUrl(trackingNumber),
-    [trackingNumber],
-  );
+  const trimmed = orderNumber.trim().replace(/^#/, "");
+  const url = useMemo(() => getWaybillPublicUrl(trimmed), [trimmed]);
 
-  if (!trackingNumber.trim()) {
+  if (!trimmed) {
     return null;
   }
 

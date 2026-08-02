@@ -106,7 +106,7 @@ export type AdminOrdersQuery = PaginationQuery & {
 };
 
 export type AdminUpdateOrderAction = "approve" | "reject" | "ship" | "set_waybill";
-export type WaybillLogoType = "jt" | "lalamove" | "custom";
+export type WaybillLogoType = "jt" | "lalamove" | "custom" | "deepsky";
 export type WaybillPaymentMethod = "cod" | "online_transfer";
 
 export type AdminShipOrderDetails = {

@@ -56,6 +56,8 @@ export type WaybillPrintData = {
   isJT: boolean;
   /** Courier branding: Lalamove logo */
   isLalamove: boolean;
+  /** Brand logo: Deepsky Clothing */
+  isDeepsky: boolean;
   /**
    * When true, print UI may pick a custom logo (`custom_logo_url`)
    * instead of the courier default.
@@ -127,6 +129,7 @@ export const mockWaybillPrepaid: WaybillPrintData = {
   total: "1499.00",
   isJT: true,
   isLalamove: false,
+  isDeepsky: false,
   isCustomize: false,
   custom_logo_url: null,
 };
@@ -165,6 +168,7 @@ export const mockWaybillCod: WaybillPrintData = {
   total: "2499.00",
   isJT: true,
   isLalamove: false,
+  isDeepsky: false,
   isCustomize: false,
   custom_logo_url: null,
 };
@@ -203,6 +207,7 @@ export const mockWaybillLalamove: WaybillPrintData = {
   total: "599.00",
   isJT: false,
   isLalamove: true,
+  isDeepsky: false,
   isCustomize: false,
   custom_logo_url: null,
 };
@@ -241,6 +246,7 @@ export const mockWaybillCustomize: WaybillPrintData = {
   total: "899.00",
   isJT: false,
   isLalamove: false,
+  isDeepsky: false,
   isCustomize: true,
   custom_logo_url: "/deepsky-logo.png",
 };

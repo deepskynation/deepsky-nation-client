@@ -12,18 +12,20 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { alertErrorClassName, segmentListClassName, segmentTabClassName } from "@/lib/panel-styles";
+import { alertErrorClassName } from "@/lib/panel-styles";
 import { cn } from "@/lib/utils";
 
 export type WaybillLogoChoice =
   | { kind: "jt" }
   | { kind: "lalamove" }
+  | { kind: "deepsky" }
   | { kind: "custom"; dataUrl: string; fileName: string };
 
 const LOGO_KINDS = [
-  { id: "jt" as const, label: "J&T Express" },
+  { id: "jt" as const, label: "J&T" },
   { id: "lalamove" as const, label: "Lalamove" },
-  { id: "custom" as const, label: "Custom logo" },
+  { id: "deepsky" as const, label: "Deepsky" },
+  { id: "custom" as const, label: "Custom" },
 ];
 
 const ALLOWED_EXTENSIONS = new Set(["jpg", "jpeg", "png", "webp", "svg"]);
@@ -83,7 +85,9 @@ export function WaybillLogoDialog({
 }: WaybillLogoDialogProps) {
   const fileInputId = useId();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [kind, setKind] = useState<"jt" | "lalamove" | "custom">(value.kind);
+  const [kind, setKind] = useState<"jt" | "lalamove" | "deepsky" | "custom">(
+    value.kind,
+  );
   const [customDataUrl, setCustomDataUrl] = useState(
     value.kind === "custom" ? value.dataUrl : "",
   );
@@ -144,7 +148,9 @@ export function WaybillLogoDialog({
       ? "/j%26t-logo.svg?v=2"
       : kind === "lalamove"
         ? "/lalamove-logo.webp"
-        : customDataUrl || null;
+        : kind === "deepsky"
+          ? "/deepsky-logo.png"
+          : customDataUrl || null;
 
   return (
     <Dialog
@@ -157,15 +163,15 @@ export function WaybillLogoDialog({
         <DialogHeader>
           <DialogTitle>Choose waybill logo</DialogTitle>
           <DialogDescription>
-            Select J&amp;T Express, Lalamove, or upload a custom logo. Custom
-            uploads allow JPG, PNG, WEBP, and SVG only.
+            Select J&amp;T Express, Lalamove, Deepsky, or upload a custom logo.
+            Custom uploads allow JPG, PNG, WEBP, and SVG only.
           </DialogDescription>
         </DialogHeader>
 
         <div
           role="tablist"
           aria-label="Waybill logo options"
-          className={cn(segmentListClassName, "flex-wrap")}
+          className="flex w-full flex-nowrap gap-1 rounded-lg bg-neutral-100/90 p-1"
         >
           {LOGO_KINDS.map((option) => {
             const isActive = kind === option.id;
@@ -179,7 +185,12 @@ export function WaybillLogoDialog({
                   setKind(option.id);
                   setError(null);
                 }}
-                className={segmentTabClassName(isActive)}
+                className={cn(
+                  "min-w-0 flex-1 rounded-md px-1.5 py-2 text-center text-xs font-medium whitespace-nowrap transition-all outline-none focus-visible:ring-2 focus-visible:ring-neutral-300",
+                  isActive
+                    ? "bg-white text-neutral-900 shadow-sm"
+                    : "text-neutral-600 hover:text-neutral-900",
+                )}
               >
                 {option.label}
               </button>

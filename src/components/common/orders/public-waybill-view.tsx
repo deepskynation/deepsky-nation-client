@@ -13,7 +13,7 @@ import {
 import type { WaybillPrintData } from "@/mock/waybill";
 
 type PublicWaybillViewProps = {
-  trackingNumber: string;
+  orderNumber: string;
 };
 
 type LoadState =
@@ -21,8 +21,8 @@ type LoadState =
   | { status: "error"; message: string }
   | { status: "ready"; data: WaybillPrintData };
 
-export function PublicWaybillView({ trackingNumber }: PublicWaybillViewProps) {
-  const trimmed = trackingNumber.trim();
+export function PublicWaybillView({ orderNumber }: PublicWaybillViewProps) {
+  const trimmed = orderNumber.trim().replace(/^#/, "");
   const [state, setState] = useState<LoadState>({ status: "loading" });
 
   useEffect(() => {
@@ -45,7 +45,7 @@ export function PublicWaybillView({ trackingNumber }: PublicWaybillViewProps) {
             status: "error",
             message:
               response.status === 404
-                ? "No waybill was found for this tracking number."
+                ? "No waybill was found for this order."
                 : "Could not load this waybill. Try again later.",
           });
           return;
@@ -80,7 +80,7 @@ export function PublicWaybillView({ trackingNumber }: PublicWaybillViewProps) {
     return (
       <GlassMessagePanel
         title="Waybill not found"
-        description="Missing tracking number."
+        description="Missing order number."
         icon={<PackageXIcon className="size-12 text-red-600" aria-hidden />}
         action={{ href: "/", label: "Back To Shop", variant: "button" }}
       />

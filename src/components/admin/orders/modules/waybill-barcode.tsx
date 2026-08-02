@@ -13,7 +13,7 @@ type WaybillBarcodeProps = {
   barHeight?: number;
 };
 
-/** Scannable Code128 barcode for a tracking number. */
+/** Scannable Code128 barcode. */
 export function WaybillBarcode({
   value,
   className,

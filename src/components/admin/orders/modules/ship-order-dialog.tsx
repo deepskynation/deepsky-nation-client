@@ -25,8 +25,6 @@ import {
   alertErrorClassName,
   fieldClassName,
   labelClassName,
-  segmentListClassName,
-  segmentTabClassName,
 } from "@/lib/panel-styles";
 import { cn } from "@/lib/utils";
 import type {
@@ -49,19 +47,16 @@ type ShipOrderDialogProps = {
 };
 
 const LOGO_KINDS = [
-  { id: "jt" as const, label: "J&T Express" },
+  { id: "jt" as const, label: "J&T" },
   { id: "lalamove" as const, label: "Lalamove" },
-  { id: "custom" as const, label: "Custom logo" },
-];
-
-const PAYMENT_KINDS = [
-  { id: "cod" as const, label: "COD" },
-  { id: "online_transfer" as const, label: "Prepaid" },
+  { id: "deepsky" as const, label: "Deepsky" },
+  { id: "custom" as const, label: "Custom" },
 ];
 
 const COURIER_BY_LOGO: Record<Exclude<WaybillLogoType, "custom">, string> = {
   jt: "J&T Express",
   lalamove: "Lalamove",
+  deepsky: "Deepsky Clothing",
 };
 
 const ALLOWED_EXTENSIONS = new Set(["jpg", "jpeg", "png", "webp", "svg"]);
@@ -104,7 +99,12 @@ function readFileAsDataUrl(file: File): Promise<string> {
 }
 
 function isWaybillLogoType(value: string | null | undefined): value is WaybillLogoType {
-  return value === "jt" || value === "lalamove" || value === "custom";
+  return (
+    value === "jt" ||
+    value === "lalamove" ||
+    value === "deepsky" ||
+    value === "custom"
+  );
 }
 
 function isWaybillPaymentMethod(
@@ -297,10 +297,6 @@ export function ShipOrderDialog({
     const trimmedWeight = packageWeightKg.trim();
     const weightValue = Number(trimmedWeight);
 
-    if (!trimmedTracking) {
-      setError("Tracking number is required.");
-      return;
-    }
     if (!trimmedWeight || Number.isNaN(weightValue) || weightValue <= 0) {
       setError("Package weight must be a positive number.");
       return;
@@ -332,7 +328,9 @@ export function ShipOrderDialog({
       ? "/j%26t-logo.svg?v=2"
       : logoType === "lalamove"
         ? "/lalamove-logo.webp"
-        : customLogoUrl || null;
+        : logoType === "deepsky"
+          ? "/deepsky-logo.png"
+          : customLogoUrl || null;
 
   const isEdit = mode === "edit";
 
@@ -350,7 +348,7 @@ export function ShipOrderDialog({
           <DialogTitle>{isEdit ? "(Edit Waybill)" : "(Set up Waybill)"}</DialogTitle>
           <DialogDescription>
             {isEdit
-              ? "Update courier, tracking, weight, and logo. Preview updates as you type."
+              ? "Update courier, weight, and logo. Preview updates as you type."
               : "Fill in shipping details. The label preview on the right updates live."}
           </DialogDescription>
         </DialogHeader>
@@ -362,7 +360,7 @@ export function ShipOrderDialog({
               <div
                 role="tablist"
                 aria-label="Waybill logo options"
-                className={cn(segmentListClassName, "flex-wrap")}
+                className="flex w-full flex-nowrap gap-1 rounded-lg bg-neutral-100/90 p-1"
               >
                 {LOGO_KINDS.map((option) => {
                   const isActive = logoType === option.id;
@@ -376,7 +374,12 @@ export function ShipOrderDialog({
                         setLogoType(option.id);
                         setError(null);
                       }}
-                      className={segmentTabClassName(isActive)}
+                      className={cn(
+                        "min-w-0 flex-1 rounded-md px-1.5 py-2 text-center text-xs font-medium whitespace-nowrap transition-all outline-none focus-visible:ring-2 focus-visible:ring-neutral-300",
+                        isActive
+                          ? "bg-white text-neutral-900 shadow-sm"
+                          : "text-neutral-600 hover:text-neutral-900",
+                      )}
                     >
                       {option.label}
                     </button>
@@ -463,50 +466,6 @@ export function ShipOrderDialog({
                   </button>
                 ) : null}
               </div>
-            </div>
-
-            <div className="space-y-2">
-              <p className={labelClassName}>Payment on label</p>
-              <div
-                role="tablist"
-                aria-label="Waybill payment options"
-                className={cn(segmentListClassName, "flex-wrap")}
-              >
-                {PAYMENT_KINDS.map((option) => {
-                  const isActive = paymentMethod === option.id;
-                  return (
-                    <button
-                      key={option.id}
-                      type="button"
-                      role="tab"
-                      aria-selected={isActive}
-                      onClick={() => {
-                        setPaymentMethod(option.id);
-                        setError(null);
-                      }}
-                      className={segmentTabClassName(isActive)}
-                    >
-                      {option.label}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label htmlFor={`ship-tracking-${orderId}`} className={labelClassName}>
-                Tracking number
-              </label>
-              <input
-                id={`ship-tracking-${orderId}`}
-                className={fieldClassName}
-                value={trackingNumber}
-                onChange={(event) => {
-                  setTrackingNumber(event.target.value);
-                  if (error) setError(null);
-                }}
-                placeholder="e.g. DSN971234567890"
-              />
             </div>
 
             <div className="space-y-2">
