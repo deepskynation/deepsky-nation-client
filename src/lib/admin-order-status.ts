@@ -57,9 +57,6 @@ export function hasAdminWaybillReady(
   if (!(order.courier ?? "").trim()) {
     return false;
   }
-  if (!(order.tracking_number ?? "").trim()) {
-    return false;
-  }
   const weight = Number(order.package_weight_kg);
   if (!order.package_weight_kg || Number.isNaN(weight) || weight <= 0) {
     return false;

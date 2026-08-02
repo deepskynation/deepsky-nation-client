@@ -42,7 +42,12 @@ type AdminOrderStatusActionsProps = {
 };
 
 function isWaybillLogoType(value: string | null | undefined): value is WaybillLogoType {
-  return value === "jt" || value === "lalamove" || value === "custom";
+  return (
+    value === "jt" ||
+    value === "lalamove" ||
+    value === "deepsky" ||
+    value === "custom"
+  );
 }
 
 export function AdminOrderStatusActions({

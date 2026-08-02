@@ -325,6 +325,7 @@ function applyWaybillLogoChoice(
       courier: "jnt",
       isJT: true,
       isLalamove: false,
+      isDeepsky: false,
       isCustomize: false,
       custom_logo_url: null,
     };
@@ -335,6 +336,18 @@ function applyWaybillLogoChoice(
       courier: "lalamove",
       isJT: false,
       isLalamove: true,
+      isDeepsky: false,
+      isCustomize: false,
+      custom_logo_url: null,
+    };
+  }
+  if (choice.kind === "deepsky") {
+    return {
+      ...data,
+      courier: "Deepsky Clothing",
+      isJT: false,
+      isLalamove: false,
+      isDeepsky: true,
       isCustomize: false,
       custom_logo_url: null,
     };
@@ -343,6 +356,7 @@ function applyWaybillLogoChoice(
     ...data,
     isJT: false,
     isLalamove: false,
+    isDeepsky: false,
     isCustomize: true,
     custom_logo_url: choice.dataUrl,
   };
@@ -472,7 +486,9 @@ function WaybillDemo() {
       ? "J&T Express"
       : logoChoice.kind === "lalamove"
         ? "Lalamove"
-        : `Custom (${logoChoice.fileName})`;
+        : logoChoice.kind === "deepsky"
+          ? "Deepsky"
+          : `Custom (${logoChoice.fileName})`;
 
   return (
     <div className="max-w-3xl space-y-4 rounded-xl border border-black/10 bg-white/70 p-6">

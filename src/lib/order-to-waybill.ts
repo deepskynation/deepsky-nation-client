@@ -39,6 +39,18 @@ function itemsFromOrder(order: ApiOrder): WaybillPrintData["items"] {
   }));
 }
 
+function logoFlags(logoType: string): Pick<
+  WaybillPrintData,
+  "isJT" | "isLalamove" | "isDeepsky" | "isCustomize"
+> {
+  return {
+    isJT: logoType === "jt",
+    isLalamove: logoType === "lalamove",
+    isDeepsky: logoType === "deepsky",
+    isCustomize: logoType === "custom",
+  };
+}
+
 /**
  * Map a live admin order (with waybill fields) to printable waybill data.
  * Returns null when required waybill fields are missing.
@@ -52,7 +64,7 @@ export function orderToWaybillPrintData(order: ApiOrder): WaybillPrintData | nul
   const paymentMethod = (order.waybill_payment_method ?? "").trim();
   const weight = Number(order.package_weight_kg);
 
-  if (!tracking || !courier || !sorting || !hub || !logoType) {
+  if (!courier || !sorting || !hub || !logoType) {
     return null;
   }
   if (Number.isNaN(weight) || weight <= 0) {
@@ -79,14 +91,12 @@ export function orderToWaybillPrintData(order: ApiOrder): WaybillPrintData | nul
     consignee: consigneeFromOrder(order),
     items: itemsFromOrder(order),
     total: order.total,
-    isJT: logoType === "jt",
-    isLalamove: logoType === "lalamove",
-    isCustomize: logoType === "custom",
+    ...logoFlags(logoType),
     custom_logo_url: logoType === "custom" ? order.waybill_logo_url : null,
   };
 }
 
-/** Public API payload for `GET /api/public/waybill/{tracking_number}`. */
+/** Public API payload for `GET /api/public/waybill/{order_number}`. */
 export type PublicWaybillApiResponse = {
   order_number: string;
   tracking_number: string;
@@ -154,9 +164,7 @@ export function publicWaybillToPrintData(
       quantity: item.quantity,
     })),
     total: payload.total,
-    isJT: logoType === "jt",
-    isLalamove: logoType === "lalamove",
-    isCustomize: logoType === "custom",
+    ...logoFlags(logoType),
     custom_logo_url: logoType === "custom" ? payload.waybill_logo_url : null,
   };
 }
@@ -184,7 +192,7 @@ export function buildWaybillDraftPreview(
 
   return {
     order_number: order.order_number,
-    tracking_number: draft.trackingNumber.trim() || "TRACKING",
+    tracking_number: draft.trackingNumber.trim(),
     courier: draft.courier.trim() || "Courier",
     shipped_at: order.shipped_at ?? order.created_at,
     expected_delivery_date: order.expected_delivery_date,
@@ -196,9 +204,7 @@ export function buildWaybillDraftPreview(
     consignee: consigneeFromOrder(order),
     items: itemsFromOrder(order),
     total: order.total,
-    isJT: logoType === "jt",
-    isLalamove: logoType === "lalamove",
-    isCustomize: logoType === "custom",
+    ...logoFlags(logoType),
     custom_logo_url: logoType === "custom" ? draft.waybillLogoUrl : null,
   };
 }

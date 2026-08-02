@@ -76,6 +76,9 @@ function resolveWaybillLogo(data: WaybillPrintData): {
   if (data.isLalamove) {
     return { src: "/lalamove-logo.webp", alt: "Lalamove" };
   }
+  if (data.isDeepsky) {
+    return { src: "/deepsky-logo.png", alt: "Deepsky Nation" };
+  }
   return { src: "/deepsky-logo.png", alt: "Deepsky Nation" };
 }
 
@@ -99,13 +102,12 @@ function WaybillHeaderLogo({ data }: { data: WaybillPrintData }) {
 
 /**
  * Printable shipping waybill (A6 / 105×148 mm).
- * Logo follows `isJT` / `isLalamove` / `isCustomize` on mock/live data.
+ * Logo follows `isJT` / `isLalamove` / `isDeepsky` / `isCustomize` on mock/live data.
  */
 export default function PrintOrderDetails({
   data,
   className,
 }: PrintOrderDetailsProps) {
-  const isCod = data.payment_method === "cod";
   const itemCount = data.items.reduce((sum, item) => sum + item.quantity, 0);
   const sendDate = formatSendDate(data.shipped_at);
   const expectedDate = data.expected_delivery_date
@@ -114,6 +116,7 @@ export default function PrintOrderDetails({
   const buyerArea = data.consignee.area ?? data.consignee.city;
   const sellerArea = data.shipper.area ?? data.shipper.city;
   const addressType = data.consignee.address_type ?? "HOME";
+  const orderId = data.order_number.replace(/^#/, "");
 
   return (
     <>
@@ -196,7 +199,7 @@ export default function PrintOrderDetails({
           "font-[Arial,Helvetica,sans-serif]",
           className,
         )}
-        aria-label={`Waybill ${data.tracking_number}`}
+        aria-label={`Waybill ${orderId}`}
       >
         {/* Header: logo + order id | destination / hub / sorting */}
         <header className="grid grid-cols-[38%_62%] border-b-2 border-black">
@@ -207,9 +210,7 @@ export default function PrintOrderDetails({
             <div className="border-t border-black px-1.5 py-1">
               <p className="text-[8px] leading-tight">
                 <span className="font-bold">Order ID</span>{" "}
-                <span className="font-semibold break-all">
-                  {data.order_number.replace(/^#/, "")}
-                </span>
+                <span className="font-semibold break-all">{orderId}</span>
               </p>
             </div>
           </div>
@@ -231,44 +232,20 @@ export default function PrintOrderDetails({
           </div>
         </header>
 
-        {/* Main barcode — full-width band like PH J&T AWB */}
-        <section className="border-b-2 border-black px-0 py-2">
-          <WaybillBarcode
-            value={data.tracking_number}
-            className="h-10"
-            fullWidth
-            barHeight={40}
-          />
-          <p className="mt-1 text-center text-[15px] leading-none font-bold tracking-wider">
-            {data.tracking_number}
-          </p>
-        </section>
-
-        {/* BUYER + SELLER with COD watermark */}
-        <section className="relative">
-          {isCod ? (
-            <div
-              className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center"
-              aria-hidden
-            >
-              <span className="text-[56px] leading-none font-black tracking-widest text-black/10 select-none">
-                COD
-              </span>
-            </div>
-          ) : null}
-
+        {/* BUYER + SELLER — expanded after removing top tracking barcode */}
+        <section className="relative flex-1">
           <div className="relative z-10 flex border-b border-black">
             <VerticalLabel>BUYER</VerticalLabel>
-            <div className="min-w-0 flex-1 px-1.5 py-1">
-              <p className="text-[10px] leading-snug font-bold">
+            <div className="min-w-0 flex-1 px-2 py-2">
+              <p className="text-[11px] leading-snug font-bold">
                 {data.consignee.name}{" "}
                 <span className="font-semibold">{data.consignee.phone}</span>
               </p>
-              <p className="mt-0.5 text-[9px] leading-snug">
+              <p className="mt-1 text-[10px] leading-snug">
                 {data.consignee.address_line}, {data.consignee.city},{" "}
                 {data.consignee.region}
               </p>
-              <div className="mt-1 flex flex-wrap gap-x-2 gap-y-0.5 text-[8px] font-semibold">
+              <div className="mt-1.5 flex flex-wrap gap-x-2 gap-y-0.5 text-[8.5px] font-semibold">
                 <span>{data.consignee.city}</span>
                 <span>{data.consignee.region}</span>
                 <span>{addressType}</span>
@@ -281,8 +258,8 @@ export default function PrintOrderDetails({
 
           <div className="relative z-10 flex">
             <VerticalLabel>SELLER</VerticalLabel>
-            <div className="min-w-0 flex-1 px-1.5 py-1">
-              <p className="text-[10px] leading-snug font-bold">
+            <div className="min-w-0 flex-1 px-2 py-2">
+              <p className="text-[11px] leading-snug font-bold">
                 {data.shipper.name}{" "}
                 {data.shipper.phone?.trim() ? (
                   <>
@@ -291,10 +268,10 @@ export default function PrintOrderDetails({
                   </>
                 ) : null}
               </p>
-              <p className="mt-0.5 text-[9px] leading-snug">
+              <p className="mt-1 text-[10px] leading-snug">
                 {data.shipper.address_line}
               </p>
-              <div className="mt-1 flex flex-wrap gap-x-2 gap-y-0.5 text-[8px] font-semibold">
+              <div className="mt-1.5 flex flex-wrap gap-x-2 gap-y-0.5 text-[8.5px] font-semibold">
                 <span>{data.shipper.city}</span>
                 <span>{data.shipper.region}</span>
                 <span>SBD</span>
@@ -307,10 +284,10 @@ export default function PrintOrderDetails({
           </div>
         </section>
 
-        {/* QR | qty/weight + small barcode | COD amount */}
+        {/* QR | qty/weight + Order ID barcode | amount */}
         <section className="grid grid-cols-[28%_42%_30%] border-t-2 border-black">
           <div className="border-r border-black p-1.5">
-            <WaybillQrCode trackingNumber={data.tracking_number} />
+            <WaybillQrCode orderNumber={orderId} />
           </div>
           <div className="flex flex-col border-r border-black">
             <div className="border-b border-black px-1.5 py-1.5 text-[9px] leading-snug">
@@ -323,18 +300,19 @@ export default function PrintOrderDetails({
                 {data.weight_kg.toFixed(1)} kg
               </p>
             </div>
-            <div className="flex flex-1 flex-col justify-center px-1 py-1">
+            <div className="flex flex-1 flex-col items-center justify-center gap-0.5 px-1 py-1">
               <WaybillBarcode
-                value={data.tracking_number}
+                value={orderId}
                 className="h-7"
                 barHeight={28}
               />
+              <p className="text-center text-[9px] leading-none font-bold tracking-wide">
+                {orderId}
+              </p>
             </div>
           </div>
           <div className="flex flex-col items-center justify-center px-1 py-2 text-center">
-            <p className="text-[9px] font-bold">
-              {isCod ? "COD Amount:" : "Amount:"}
-            </p>
+            <p className="text-[9px] font-bold">Amount:</p>
             <p className="mt-1 text-[20px] leading-none font-black tracking-tight">
               {formatCodAmount(data.total)}
             </p>
@@ -344,14 +322,16 @@ export default function PrintOrderDetails({
         {/* Static courier attempt checklists + shop note */}
         <footer className="flex min-h-[36px] items-stretch border-t-2 border-black">
           <div className="flex min-w-0 flex-[1.4] flex-col items-start justify-center gap-0.5 px-1.5 py-1">
-            {/* eslint-disable-next-line @next/next/no-img-element -- static public asset for print */}
-            <img
-              src="/deepsky-logo.png"
-              alt="Deepsky Nation"
-              width={56}
-              height={14}
-              className="h-2 w-auto shrink-0 object-contain object-left"
-            />
+            {!data.isDeepsky ? (
+              // eslint-disable-next-line @next/next/no-img-element -- static public asset for print
+              <img
+                src="/deepsky-logo.png"
+                alt="Deepsky Nation"
+                width={56}
+                height={14}
+                className="h-2 w-auto shrink-0 object-contain object-left"
+              />
+            ) : null}
             <p className="min-w-0 text-[6.5px] leading-tight text-black/80">
               Thank you for shopping with Deepsky Nation! Please confirm when
               your order is received.

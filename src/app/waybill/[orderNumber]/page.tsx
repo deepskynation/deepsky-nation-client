@@ -4,14 +4,14 @@ import { Loader2Icon } from "lucide-react";
 import { PublicWaybillView } from "@/components/common/orders/public-waybill-view";
 
 type WaybillPageProps = {
-  params: Promise<{ trackingNumber: string }>;
+  params: Promise<{ orderNumber: string }>;
 };
 
 export async function generateMetadata({
   params,
 }: WaybillPageProps): Promise<Metadata> {
-  const { trackingNumber } = await params;
-  const decoded = decodeURIComponent(trackingNumber).trim();
+  const { orderNumber } = await params;
+  const decoded = decodeURIComponent(orderNumber).trim().replace(/^#/, "");
   return {
     title: decoded
       ? `Waybill ${decoded} | Deepsky Nation`
@@ -32,13 +32,13 @@ function WaybillFallback() {
 }
 
 export default async function WaybillPage({ params }: WaybillPageProps) {
-  const { trackingNumber } = await params;
-  const decoded = decodeURIComponent(trackingNumber).trim();
+  const { orderNumber } = await params;
+  const decoded = decodeURIComponent(orderNumber).trim().replace(/^#/, "");
 
   return (
     <main className="min-h-full bg-gradient-to-b from-neutral-100 via-white to-neutral-200/90">
       <Suspense fallback={<WaybillFallback />}>
-        <PublicWaybillView key={decoded} trackingNumber={decoded} />
+        <PublicWaybillView key={decoded} orderNumber={decoded} />
       </Suspense>
     </main>
   );
